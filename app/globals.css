@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+/* ========================================
+   폰트 설정 - Pretendard (CDN)
+   ======================================== */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+/* ========================================
+   ABO MEDIA 브랜드 컬러 시스템 - #2596be
+   ======================================== */
 :root {
+  /* 배경/전경 */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* 브랜드 컬러 - #2596be 기반 */
+  --brand: #2596be;              /* 메인 브랜드 컬러 */
+  --brand-dark: #1c7a9e;         /* 진한 버전 (호버용) */
+  --brand-light: #3db3d9;        /* 밝은 버전 */
+  --brand-acc: #2596be;          /* 악센트 (동일) */
+  
+  /* 그라데이션 */
+  --gradient-primary: linear-gradient(135deg, #1c7a9e 0%, #2596be 50%, #3db3d9 100%);
+  --gradient-hero: linear-gradient(180deg, rgba(28,122,158,0.4) 0%, rgba(37,150,190,0.6) 60%, rgba(61,179,217,0.7) 100%);
+
+  /* 중립 색상 */
+  --line: #e6e6e6;
+  --muted: #6b7280;
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-800: #262626;
+  --neutral-900: #0A0F1A;
+
+  /* 텍스트 */
+  --text-primary: #171717;
+  --text-secondary: #525252;
+  --text-muted: #6b7280;
+
+  /* 그림자 */
+  --shadow-brand: 0 10px 25px -5px rgba(37, 150, 190, 0.25);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
 }
 
+/* 다크모드 (선택사항) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --line: #262626;
+    --muted: #9ca3af;
   }
 }
 
+/* ========================================
+   기본 스타일
+   ======================================== */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--brand);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ========================================
+   유틸리티 클래스
+   ======================================== */
+.container-main {
+  @apply mx-auto max-w-6xl px-4;
+}
+
+/* 버튼 */
+.btn {
+  @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--brand-dark);
+}
+
+.btn-ghost {
+  @apply border-2;
+  border-color: var(--line);
+  color: var(--foreground);
+}
+
+.btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* 카드 */
+.card {
+  @apply rounded-2xl border bg-white;
+  border-color: var(--line);
+}
+
+/* 보더/텍스트 */
+.border-subtle {
+  border-color: var(--line);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.text-brand {
+  color: var(--brand);
+}
+
+.bg-brand {
+  background: var(--brand);
+}
+
+.shadow-brand {
+  box-shadow: var(--shadow-brand);
+}
+
+/* ========================================
+   애니메이션
+   ======================================== */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fade-in 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fade-in 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fade-in 0.8s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Hero 비디오 오버레이 고정 */
+.hero-static-overlay,
+.hero-static-overlay * {
+  transition: none !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  pointer-events: none !important;
 }

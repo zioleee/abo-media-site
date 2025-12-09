@@ -5,8 +5,8 @@ import { GraphQLClient, gql } from "graphql-request";
 export const revalidate = 60;
 
 // Hygraph 클라이언트
-const client = new GraphQLClient(process.env.HYGRAPH_ENDPOINT as string, {
-  headers: { Authorization: `Bearer ${process.env.HYGRAPH_TOKEN}` },
+const client = new GraphQLClient(process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT as string, {
+  headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_HYGRAPH_TOKEN}` },
 });
 
 // GraphQL 쿼리

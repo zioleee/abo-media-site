@@ -2,9 +2,23 @@
 
 import { useEffect, useRef } from "react";
 
+type NaverMaps = {
+  maps: {
+    LatLng: new (lat: number, lng: number) => unknown;
+    Map: new (el: HTMLElement, options: unknown) => unknown;
+    Marker: new (options: unknown) => unknown;
+    InfoWindow: new (options: { content: string }) => {
+      open: (map: unknown, marker: unknown) => void;
+    };
+    Position: {
+      TOP_RIGHT: unknown;
+    };
+  };
+};
+
 declare global {
   interface Window {
-    naver: any;
+    naver?: NaverMaps;
   }
 }
 
@@ -12,40 +26,43 @@ export default function Contact() {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const existing = document.querySelector<HTMLScriptElement>('script[data-naver-maps="true"]');
+    if (existing) return;
+
     const script = document.createElement('script');
+    script.dataset.naverMaps = "true";
     script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}`;
     script.async = true;
     document.head.appendChild(script);
 
     script.onload = () => {
-      if (mapRef.current && window.naver) {
-        const location = new window.naver.maps.LatLng(37.5595, 126.8464);
+      if (!mapRef.current || !window.naver) return;
 
-        const map = new window.naver.maps.Map(mapRef.current, {
-          center: location,
-          zoom: 17,
-          zoomControl: true,
-          zoomControlOptions: { position: window.naver.maps.Position.TOP_RIGHT }
-        });
+      const location = new window.naver.maps.LatLng(37.5595, 126.8464);
 
-        const marker = new window.naver.maps.Marker({
-          position: location,
-          map: map,
-          title: '에이비오미디어'
-        });
+      const map = new window.naver.maps.Map(mapRef.current, {
+        center: location,
+        zoom: 17,
+        zoomControl: true,
+        zoomControlOptions: { position: window.naver.maps.Position.TOP_RIGHT }
+      });
 
-        const infoWindow = new window.naver.maps.InfoWindow({
-          content: '<div style="padding:15px;font-size:14px;"><strong>에이비오미디어</strong><br/>서울 강서구 양천로 551-17</div>'
-        });
+      const marker = new window.naver.maps.Marker({
+        position: location,
+        map: map,
+        title: '에이비오미디어'
+      });
 
-        infoWindow.open(map, marker);
-      }
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content:
+          '<div style="padding:15px;font-size:14px;"><strong>에이비오미디어</strong><br/>서울 강서구 양천로 551-17</div>'
+      });
+
+      infoWindow.open(map, marker);
     };
 
     return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
+      if (document.head.contains(script)) document.head.removeChild(script);
     };
   }, []);
 
@@ -65,7 +82,6 @@ export default function Contact() {
       <section className="py-16 md:py-20">
         <div className="container-main">
           <div className="grid md:grid-cols-2 gap-12">
-
             {/* 왼쪽 정보 */}
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-8">Location</h2>
@@ -123,13 +139,13 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* 네이버 지도/길찾기 버튼 */}
+              {/* 네이버 지도/길찾기 버튼 - 브랜드 컬러 적용 */}
               <div className="mt-8 flex gap-3">
                 <a
                   href="https://map.naver.com/p/search/서울특별시 강서구 양천로 551-17"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#03C75A] text-white font-semibold rounded-full hover:bg-[#02b350] transition"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2596be] text-white font-semibold rounded-full hover:bg-[#1c7a9e] transition shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -141,7 +157,7 @@ export default function Contact() {
                   href="https://map.naver.com/p/search/서울특별시 강서구 양천로 551-17"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#03C75A] text-[#03C75A] font-semibold rounded-full hover:bg-[#03C75A] hover:text-white transition"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#2596be] text-[#2596be] font-semibold rounded-full hover:bg-[#2596be] hover:text-white transition"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
@@ -160,46 +176,13 @@ export default function Contact() {
                 className="w-full h-[400px] rounded-2xl shadow-lg border border-gray-200"
               />
 
-              <p className="mt-4 text-sm text-gray-500 text-center">
-                지도를 드래그하여 이동할 수 있습니다
-              </p>
+              
             </div>
           </div>
         </div>
       </section>
 
-      {/* 문의 CTA */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-main text-center">
-          <h2 className="text-3xl font-bold text-gray-900">문의하기</h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            프로젝트 제안, 제휴 문의, 기타 궁금하신 사항이 있으시면<br />
-            이메일 또는 전화로 연락주세요.
-          </p>
-
-          <div className="mt-8 flex justify-center gap-4">
-            <a
-              href="mailto:contact@abomedia.kr"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-[#2596be] text-white font-semibold rounded-full hover:bg-[#1c7a9e] transition shadow-lg"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              이메일 보내기
-            </a>
-
-            <a
-              href="tel:0507-1385-0877"
-              className="inline-flex items-center gap-2 px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-full hover:border-[#2596be] hover:text-[#2596be] transition"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              전화 걸기
-            </a>
-          </div>
-        </div>
-      </section>
+      
     </main>
   );
 }

@@ -201,21 +201,8 @@ export default function Home() {
             })}
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <div className="flex gap-2">
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i)}
-                  className={`w-2 h-2 rounded-full transition hover:bg-white/50 ${
-                    i === currentPage ? 'bg-white' : 'bg-white/30'
-                  }`}
-                  aria-label={`페이지 ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            <div className="flex gap-2">
+          <div className="mt-8 flex items-center justify-center">
+            <div className="flex gap-3">
               <button
                 onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
                 disabled={currentPage === 0}

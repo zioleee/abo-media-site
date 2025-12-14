@@ -21,14 +21,14 @@ const historyData: HistoryItem[] = [
   {
     year: "2019",
     events: [
-      { network: "MBC", shows: ["<아욱대 설 특집 방송>"] },
-      { network: "SBS Plus", shows: ["<퐁당아지들>"] }
+      { network: "MBC", shows: ["<아육대 설 특집 방송>"] },
+      { network: "SBS Plus", shows: ["<똥강아지들>"] }
     ]
   },
   {
     year: "2020",
     events: [
-      { network: "MBN", shows: ["<시골 밥워대>"] },
+      { network: "MBN", shows: ["<지구 방위대>"] },
       { network: "JTBC", shows: ["<가장 보통의 가족>"] },
       { network: "SBS", shows: ["<추석특집 라면 당기는 시간>"] },
       { network: "KBS2", shows: ["<펫비타민>"] }
@@ -47,24 +47,24 @@ const historyData: HistoryItem[] = [
   {
     year: "2022",
     events: [
-      { network: "KBS2", shows: ["<뼈고파>"] },
+      { network: "KBS2", shows: ["<빼고파>"] },
       { network: "WATCHA", shows: ["<도깨비>"] },
       { network: "KBS2", shows: ["<갓파더>"] },
       { network: "tvN", shows: ["<우리들의 차차차>"] },
       { network: "MBN", shows: ["<달인 VS 달인>"] },
-      { network: "SBS", shows: ["<펫미팅>"] },
+      { network: "SBS", shows: ["<펫미픽미>"] },
       { network: "SBS Plus", shows: ["<우리 아이가 달라졌어요 리턴즈>"] }
     ]
   },
   {
     year: "2023",
     events: [
-      { network: "tvN", shows: ["<별거벗은 세계사>"] },
-      { network: "TV조선", shows: ["<별별선수촌>"] },
+      { network: "tvN", shows: ["<벌거벗은 세계사>"] },
+      { network: "TV조선", shows: ["<부부선수촌>"] },
       { network: "JYP", shows: ["<글로벌 오디션 A2K>"] },
       { network: "U+모바일tv", shows: ["<내편하자 1,2>"] },
       { network: "TV조선", shows: ["<형제라면>"] },
-      { network: "TV조선", shows: ["<조선셰육회>"] },
+      { network: "TV조선", shows: ["<조선체육회>"] },
       { network: "MBN", shows: ["<오픈전쟁>"] },
       { network: "TV조선", shows: ["<아빠하고 나하고>"] }
     ]
@@ -72,13 +72,13 @@ const historyData: HistoryItem[] = [
   {
     year: "2024",
     events: [
-      { network: "Wavve", shows: ["열맛찬스"] },
+      { network: "Wavve", shows: ["엄맛찬스"] },
       { network: "TV조선", shows: ["<송승환의 초대>"] },
       { network: "U+모바일tv", shows: ["<내편하자 3>"] },
-      { network: "E채널", shows: ["<설득 네거지 시선>"] },
+      { network: "E채널", shows: ["<설록 네가지 시선>"] },
       { network: "SBS Plus", shows: ["<슬로라서>"] },
       { network: "tvN", shows: ["<유별난 역사한끼>"] },
-      { network: "tvN STORY", shows: ["<이젠 사람할 수 있을까>"] }
+      { network: "tvN STORY", shows: ["<이젠 사랑할 수 있을까>"] }
     ]
   },
   {
@@ -87,10 +87,10 @@ const historyData: HistoryItem[] = [
       { 
         network: "tvN", 
         shows: [
-          "<별거벗은 세계사>",
-          "<별거벗은 한국사>",
+          "<벌거벗은 세계사>",
+          "<벌거벗은 한국사>",
           "<유별난 역사 한 끼>",
-          "<잘생긴 드롱>",
+          "<잘생긴 트롯>",
           "<백억짜리 야짐식사>",
           "<남겨서 뭐하게 시즌 1,2>"
         ]
@@ -98,14 +98,14 @@ const historyData: HistoryItem[] = [
       { 
         network: "JTBC", 
         shows: [
-          "<살라살라>",
+          "<샬라살라>",
           "<1호가 될수없어 시즌2>",
-          "<함께함쇼>"
+          "<함께합쇼>"
         ]
       },
-      { network: "SBS플러스", shows: ["<슬로라서 시즌2>"] },
+      { network: "SBS플러스", shows: ["<솔로라서 시즌2>"] },
       { network: "LG유플러스", shows: ["<내편하자 시즌4>"] },
-      { network: "MBN", shows: ["<이장우의 투유노집밥>"] },
+      { network: "MBN", shows: ["<이장우의 두유노집밥>"] },
       { network: "KBS Joy", shows: ["<오래된 만남 추구 시즌 1,2>"] },
       { network: "KBS", shows: ["<누나 내게 여자야>", "<배달 왔수다>"] }
     ]

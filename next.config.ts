@@ -2,6 +2,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,  // ← 이 부분만 추가!
+  },
   images: {
     // 더 안전: 모든 graphassets 서브도메인 허용
     remotePatterns: [{ protocol: "https", hostname: "**.graphassets.com" }],

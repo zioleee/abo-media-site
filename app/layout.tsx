@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   authors: [{ name: "ABO MEDIA" }],
   creator: "ABO MEDIA",
   publisher: "ABO MEDIA",
+  icons: {                                    
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   robots: {
     index: false,
     follow: false,

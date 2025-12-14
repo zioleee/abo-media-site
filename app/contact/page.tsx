@@ -71,7 +71,7 @@ export default function Contact() {
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white py-20">
         <div className="container-main">
-          <h1 className="text-4xl md:text-5xl font-bold">Contact</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">CONTACT</h1>
           <p className="mt-4 text-lg text-white/90">
             에이비오미디어와 함께 콘텐츠의 미래를 만들어보세요
           </p>
@@ -147,9 +147,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2596be] text-white font-semibold rounded-full hover:bg-[#1c7a9e] transition shadow-lg"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
+                  
                   길찾기
                 </a>
 
@@ -159,9 +157,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#2596be] text-[#2596be] font-semibold rounded-full hover:bg-[#2596be] hover:text-white transition"
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                  </svg>
+                  
                   지도 보기
                 </a>
               </div>

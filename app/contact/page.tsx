@@ -26,16 +26,13 @@ export default function Contact() {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const existing = document.querySelector<HTMLScriptElement>('script[data-naver-maps="true"]');
-    if (existing) return;
+    const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
+    if (!clientId) {
+      console.warn("NEXT_PUBLIC_NAVER_MAP_CLIENT_ID is missing");
+      return;
+    }
 
-    const script = document.createElement('script');
-    script.dataset.naverMaps = "true";
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}`;
-    script.async = true;
-    document.head.appendChild(script);
-
-    script.onload = () => {
+    const initMap = () => {
       if (!mapRef.current || !window.naver) return;
 
       const location = new window.naver.maps.LatLng(37.5595, 126.8464);
@@ -44,25 +41,45 @@ export default function Contact() {
         center: location,
         zoom: 17,
         zoomControl: true,
-        zoomControlOptions: { position: window.naver.maps.Position.TOP_RIGHT }
+        zoomControlOptions: { position: window.naver.maps.Position.TOP_RIGHT },
       });
 
       const marker = new window.naver.maps.Marker({
         position: location,
-        map: map,
-        title: '에이비오미디어'
+        map,
+        title: "에이비오미디어",
       });
 
       const infoWindow = new window.naver.maps.InfoWindow({
         content:
-          '<div style="padding:15px;font-size:14px;"><strong>에이비오미디어</strong><br/>서울 강서구 양천로 551-17</div>'
+          '<div style="padding:15px;font-size:14px;"><strong>에이비오미디어</strong><br/>서울 강서구 양천로 551-17</div>',
       });
 
       infoWindow.open(map, marker);
     };
 
+    // ✅ 이미 스크립트가 있으면: return 하지 말고 "지도 초기화"만 시도
+    const existing = document.querySelector<HTMLScriptElement>('script[data-naver-maps="true"]');
+    if (existing) {
+      // 이미 로드되어 window.naver가 있으면 즉시 init
+      if (window.naver) initMap();
+      // 아직 로드 중이면 load 이벤트 한 번만 걸기
+      else existing.addEventListener("load", initMap, { once: true });
+      return;
+    }
+
+    // ✅ 스크립트가 없으면 새로 로드
+    const script = document.createElement("script");
+    script.dataset.naverMaps = "true";
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`;
+    script.async = true;
+
+    script.addEventListener("load", initMap);
+    document.head.appendChild(script);
+
+    // ✅ script는 지우지 않는 편이 안정적 (페이지 이동 시 재로딩/깜빡임 방지)
     return () => {
-      if (document.head.contains(script)) document.head.removeChild(script);
+      script.removeEventListener("load", initMap);
     };
   }, []);
 
@@ -114,8 +131,8 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">연락처</h3>
                     <p className="text-gray-600">
-                      <a href="tel:0507-1385-0877" className="hover:text-[#2596be] transition">
-                        0507-1385-0877
+                      <a href="tel:010-3889-4595" className="hover:text-[#2596be] transition">
+                        010-3889-4595
                       </a>
                     </p>
                   </div>
@@ -131,15 +148,15 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">이메일</h3>
                     <p className="text-gray-600">
-                      <a href="mailto:contact@abomedia.kr" className="hover:text-[#2596be] transition">
-                        contact@abomedia.kr
+                      <a href="mailto:abo@abomedia.co.kr" className="hover:text-[#2596be] transition">
+                        abo@abomedia.co.kr
                       </a>
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* 네이버 지도/길찾기 버튼 - 브랜드 컬러 적용 */}
+              {/* 네이버 지도/길찾기 버튼 */}
               <div className="mt-8 flex gap-3">
                 <a
                   href="https://map.naver.com/p/search/서울특별시 강서구 양천로 551-17"
@@ -147,7 +164,6 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2596be] text-white font-semibold rounded-full hover:bg-[#1c7a9e] transition shadow-lg"
                 >
-                  
                   길찾기
                 </a>
 
@@ -157,7 +173,6 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#2596be] text-[#2596be] font-semibold rounded-full hover:bg-[#2596be] hover:text-white transition"
                 >
-                  
                   지도 보기
                 </a>
               </div>
@@ -171,14 +186,10 @@ export default function Contact() {
                 ref={mapRef}
                 className="w-full h-[400px] rounded-2xl shadow-lg border border-gray-200"
               />
-
-              
             </div>
           </div>
         </div>
       </section>
-
-      
     </main>
   );
 }

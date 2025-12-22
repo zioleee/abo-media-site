@@ -19,7 +19,7 @@ export default function Footer() {
             {isEnglish ? 'ABO Media Co., Ltd.' : '㈜에이비오미디어'}
           </p>
           <p>
-            {isEnglish ? 'Tel' : '대표번호'} 0507-1385-0877
+            {isEnglish ? 'Tel' : '대표번호'} 010-3889-4595
           </p>
           <p>
             {isEnglish 

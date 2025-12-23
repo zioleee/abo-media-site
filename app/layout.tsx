@@ -26,11 +26,11 @@ export const metadata: Metadata = {
    other: {
     "naver-site-verification": "9f5696700b029e96b283c8b9a37a505ce8464906",
   },
-  
+
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    url: "https://abo-media.co.kr",
+    url: "https://www.abomedia.kr",
     title: "ABO MEDIA - 콘텐츠로 사람과 시장을 연결합니다",
     description: "예능·리얼리티·음악 등 방송/디지털 콘텐츠를 기획·제작하는 종합 미디어 기업",
     siteName: "ABO MEDIA",

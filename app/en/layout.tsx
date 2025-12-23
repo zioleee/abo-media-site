@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://abo-media.co.kr/en",
+    url: "https://www.abomedia.kr/en",
     title: "ABO MEDIA - Connecting People and Markets through Content",
     description: "A comprehensive media company specializing in entertainment, reality shows, and music content production",
     siteName: "ABO MEDIA",

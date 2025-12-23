@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   openGraph: {
     type: "website",
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
     siteName: "ABO MEDIA",
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
+        url: "/ABO_Logo.png",
+        width: 800,
+        height: 800,
         alt: "ABO MEDIA",
       },
     ],
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ABO MEDIA",
     description: "콘텐츠로 사람과 시장을 연결합니다",
-    images: ["/og-image.jpg"],
+    images: ["/ABO_Logo.png"],
   },
 };
 

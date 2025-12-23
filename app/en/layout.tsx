@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   creator: "ABO MEDIA",
   publisher: "ABO MEDIA",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   openGraph: {
     type: "website",
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     siteName: "ABO MEDIA",
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
+        url: "/ABO_Logo.png",
+        width: 800,
+        height: 800,
         alt: "ABO MEDIA",
       },
     ],
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ABO MEDIA",
     description: "Connecting People and Markets through Content",
-    images: ["/og-image.jpg"],
+    images: ["/ABO_Logo.png"],
   },
 };
 

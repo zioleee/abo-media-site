@@ -1,8 +1,8 @@
 // app/sitemap.ts
 import { MetadataRoute } from 'next'
-
+import { SITE_URL } from "./lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.abomedia.kr'
+  const baseUrl = SITE_URL;
   
   return [
     {

@@ -1,7 +1,12 @@
 // app/en/layout.tsx
 import { Metadata } from "next";
+import { SITE_URL } from "../lib/site";
 
 export const metadata: Metadata = {
+
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: `${SITE_URL}/en` },
+
   title: {
     default: "ABO MEDIA - Connecting People and Markets through Content",
     template: "%s | ABO MEDIA",
@@ -18,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.abomedia.kr/en",
+    url: `${SITE_URL}/en`,
     title: "ABO MEDIA - Connecting People and Markets through Content",
     description: "A comprehensive media company specializing in entertainment, reality shows, and music content production",
     siteName: "ABO MEDIA",

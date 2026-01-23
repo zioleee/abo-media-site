@@ -16,14 +16,12 @@ export default function Header() {
     { href: '/en/business', label: 'Business' },
     { href: '/en/works', label: 'Works' },
     { href: '/en/news', label: 'News' },
-    { href: '/en/clients', label: 'Clients' },
     { href: '/en/contact', label: 'Contact' },
   ] : [
     { href: '/about', label: 'About' },
     { href: '/business', label: 'Business' },
     { href: '/works', label: 'Works' },
     { href: '/news', label: 'News' },
-    { href: '/clients', label: 'Clients' },
     { href: '/contact', label: 'Contact' },
   ];
 

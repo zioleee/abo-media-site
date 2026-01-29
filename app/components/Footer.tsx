@@ -18,11 +18,19 @@ export default function Footer() {
           <p className="text-white font-medium">
             {isEnglish ? 'ABO Media Co., Ltd.' : '㈜에이비오미디어'}
           </p>
+
+          {/* Tel과 Email을 한 줄에 배치 */}
           <p>
-            {isEnglish ? 'Tel' : '대표번호'} 010-3889-4595
+            Tel. 010-3889-4595
           </p>
           <p>
-            {isEnglish 
+            Email. business@abomedia.co.kr
+          </p>
+
+
+
+          <p>
+            {isEnglish
               ? '705, Hanwha Bizmetro 1st, 551-17 Yangcheon-ro, Gangseo-gu, Seoul, Republic of Korea'
               : '서울특별시 강서구 양천로 551-17 한화비즈메트로 1차 705호'
             }

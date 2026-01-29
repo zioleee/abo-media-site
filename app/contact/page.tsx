@@ -77,7 +77,7 @@ export default function Contact() {
     script.addEventListener("load", initMap);
     document.head.appendChild(script);
 
-    // ✅ script는 지우지 않는 편이 안정적 (페이지 이동 시 재로딩/깜빡임 방지)
+    //  script는 지우지 않는 편이 안정적 (페이지 이동 시 재로딩/깜빡임 방지)
     return () => {
       script.removeEventListener("load", initMap);
     };
@@ -148,8 +148,8 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">이메일</h3>
                     <p className="text-gray-600">
-                      <a href="mailto:abo@abomedia.co.kr" className="hover:text-[#2596be] transition">
-                        abo@abomedia.co.kr
+                      <a href="mailto:business@abomedia.co.kr" className="hover:text-[#2596be] transition">
+                        business@abomedia.co.kr
                       </a>
                     </p>
                   </div>

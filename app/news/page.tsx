@@ -13,9 +13,14 @@ if (!endpoint) {
   console.warn('NEXT_PUBLIC_HYGRAPH_ENDPOINT is missing');
 }
 
-const client = new GraphQLClient(endpoint as string, token ? {
-  headers: { Authorization: `Bearer ${token}` },
-} : undefined);
+const client = new GraphQLClient(
+  endpoint as string,
+  token
+    ? {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    : undefined
+);
 
 const QUERY = gql`
   query NewsList {
@@ -84,7 +89,7 @@ export default function NewsPage() {
                   href={`/news/${news.slug}`}
                   className="group bg-white rounded-xl border-2 border-gray-100 overflow-hidden hover:border-[#2596be]/30 hover:shadow-lg transition-all"
                 >
-                  {/* 이미지 - 약간 아래쪽 포함 */}
+                  {/* 이미지 */}
                   <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
                     {news.coverImage?.url ? (
                       <Image
@@ -93,6 +98,7 @@ export default function NewsPage() {
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-300"
+                        unoptimized
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -101,7 +107,7 @@ export default function NewsPage() {
                     )}
                   </div>
 
-                  {/* 제목만 */}
+                  {/* 제목 */}
                   <div className="p-6">
                     <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
                       {news.title}

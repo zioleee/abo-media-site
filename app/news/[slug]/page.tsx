@@ -69,9 +69,6 @@ function formatDate(dateString?: string | null) {
   return `${yyyy}.${mm}.${dd}`;
 }
 
-/**
- * Hygraph RichText(raw) 최소 렌더러
- */
 function renderRichText(raw?: RichTextRaw | null) {
   const blocks = raw?.children ?? [];
   return blocks.map((block: any, idx: number) => {
@@ -80,16 +77,16 @@ function renderRichText(raw?: RichTextRaw | null) {
         .map((c: any) => (typeof c?.text === 'string' ? c.text : ''))
         .join('');
 
-      if (!text.trim()) return <div key={idx} className="h-4" />;
+      if (!text.trim()) return <div key={idx} className="h-5" />;
 
       return (
         <p
           key={idx}
           className="
             text-gray-900
-            text-[16px] md:text-[18px]
-            font-bold
-            leading-7 md:leading-8
+            text-[17px] md:text-[19px]
+            font-normal
+            leading-8 md:leading-9
             mb-6
             whitespace-pre-line
           "
@@ -102,15 +99,15 @@ function renderRichText(raw?: RichTextRaw | null) {
   });
 }
 
-// ✅ Next.js 15: params는 Promise로 전달됨
-export default async function NewsDetailPage({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> 
+// ✅ Next.js에서 params 타입은 프로젝트 설정에 따라 달라질 수 있어서
+// 네가 이미 쓰던 "Promise params" 방식을 그대로 유지
+export default async function NewsDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
 }) {
-  // ✅ params를 await로 풀어줌
   const { slug } = await params;
-  
+
   const news = await getNewsDetail(slug);
   if (!news) notFound();
 
@@ -118,50 +115,28 @@ export default async function NewsDetailPage({
 
   return (
     <main className="bg-white">
-      {/* 본문 */}
       <article className="py-14 md:py-16">
         <div className="max-w-4xl mx-auto px-6">
-          {/* 메타 정보 */}
-          <div className="
-            flex items-center gap-3
-            text-[15px] md:text-[16px]
-            font-bold
-            text-gray-800
-            mb-6
-          ">
+          {/* 메타(카테고리 | 날짜) : 더 크고 굵게 */}
+          <div className="flex items-center gap-3 text-[16px] md:text-[17px] font-bold text-gray-800 mb-6">
             {categoryLabel ? (
               <>
-                <span className="uppercase tracking-wide">
-                  {categoryLabel}
-                </span>
+                <span className="uppercase tracking-wide">{categoryLabel}</span>
                 <span className="text-gray-400">|</span>
               </>
             ) : null}
-            <time className="font-semibold">
-              {formatDate(news.publishedDate)}
-            </time>
+            <time className="font-bold">{formatDate(news.publishedDate)}</time>
           </div>
 
-          {/* 제목 */}
-          <h1 className="text-[28px] md:text-[40px] font-extrabold text-gray-900 leading-tight tracking-tight mb-10">
+          {/* 제목: 더 굵고 큼 */}
+          <h1 className="text-[30px] md:text-[42px] font-extrabold text-gray-900 leading-tight tracking-tight mb-10">
             {news.title}
           </h1>
 
-          {/* 대표 이미지 */}
+          {/* 대표 이미지: 너무 커 보이지 않게 박스 높이 줄임 + unoptimized */}
           {news.coverImage?.url ? (
             <div className="mb-12">
-              <div
-                className="
-                  relative
-                  w-full
-                  max-w-[720px]
-                  mx-auto
-                  h-[420px] md:h-[520px]
-                  rounded-2xl
-                  overflow-hidden
-                  bg-gray-100
-                "
-              >
+              <div className="relative w-full max-w-[720px] mx-auto h-[320px] md:h-[420px] rounded-2xl overflow-hidden bg-gray-100">
                 <Image
                   src={news.coverImage.url}
                   alt={news.title}
@@ -169,6 +144,7 @@ export default async function NewsDetailPage({
                   sizes="(max-width: 768px) 100vw, 720px"
                   className="object-contain"
                   priority
+                  unoptimized
                 />
               </div>
             </div>
@@ -181,17 +157,7 @@ export default async function NewsDetailPage({
           <div className="mt-16 pt-10 border-t border-gray-200 flex justify-end">
             <Link
               href="/news"
-              className="
-                inline-flex items-center justify-center
-                px-6 py-3
-                rounded-lg
-                border border-gray-300
-                bg-white
-                text-gray-800
-                font-semibold
-                hover:bg-gray-50
-                transition
-              "
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-gray-300 bg-white text-gray-800 font-semibold hover:bg-gray-50 transition"
             >
               목록보기
             </Link>

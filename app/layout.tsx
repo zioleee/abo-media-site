@@ -7,6 +7,9 @@ import type { Metadata } from "next";
 
 const NAVER_VERIFICATION = "358efa793fdb1d77773d4c5232f93baa8f272d33";
 
+// ✅ 카카오/OG 미리보기 전용 이미지 (public/og_abomedia_white.png)
+const OG_IMAGE = "/og_abomedia_white.png";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: SITE_URL },
@@ -36,11 +39,6 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
 
-  // ✅ 여기(other)는 아예 빼도 됨. (중복 방지)
-  // other: {
-  //   "naver-site-verification": NAVER_VERIFICATION,
-  // },
-
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -51,18 +49,19 @@ export const metadata: Metadata = {
     siteName: "ABO MEDIA",
     images: [
       {
-        url: "/ABO_Logo.png",
-        width: 800,
-        height: 800,
+        url: OG_IMAGE, // ✅ 변경
+        width: 1200,
+        height: 630,
         alt: "ABO MEDIA",
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
     title: "ABO MEDIA",
     description: "콘텐츠로 사람과 시장을 연결합니다",
-    images: ["/ABO_Logo.png"],
+    images: [OG_IMAGE], // ✅ 변경
   },
 };
 

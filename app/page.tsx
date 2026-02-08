@@ -1,4 +1,4 @@
-// app/page.tsx - 최종 버전: 2개 프로그램 인터랙티브 미리보기
+// app/page.tsx - 모바일 스와이프 추가 버전
 'use client'
 
 import Link from "next/link";
@@ -90,6 +90,10 @@ export default function Home() {
   const [activeProgram, setActiveProgram] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
 
+  // 모바일 터치 상태
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
   // 유튜브 영상 상태
   const [isYouTubePlaying, setIsYouTubePlaying] = useState(true);
   const [showYouTubePlayButton, setShowYouTubePlayButton] = useState(false);
@@ -108,27 +112,21 @@ export default function Home() {
   const [lineup2025InView, setLineup2025InView] = useState(false);
   const [youtubeInView, setYoutubeInView] = useState(false);
 
-const works2025 = allWorks
-  .filter(w => Number(w.year) === 2025)
-  .sort((a, b) => {
-    // 1) 같은 로고끼리 묶기 기준 (로고 url 우선, 없으면 client name, 없으면 "")
-    const aKey = a.client?.logo?.url ?? a.client?.name ?? "";
-    const bKey = b.client?.logo?.url ?? b.client?.name ?? "";
+  const works2025 = allWorks
+    .filter(w => Number(w.year) === 2025)
+    .sort((a, b) => {
+      const aKey = a.client?.logo?.url ?? a.client?.name ?? "";
+      const bKey = b.client?.logo?.url ?? b.client?.name ?? "";
+      const keyCompare = aKey.localeCompare(bKey);
+      if (keyCompare !== 0) return keyCompare;
+      return a.title.localeCompare(b.title);
+    });
 
-    // 2) 로고/클라이언트 기준으로 먼저 정렬
-    const keyCompare = aKey.localeCompare(bKey);
-    if (keyCompare !== 0) return keyCompare;
-
-    // 3) 같은 로고 그룹 안에서는 제목(혹은 원하는 기준)으로 정렬
-    return a.title.localeCompare(b.title);
-  });
-
-  // 프로그램 hover 핸들러
+  // 프로그램 hover 핸들러 (데스크톱 전용)
   const handleProgramHover = (index: number) => {
     setActiveProgram(index);
     setIsHovering(true);
     
-    // 이전 비디오 정지
     const prevVideo = index === 0 ? videoRef2.current : videoRef1.current;
     const currentVideo = index === 0 ? videoRef1.current : videoRef2.current;
     
@@ -138,6 +136,51 @@ const works2025 = allWorks
 
   const handleProgramLeave = () => {
     setIsHovering(false);
+  };
+
+  // 모바일 터치 핸들러
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && activeProgram < programs.length - 1) {
+      // 왼쪽으로 스와이프 → 다음 프로그램
+      const nextIndex = activeProgram + 1;
+      setActiveProgram(nextIndex);
+      
+      const prevVideo = nextIndex === 1 ? videoRef1.current : videoRef2.current;
+      const currentVideo = nextIndex === 1 ? videoRef2.current : videoRef1.current;
+      
+      if (prevVideo) prevVideo.pause();
+      if (currentVideo) currentVideo.play();
+    }
+
+    if (isRightSwipe && activeProgram > 0) {
+      // 오른쪽으로 스와이프 → 이전 프로그램
+      const prevIndex = activeProgram - 1;
+      setActiveProgram(prevIndex);
+      
+      const prevVideo = prevIndex === 0 ? videoRef2.current : videoRef1.current;
+      const currentVideo = prevIndex === 0 ? videoRef1.current : videoRef2.current;
+      
+      if (prevVideo) prevVideo.pause();
+      if (currentVideo) currentVideo.play();
+    }
+
+    // 초기화
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   // 유튜브 영상 재생/일시정지 토글
@@ -177,90 +220,81 @@ const works2025 = allWorks
     };
   }, [isYouTubePlaying]);
 
- // YouTube iframe API 로드 + (KOR/ENG 라우팅 이동 후에도 재생되게)
-useEffect(() => {
-  const PLAYER_ID = "youtube-player";
-  const SCRIPT_ID = "yt-iframe-api";
+  // YouTube iframe API 로드
+  useEffect(() => {
+    const PLAYER_ID = "youtube-player";
+    const SCRIPT_ID = "yt-iframe-api";
 
-  let playerInstance: any = null;
+    let playerInstance: any = null;
 
-  const initPlayer = () => {
-    // YT 준비 안 됐으면 종료
-    if (!(window as any).YT?.Player) return;
+    const initPlayer = () => {
+      if (!(window as any).YT?.Player) return;
 
-    playerInstance = new (window as any).YT.Player(PLAYER_ID, {
-      videoId: "Kgvnxaj0cGk",
-      playerVars: {
-        autoplay: 1,
-        mute: 1,
-        loop: 1,
-        playlist: "Kgvnxaj0cGk",
-        controls: 0,
-        showinfo: 0,
-        modestbranding: 1,
-        rel: 0,
-        playsinline: 1,
-      },
-      events: {
-        onReady: (event: any) => {
-          setYoutubePlayer(event.target);
-
-          // 라우팅 직후 검정 화면 방지용 보험
-          try {
-            event.target.mute();
-            event.target.playVideo();
-          } catch {}
+      playerInstance = new (window as any).YT.Player(PLAYER_ID, {
+        videoId: "Kgvnxaj0cGk",
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          loop: 1,
+          playlist: "Kgvnxaj0cGk",
+          controls: 0,
+          showinfo: 0,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
         },
-        onStateChange: (event: any) => {
-          if (event.data === 0) event.target.playVideo();
+        events: {
+          onReady: (event: any) => {
+            setYoutubePlayer(event.target);
+            try {
+              event.target.mute();
+              event.target.playVideo();
+            } catch {}
+          },
+          onStateChange: (event: any) => {
+            if (event.data === 0) event.target.playVideo();
+          },
         },
-      },
-    });
-  };
-
-  // 1) 이미 API 로드되어 있으면 바로 플레이어 생성
-  if ((window as any).YT?.Player) {
-    initPlayer();
-    return () => {
-      try { playerInstance?.destroy(); } catch {}
-      setYoutubePlayer(null);
+      });
     };
-  }
 
-  // 2) 아직 로드 전이면: ready 콜백 지정
-  (window as any).onYouTubeIframeAPIReady = () => {
-    initPlayer();
-  };
+    if ((window as any).YT?.Player) {
+      initPlayer();
+      return () => {
+        try { playerInstance?.destroy(); } catch {}
+        setYoutubePlayer(null);
+      };
+    }
 
-  // 3) 스크립트 중복 삽입 방지
-  if (!document.getElementById(SCRIPT_ID)) {
-    const tag = document.createElement("script");
-    tag.id = SCRIPT_ID;
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(tag);
-  } else {
-    // 스크립트는 있는데 YT가 아직 안 생긴 경우 대비
-    const t = setInterval(() => {
-      if ((window as any).YT?.Player) {
+    (window as any).onYouTubeIframeAPIReady = () => {
+      initPlayer();
+    };
+
+    if (!document.getElementById(SCRIPT_ID)) {
+      const tag = document.createElement("script");
+      tag.id = SCRIPT_ID;
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+    } else {
+      const t = setInterval(() => {
+        if ((window as any).YT?.Player) {
+          clearInterval(t);
+          initPlayer();
+        }
+      }, 50);
+
+      return () => {
         clearInterval(t);
-        initPlayer();
-      }
-    }, 50);
+        try { playerInstance?.destroy(); } catch {}
+        setYoutubePlayer(null);
+      };
+    }
 
     return () => {
-      clearInterval(t);
       try { playerInstance?.destroy(); } catch {}
       setYoutubePlayer(null);
     };
-  }
-
-  // cleanup
-  return () => {
-    try { playerInstance?.destroy(); } catch {}
-    setYoutubePlayer(null);
-  };
-}, []);
-
+  }, []);
 
   useEffect(() => {
     getAllWorks().then(setAllWorks);
@@ -401,13 +435,16 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* 2025 프로그램 미리보기 - 인터랙티브 */}
+      {/* 2025 프로그램 미리보기 - 데스크톱: 호버, 모바일: 스와이프 */}
       <section
         ref={comingSoonRef}
         className="relative overflow-hidden min-h-screen flex items-center justify-center"
         style={{
           opacity: scrollProgress,
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* 배경 영상들 */}
         <div className="absolute inset-0">
@@ -440,9 +477,9 @@ useEffect(() => {
         {/* 그라데이션 오버레이 */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
 
-        {/* 프로그램 정보 (우측 상단) */}
+        {/* 프로그램 정보 (중앙 상단 - 모바일 최적화) */}
         <div
-          className="absolute top-24 right-8 md:right-16 max-w-md z-20 transition-all duration-700"
+          className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
           style={{
             opacity: scrollProgress * (isHovering ? 1 : 0.7),
           }}
@@ -465,15 +502,14 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* 프로그램 선택 리스트 (좌측 하단) */}
+        {/* 프로그램 선택 리스트 - 데스크톱만 표시 */}
         <div
-          className="absolute bottom-24 left-8 md:left-16 z-20 space-y-3"
+          className="hidden md:block absolute bottom-24 left-16 z-20 space-y-3"
           style={{
             opacity: scrollProgress,
           }}
         >
           <div className="mb-4">
-            
             <div className="h-px w-full bg-gradient-to-r from-white/40 to-transparent" />
           </div>
 
@@ -508,6 +544,25 @@ useEffect(() => {
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* 모바일 페이지 인디케이터 */}
+        <div
+          className="md:hidden absolute bottom-32 left-1/2 -translate-x-1/2 flex gap-2 z-20"
+          style={{
+            opacity: scrollProgress,
+          }}
+        >
+          {programs.map((_, idx) => (
+            <div
+              key={idx}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                activeProgram === idx
+                  ? 'w-8 bg-white'
+                  : 'w-1.5 bg-white/40'
+              }`}
+            />
           ))}
         </div>
 
@@ -736,37 +791,35 @@ useEffect(() => {
         <div className="absolute inset-0 bg-black/20" />
 
         <div
-          className={`absolute inset-0 flex flex-col items-center justify-start pt-8 md:pt-12 z-10 pointer-events-none transition-opacity duration-500 ${isYouTubePlaying ? 'opacity-0 group-hover:opacity-80' : 'opacity-90'}`}
-        >
-          <div className="w-full flex flex-col items-center text-center px-8">
-            <div className="inline-flex items-center gap-3 mb-3">
-              <div className="h-px w-12 bg-white/40" />
-              <span className="text-xs font-medium tracking-[0.3em] uppercase text-white/80">
-                YouTube Channel
-              </span>
-              <div className="h-px w-12 bg-white/40" />
-            </div>
+  className={`absolute inset-0 flex flex-col items-center justify-start pt-8 md:pt-12 z-10 pointer-events-none transition-opacity duration-500 ${
+    isYouTubePlaying ? "opacity-0 group-hover:opacity-80" : "opacity-90"
+  }`}
+>
+  <div className="w-full flex flex-col items-center text-center px-8">
+    <div className="inline-flex items-center gap-3 mb-3">
+      <div className="h-px w-12 bg-white/40" />
+      <span className="text-xs font-medium tracking-[0.3em] uppercase text-white/80">
+        YouTube Channel
+      </span>
+      <div className="h-px w-12 bg-white/40" />
+    </div>
 
-            
+    <a
+      href="https://www.youtube.com/@Ji_Daeri"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-2 px-6 py-3 mt-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold rounded-full hover:bg-white/20 transition-all pointer-events-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+      채널 방문하기
+    </a>
+  </div>
+</div>
 
-           
 
-            <a
-              href="https://www.youtube.com/@Ji_Daeri"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 mt-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold rounded-full hover:bg-white/20 transition-all pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-              </svg>
-              채널 방문하기
-            </a>
-          </div>
-        </div>
-
-       
 
         <div className="absolute bottom-8 right-8 z-10">
           <div className="text-right">

@@ -102,38 +102,8 @@ export default function Header() {
             </div>
           </div>
 
-          {/* 모바일: 언어 전환 + 햄버거 버튼 */}
-          <div className="flex md:hidden items-center gap-3">
-            {/* 언어 전환 */}
-            <div className="flex items-center gap-1.5">
-              <Link
-                href={pathname.replace('/en', '') || '/'}
-                className={`
-                  px-2.5 py-1 text-xs font-semibold rounded transition-all
-                  ${!isEnglish 
-                    ? 'text-[var(--brand)] bg-[var(--brand)]/10' 
-                    : 'text-gray-500'
-                  }
-                `}
-              >
-                KOR
-              </Link>
-              <span className="text-gray-300 text-xs">|</span>
-              <Link
-                href={'/en' + (isEnglish ? pathname.replace('/en', '') : pathname)}
-                className={`
-                  px-2.5 py-1 text-xs font-semibold rounded transition-all
-                  ${isEnglish 
-                    ? 'text-[var(--brand)] bg-[var(--brand)]/10' 
-                    : 'text-gray-500'
-                  }
-                `}
-              >
-                ENG
-              </Link>
-            </div>
-
-            {/* 햄버거 버튼 */}
+          {/* 모바일: 햄버거 버튼만 */}
+          <div className="flex md:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 hover:bg-gray-100 rounded-md transition-colors"
@@ -163,12 +133,20 @@ export default function Header() {
           className="fixed inset-0 z-50 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         >
-          {/* 반투명 배경 */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+          {/* 반투명 배경 - 페이드 인 */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
+            style={{
+              animation: 'fadeIn 0.3s ease-out'
+            }}
+          />
           
-          {/* 메뉴 패널 */}
+          {/* 메뉴 패널 - 슬라이드 인 */}
           <div 
             className="absolute top-0 right-0 w-[65%] max-w-[280px] h-full bg-white shadow-2xl flex flex-col overflow-hidden"
+            style={{
+              animation: 'slideInRight 0.3s ease-out'
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* 닫기 버튼 */}
@@ -194,22 +172,93 @@ export default function Header() {
               </button>
             </div>
 
-            {/* 메뉴 아이템 - 위쪽 정렬 + 적당한 패딩 */}
-            <nav className="flex flex-col px-6 pt-8 gap-1">
-              {navItems.map((item) => (
+            {/* 메뉴 아이템 */}
+            <nav className="flex flex-col px-6 pt-8 gap-1 flex-1">
+              {navItems.map((item, idx) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-4 text-lg font-semibold hover:bg-gray-50 hover:text-[var(--brand)] rounded-lg transition-all"
+                  className="px-4 py-4 text-4xl font-semibold hover:bg-gray-50 hover:text-[var(--brand)] rounded-lg transition-all"
+                  style={{
+                    animation: `fadeInUp 0.4s ease-out ${idx * 0.05}s both`
+                  }}
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
+
+            {/* 언어 전환 - 메뉴 하단 (기존 스타일 그대로) */}
+            <div 
+              className="flex items-center gap-1.5 px-6 pb-6 pt-4 border-t border-gray-200 flex-shrink-0 justify-center"
+              style={{
+                animation: 'fadeInUp 0.4s ease-out 0.3s both'
+              }}
+            >
+              <Link
+                href={pathname.replace('/en', '') || '/'}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`
+                  px-2.5 py-1 text-xs font-semibold rounded transition-all
+                  ${!isEnglish 
+                    ? 'text-[var(--brand)] bg-[var(--brand)]/10' 
+                    : 'text-gray-500'
+                  }
+                `}
+              >
+                KOR
+              </Link>
+              <span className="text-gray-300 text-xs">|</span>
+              <Link
+                href={'/en' + (isEnglish ? pathname.replace('/en', '') : pathname)}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`
+                  px-2.5 py-1 text-xs font-semibold rounded transition-all
+                  ${isEnglish 
+                    ? 'text-[var(--brand)] bg-[var(--brand)]/10' 
+                    : 'text-gray-500'
+                  }
+                `}
+              >
+                ENG
+              </Link>
+            </div>
           </div>
         </div>
       )}
+
+      {/* 애니메이션 CSS */}
+      <style jsx>{`
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   );
 }

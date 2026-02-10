@@ -136,7 +136,7 @@ export default async function NewsDetailPage({
           {/* 대표 이미지: 너무 커 보이지 않게 박스 높이 줄임 + unoptimized */}
           {news.coverImage?.url ? (
             <div className="mb-12">
-              <div className="relative w-full max-w-[720px] mx-auto h-[320px] md:h-[420px] rounded-2xl overflow-hidden bg-gray-100">
+              <div className="relative w-full max-w-[720px] mx-auto h-[320px] md:h-[420px] rounded-2xl overflow-hidden ">
                 <Image
                   src={news.coverImage.url}
                   alt={news.title}

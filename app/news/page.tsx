@@ -1,4 +1,3 @@
-// app/news/page.tsx
 'use client';
 
 import Image from 'next/image';
@@ -9,17 +8,11 @@ import { GraphQLClient, gql } from 'graphql-request';
 const endpoint = process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT;
 const token = process.env.NEXT_PUBLIC_HYGRAPH_TOKEN;
 
-if (!endpoint) {
-  console.warn('NEXT_PUBLIC_HYGRAPH_ENDPOINT is missing');
-}
+if (!endpoint) console.warn('NEXT_PUBLIC_HYGRAPH_ENDPOINT is missing');
 
 const client = new GraphQLClient(
   endpoint as string,
-  token
-    ? {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    : undefined
+  token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
 );
 
 const QUERY = gql`
@@ -28,6 +21,7 @@ const QUERY = gql`
       id
       title
       slug
+      externalUrl
       coverImage {
         url
         width
@@ -43,6 +37,7 @@ type NewsItem = {
   id: string;
   title: string;
   slug: string;
+  externalUrl?: string | null;
   coverImage?: Asset | null;
 };
 
@@ -58,9 +53,44 @@ async function getNewsItems(): Promise<NewsItem[]> {
 
 export default function NewsPage() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [ogMap, setOgMap] = useState<Record<string, string | null>>({});
 
   useEffect(() => {
-    getNewsItems().then(setNewsItems);
+    let alive = true;
+
+    (async () => {
+      const items = await getNewsItems();
+      if (!alive) return;
+
+      setNewsItems(items);
+console.log("items externalUrl:", items.map(i => ({ id: i.id, title: i.title, externalUrl: i.externalUrl })));
+
+      const externals = items.filter((n) => (n.externalUrl ?? '').trim().length > 0);
+      if (externals.length === 0) return;
+
+      const results = await Promise.all(
+        externals.map(async (n) => {
+          try {
+            const res = await fetch(`/api/og?url=${encodeURIComponent(n.externalUrl!)}`);
+            const json = await res.json();
+            console.log("OG", n.externalUrl, json?.ogImage);
+            return [n.id, (json?.ogImage as string) ?? null] as const;
+          } catch {
+            return [n.id, null] as const;
+          }
+        })
+      );
+
+      const next: Record<string, string | null> = {};
+      results.forEach(([id, ogImage]) => (next[id] = ogImage));
+      console.log("ogMap next:", next);
+
+      if (alive) setOgMap(next);
+    })();
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
@@ -83,38 +113,61 @@ export default function NewsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {newsItems.map((news) => (
-                <Link
-                  key={news.id}
-                  href={`/news/${news.slug}`}
-                  className="group bg-white rounded-xl border-2 border-gray-100 overflow-hidden hover:border-[#2596be]/30 hover:shadow-lg transition-all"
-                >
-                  {/* 이미지 */}
-                  <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
-                    {news.coverImage?.url ? (
-                      <Image
-                        src={news.coverImage.url}
-                        alt={news.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-300"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <p className="text-xs text-gray-400">No Image</p>
-                      </div>
-                    )}
-                  </div>
+              {newsItems.map((news) => {
+                const external = (news.externalUrl ?? '').trim().length > 0;
+                const href = external ? news.externalUrl! : `/news/${news.slug}`;
+                const rawOg = ogMap[news.id];
+const proxiedOg = rawOg ? `/api/img?url=${encodeURIComponent(rawOg)}` : null;
 
-                  {/* 제목 */}
-                  <div className="p-6">
-                    <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
-                      {news.title}
-                    </h2>
-                  </div>
-                </Link>
-              ))}
+const thumb = news.coverImage?.url || proxiedOg || null;
+
+
+                const className =
+                  'group bg-white rounded-xl border-2 border-gray-100 overflow-hidden hover:border-[#2596be]/30 hover:shadow-lg transition-all';
+
+                const CardInner = (
+                  <>
+                    {/* 이미지 */}
+                    <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
+                      {thumb ? (
+                        <img
+  src={thumb}
+  alt={news.title}
+  className="absolute inset-0 w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-300"
+/>
+
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <p className="text-xs text-gray-400">No Image</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 제목 */}
+                    <div className="p-6">
+                      <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
+                        {news.title}
+                      </h2>
+                    </div>
+                  </>
+                );
+
+                return external ? (
+                  <a
+                    key={news.id}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                  >
+                    {CardInner}
+                  </a>
+                ) : (
+                  <Link key={news.id} href={href} className={className}>
+                    {CardInner}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>

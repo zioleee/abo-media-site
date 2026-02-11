@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 function pickMeta(html: string, key: string) {
-  // property/name -> content
   const re1 = new RegExp(
     `<meta[^>]+(?:property|name)=["']${key}["'][^>]+content=["']([^"']+)["'][^>]*>`,
     "i"
@@ -9,7 +8,6 @@ function pickMeta(html: string, key: string) {
   const m1 = html.match(re1);
   if (m1?.[1]) return m1[1];
 
-  // content -> property/name
   const re2 = new RegExp(
     `<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${key}["'][^>]*>`,
     "i"
@@ -102,16 +100,19 @@ function isBadImage(u: string | null) {
 }
 
 function buildCandidateUrls(input: string) {
-  const urls = [input];
+  const urls = [];
 
   // 네이버 블로그 단축 형태 보정
   const m = input.match(/^https?:\/\/blog\.naver\.com\/([^\/]+)\/(\d+)/i);
   if (m) {
     const blogId = m[1];
     const logNo = m[2];
-    // ✅ 순서 중요: m.blog와 PostView가 OG를 더 잘 제공함
+    // ✅ m.blog를 최우선으로 (OG가 제일 잘 나옴)
     urls.push(`https://m.blog.naver.com/${blogId}/${logNo}`);
     urls.push(`https://blog.naver.com/PostView.naver?blogId=${blogId}&logNo=${logNo}`);
+    urls.push(input); // 원본은 마지막
+  } else {
+    urls.push(input);
   }
 
   // 트래킹 제거 버전
@@ -121,19 +122,22 @@ function buildCandidateUrls(input: string) {
     u.searchParams.delete("utm_source");
     u.searchParams.delete("utm_medium");
     u.searchParams.delete("utm_campaign");
-    urls.push(u.toString());
+    const cleaned = u.toString();
+    if (cleaned !== input) urls.push(cleaned);
   } catch {}
 
   // 경향 스포츠 모바일 버전 시도
-  urls.push(input.replace("https://sports.khan.co.kr", "https://m.sports.khan.co.kr"));
+  if (input.includes("sports.khan.co.kr")) {
+    urls.push(input.replace("https://sports.khan.co.kr", "https://m.sports.khan.co.kr"));
+  }
 
   return Array.from(new Set(urls));
 }
 
-async function fetchHtml(url: string) {
+async function fetchHtml(url: string, signal?: AbortSignal) {
   const res = await fetch(url, {
     redirect: "follow",
-    cache: "no-store",
+    signal, // ✅ 중단 가능하도록
     headers: {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -142,10 +146,42 @@ async function fetchHtml(url: string) {
       "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8",
       "Referer": "https://www.google.com/",
     },
+    // ✅ 6시간 캐시 (배포 환경에서 속도 향상)
+    next: { revalidate: 60 * 60 * 6 },
   });
 
   const html = await res.text().catch(() => "");
   return { ok: res.ok, status: res.status, html, finalUrl: res.url };
+}
+
+function extractImageFromHtml(html: string, base: string) {
+  const ogImageRaw =
+    pickMeta(html, "og:image") ??
+    pickMeta(html, "twitter:image") ??
+    pickMeta(html, "twitter:image:src");
+
+  const imageSrcRaw =
+    pickLinkRel(html, "image_src") ??
+    pickItemprop(html, "image");
+
+  const isNaverBlog = base.includes("blog.naver.com");
+  const firstImgRaw = pickFirstImage(html, !isNaverBlog);
+
+  const imageCandidates = isNaverBlog
+    ? [
+        absolutize(ogImageRaw, base),
+        absolutize(firstImgRaw, base),
+        absolutize(imageSrcRaw, base),
+      ]
+    : [
+        absolutize(ogImageRaw, base),
+        absolutize(imageSrcRaw, base),
+        absolutize(firstImgRaw, base),
+      ];
+
+  return imageCandidates
+    .filter(Boolean)
+    .find((u) => !isBadImage(u as string)) ?? null;
 }
 
 export async function GET(req: Request) {
@@ -155,79 +191,66 @@ export async function GET(req: Request) {
 
   try {
     const urlCandidates = buildCandidateUrls(url);
+    
+    // ✅ AbortController로 병렬 요청 관리
+    const controller = new AbortController();
+    
+    // ✅ 모든 URL을 동시에 요청 (병렬 처리)
+    const promises = urlCandidates.map(async (u) => {
+      try {
+        const { ok, html, finalUrl } = await fetchHtml(u, controller.signal);
+        if (!ok || !html) return null;
 
-    // ✅ 모든 URL 후보를 순회하면서 이미지를 찾음
-    for (const u of urlCandidates) {
-      const { ok, html, finalUrl } = await fetchHtml(u);
-      if (!ok || !html) continue;
+        const base = finalUrl || u;
 
-      const base = finalUrl || u;
+        const ogTitle =
+          pickMeta(html, "og:title") ??
+          pickMeta(html, "twitter:title");
 
-      // 제목/설명
-      const ogTitle =
-        pickMeta(html, "og:title") ??
-        pickMeta(html, "twitter:title");
+        const ogDesc =
+          pickMeta(html, "og:description") ??
+          pickMeta(html, "twitter:description");
 
-      const ogDesc =
-        pickMeta(html, "og:description") ??
-        pickMeta(html, "twitter:description");
+        const image = extractImageFromHtml(html, base);
 
-      // 이미지 후보 수집
-      const ogImageRaw =
-        pickMeta(html, "og:image") ??
-        pickMeta(html, "twitter:image") ??
-        pickMeta(html, "twitter:image:src");
+        let title = ogTitle;
+        if (!title) {
+          const t = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] ?? null;
+          title = t;
+        }
 
-      const imageSrcRaw =
-        pickLinkRel(html, "image_src") ??
-        pickItemprop(html, "image");
+        if (image) {
+          return {
+            sourceUrl: base,
+            ogImage: image,
+            ogTitle: title ?? null,
+            ogDesc: ogDesc ?? null,
+          };
+        }
 
-      const isNaverBlog = base.includes("blog.naver.com");
-      const firstImgRaw = pickFirstImage(html, !isNaverBlog);
-
-      // ✅ 블로그/뉴스 구분 전략
-      const imageCandidates = isNaverBlog
-        ? [
-            absolutize(ogImageRaw, base),      // 블로그: OG 우선 (m.blog/PostView에서 잘 나옴)
-            absolutize(firstImgRaw, base),
-            absolutize(imageSrcRaw, base),
-          ]
-        : [
-            absolutize(ogImageRaw, base),      // 뉴스: OG 우선
-            absolutize(imageSrcRaw, base),
-            absolutize(firstImgRaw, base),
-          ];
-
-      const image = imageCandidates
-        .filter(Boolean)
-        .find((u) => !isBadImage(u as string)) ?? null;
-
-      let title = ogTitle;
-      if (!title) {
-        const t = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] ?? null;
-        title = t;
+        return null;
+      } catch (e) {
+        // AbortError는 무시 (정상적인 중단)
+        if ((e as Error).name === 'AbortError') return null;
+        console.error(`Failed to fetch ${u}:`, e);
+        return null;
       }
+    });
 
-      // ✅ 핵심: 이미지를 찾았으면 즉시 리턴 (다음 URL 시도 안 함)
-      if (image) {
-        return NextResponse.json({
-          sourceUrl: base,
-          ogImage: image,
-          ogTitle: title ?? null,
-          ogDesc: ogDesc ?? null,
-        });
-      }
+    // ✅ 첫 번째 성공한 결과를 즉시 반환
+    const results = await Promise.all(promises);
+    const firstSuccess = results.find(r => r !== null);
 
-      // ✅ 이미지는 없지만 제목/설명이 있으면 계속 다음 URL 시도
-      // (블로그는 m.blog나 PostView에서 이미지가 나올 수 있음)
+    if (firstSuccess) {
+      controller.abort(); // ✅ 나머지 요청 취소
+      return NextResponse.json(firstSuccess);
     }
 
-    // ✅ 모든 URL을 시도했는데도 이미지를 못 찾았으면 마지막 시도 결과 리턴
     return NextResponse.json({
       ogImage: null,
       ogTitle: null,
       ogDesc: null,
-      tried: buildCandidateUrls(url),
+      tried: urlCandidates,
       hint: "No image meta found in fetched HTML. Site may render meta tags client-side or block bots.",
     });
   } catch (e) {

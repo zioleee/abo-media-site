@@ -22,6 +22,7 @@ const QUERY = gql`
       title
       slug
       externalUrl
+      publishedDate
       coverImage {
         url
         width
@@ -31,6 +32,7 @@ const QUERY = gql`
   }
 `;
 
+
 type Asset = { url: string; width?: number | null; height?: number | null };
 
 type NewsItem = {
@@ -38,6 +40,7 @@ type NewsItem = {
   title: string;
   slug: string;
   externalUrl?: string | null;
+  publishedDate?: string | null;
   coverImage?: Asset | null;
 };
 
@@ -49,6 +52,15 @@ async function getNewsItems(): Promise<NewsItem[]> {
     console.error('Failed to fetch newsItems:', e);
     return [];
   }
+}
+function formatDate(dateString?: string | null) {
+  if (!dateString) return '';
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return dateString;
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}.${mm}.${dd}`;
 }
 
 export default function NewsPage() {
@@ -143,12 +155,16 @@ const thumb = news.coverImage?.url || proxiedOg || null;
                       )}
                     </div>
 
-                    {/* 제목 */}
                     <div className="p-6">
-                      <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
-                        {news.title}
-                      </h2>
-                    </div>
+  <time className="block text-base font-semibold text-gray-600 mb-3">
+    {formatDate(news.publishedDate)}
+  </time>
+
+  <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
+    {news.title}
+  </h2>
+</div>
+
                   </>
                 );
 

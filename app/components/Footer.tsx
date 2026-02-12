@@ -21,7 +21,7 @@ export default function Footer() {
 
           {/* Tel과 Email을 한 줄에 배치 */}
           <p>
-            Tel. 010-3889-4595
+            Tel. 02-2668-0877
           </p>
           <p>
             Email. business@abomedia.co.kr

@@ -132,7 +132,7 @@ export default function Contact() {
                     <h3 className="font-semibold text-gray-900 mb-1">연락처</h3>
                     <p className="text-gray-600">
                       <a href="tel:010-3889-4595" className="hover:text-[#2596be] transition">
-                        010-3889-4595
+                        02-2668-0877
                       </a>
                     </p>
                   </div>

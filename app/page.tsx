@@ -63,7 +63,7 @@ async function getAllWorks(): Promise<Work[]> {
   }
 }
 
-// ✅ Hygraph 이미지 최적화 함수
+// Hygraph 이미지 최적화 함수
 function optimizeHygraphImage(url: string, width: number = 400): string {
   if (!url) return url;
   
@@ -303,69 +303,70 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    getAllWorks().then(setAllWorks);
-    setIsVisible(true);
+ useEffect(() => {
+  getAllWorks().then(setAllWorks);
+  setIsVisible(true);
 
-    const handleScroll = () => {
-      if (!heroRef.current || !comingSoonRef.current) return;
+  const handleScroll = () => {
+    if (!heroRef.current || !comingSoonRef.current) return;
 
-      const HEADER_H = 80;
-      const heroBottom = heroRef.current.offsetHeight;
-      const scrolled = window.scrollY;
-      const comingSoonTop = comingSoonRef.current.offsetTop;
+    const HEADER_H = 80;
+    const heroBottom = heroRef.current.offsetHeight;
+    const scrolled = window.scrollY;
+    const comingSoonTop = comingSoonRef.current.offsetTop;
 
-      const transitionStart = heroBottom * 0.3;
-      const transitionEnd = comingSoonTop - HEADER_H;
-      const denom = Math.max(1, transitionEnd - transitionStart);
+    const transitionStart = heroBottom * 0.3;
+    const transitionEnd = comingSoonTop - HEADER_H;
+    const denom = Math.max(1, transitionEnd - transitionStart);
 
-      if (scrolled < transitionStart) {
-        setScrollProgress(0);
-      } else if (scrolled > transitionEnd) {
-        setScrollProgress(1);
-      } else {
-        const progress = (scrolled - transitionStart) / denom;
-        setScrollProgress(progress);
-      }
-    };
+    if (scrolled < transitionStart) {
+      setScrollProgress(0);
+    } else if (scrolled > transitionEnd) {
+      setScrollProgress(1);
+    } else {
+      const progress = (scrolled - transitionStart) / denom;
+      setScrollProgress(progress);
+    }
+  };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
+  window.addEventListener('scroll', handleScroll);
+  handleScroll();
 
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: "0px 0px -100px 0px",
-    };
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: "0px 0px -100px 0px",
+  };
 
-    const aboutObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) setAboutInView(true);
-      });
-    }, observerOptions);
+  const aboutObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) setAboutInView(true);
+    });
+  }, observerOptions);
 
-    const lineup2025Observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) setLineup2025InView(true);
-      });
-    }, observerOptions);
+  // 이 부분 수정: entry.isIntersecting 값을 그대로 전달
+  const lineup2025Observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      setLineup2025InView(entry.isIntersecting);  // if문 제거
+    });
+  }, observerOptions);
 
-    const youtubeObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) setYoutubeInView(true);
-      });
-    }, observerOptions);
+  const youtubeObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) setYoutubeInView(true);
+    });
+  }, observerOptions);
 
-    if (aboutRef.current) aboutObserver.observe(aboutRef.current);
-    if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
-    if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current);
+  if (aboutRef.current) aboutObserver.observe(aboutRef.current);
+  if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
+  if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current);
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      aboutObserver.disconnect();
-      lineup2025Observer.disconnect();
-      youtubeObserver.disconnect();
-    };
-  }, []);
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+    aboutObserver.disconnect();
+    lineup2025Observer.disconnect();
+    youtubeObserver.disconnect();
+  };
+}, []);
 
   return (
     <main className="overflow-x-hidden">
@@ -388,10 +389,10 @@ export default function Home() {
           <source src="/ALPHA.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1c7a9e]/30 via-[#2596be]/40 to-[#1c7a9e]/50" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(61,179,217,0.15),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1c7a9e]/12 via-[#2596be]/16 to-[#1c7a9e]/20" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(61,179,217,0.06),transparent_70%)]" />
 
-        <div
+        {/* <div
           className={`relative z-10 w-full max-w-5xl mx-auto px-8 text-center text-white transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
         >
           <div className="inline-flex items-center gap-3 mb-8">
@@ -439,7 +440,20 @@ export default function Home() {
               </svg>
             </div>
           </div>
-        </div>
+        </div> */}
+
+        {/* 스크롤 아이콘을 section 직속 자식으로 이동 */}
+  <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
+    <div
+      className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
+      style={{ animationDuration: "2s" }}
+    >
+      <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+    </div>
+  </div>
       </section>
 
       {/* 2025 프로그램 미리보기 - 데스크톱: 호버, 모바일: 스와이프 */}
@@ -484,75 +498,67 @@ export default function Home() {
         {/* 그라데이션 오버레이 */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
 
-        {/* 프로그램 정보 (중앙 상단 - 모바일 최적화) */}
-        <div
-          className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
-          style={{
-            opacity: scrollProgress * (isHovering ? 1 : 0.7),
-          }}
-        >
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-            <div className="inline-flex items-center gap-2 mb-3">
-              <div className="h-px w-6 bg-white/40" />
-              <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-white/80">
-                2025 
-              </span>
-            </div>
-            
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-              {programs[activeProgram].title}
-            </h2>
-            
-            <p className="text-sm text-white/70 leading-relaxed line-clamp-4">
-              {programs[activeProgram].description}
-            </p>
+        {/* 프로그램 정보 (중앙 상단) -  진하게 */}
+<div
+  className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
+  style={{
+    opacity: scrollProgress * (isHovering ? 1 : 0.85),  
+  }}
+>
+  <div className="bg-white/25 backdrop-blur-md rounded-2xl p-6 border border-white/30">  {/* bg-white/10 border-white/20 → /15 /30 */}
+    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-lg">  {/* drop-shadow-lg 추가 */}
+      {programs[activeProgram].title}
+    </h2>
+    
+    <p className="text-sm text-white/85 leading-relaxed line-clamp-4 font-medium">  {/* text-white/70 → /85, font-medium 추가 */}
+      {programs[activeProgram].description}
+    </p>
+  </div>
+</div>
+
+       {/* 프로그램 선택 리스트 - 데스크톱만 표시 -  크기 증가 */}
+<div
+  className="hidden md:block absolute bottom-32 left-16 z-20 space-y-4"  // space-y-3 → 4
+  style={{
+    opacity: scrollProgress,
+  }}
+>
+  
+  
+
+  {programs.map((program, idx) => (
+    <div
+      key={program.id}
+      className={`cursor-pointer transition-all duration-300 ${
+        activeProgram === idx 
+          ? 'translate-x-3'  // translate-x-2 → 3
+          : 'translate-x-0 hover:translate-x-2'  // hover:translate-x-1 → 2
+      }`}
+      onMouseEnter={() => handleProgramHover(idx)}
+      onMouseLeave={handleProgramLeave}
+    >
+      <div className={`flex items-center gap-4 transition-all duration-300 ${  // gap-3 → 4
+        activeProgram === idx
+          ? 'text-white'
+          : 'text-white/60 hover:text-white/90'
+      }`}>
+        <div className={`w-1.5 h-12 rounded-full transition-all duration-300 ${  // w-1 h-8 → w-1.5 h-12
+          activeProgram === idx
+            ? 'bg-white'
+            : 'bg-white/30'
+        }`} />
+        <div>
+          <div className="text-base font-bold leading-tight">  {/* text-sm font-semibold → text-base font-bold */}
+            {program.title}
+          </div>
+          <div className="text-xs text-white/60 mt-1">  {/* text-[10px] text-white/50 mt-0.5 → text-xs text-white/60 mt-1 */}
+            {idx === 0 ? '예능' : '리얼리티'}
           </div>
         </div>
-
-        {/* 프로그램 선택 리스트 - 데스크톱만 표시 */}
-        <div
-          className="hidden md:block absolute bottom-24 left-16 z-20 space-y-3"
-          style={{
-            opacity: scrollProgress,
-          }}
-        >
-          <div className="mb-4">
-            <div className="h-px w-full bg-gradient-to-r from-white/40 to-transparent" />
-          </div>
-
-          {programs.map((program, idx) => (
-            <div
-              key={program.id}
-              className={`cursor-pointer transition-all duration-300 ${
-                activeProgram === idx 
-                  ? 'translate-x-2' 
-                  : 'translate-x-0 hover:translate-x-1'
-              }`}
-              onMouseEnter={() => handleProgramHover(idx)}
-              onMouseLeave={handleProgramLeave}
-            >
-              <div className={`flex items-center gap-3 transition-all duration-300 ${
-                activeProgram === idx
-                  ? 'text-white'
-                  : 'text-white/60 hover:text-white/90'
-              }`}>
-                <div className={`w-1 h-8 rounded-full transition-all duration-300 ${
-                  activeProgram === idx
-                    ? 'bg-white'
-                    : 'bg-white/30'
-                }`} />
-                <div>
-                  <div className="text-sm font-semibold leading-tight">
-                    {program.title}
-                  </div>
-                  <div className="text-[10px] text-white/50 mt-0.5">
-                    {idx === 0 ? '예능' : '리얼리티'}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      </div>
+    </div>
+  ))}
+</div>
 
         {/* 모바일 페이지 인디케이터 */}
         <div
@@ -587,24 +593,6 @@ export default function Home() {
             <div className="text-white/60 text-xs tracking-wider">
               2025
             </div>
-          </div>
-        </div>
-
-        {/* 스크롤 인디케이터 */}
-        <div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10"
-          style={{
-            opacity: scrollProgress,
-          }}
-        >
-          <div
-            className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
-            style={{ animationDuration: "2s" }}
-          >
-            <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
           </div>
         </div>
       </section>
@@ -673,7 +661,7 @@ export default function Home() {
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
               {works2025.map((work, idx) => {
                 const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
-                // ✅ Hygraph 이미지 최적화 (400px 너비, WebP, 80% 품질)
+                //  Hygraph 이미지 최적화 (400px 너비, WebP, 80% 품질)
                 const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
                 const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
 

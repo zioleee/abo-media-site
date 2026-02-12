@@ -60,7 +60,7 @@ export default function Header() {
           {/* 데스크톱: GNB + 언어 전환 */}
           <div className="hidden md:flex items-center gap-8">
             {/* 네비게이션 */}
-            <div className="flex items-center gap-8 text-[15px] font-semibold">
+            <div className="flex items-center gap-10 text-[18px] font-semibold">
               {navItems.map((item) => (
                 <Link 
                   key={item.href}

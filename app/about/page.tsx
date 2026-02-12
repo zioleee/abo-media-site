@@ -76,7 +76,7 @@ const historyData: HistoryItem[] = [
       { network: "TV조선", shows: ["<송승환의 초대>"] },
       { network: "U+모바일tv", shows: ["<내편하자 3>"] },
       { network: "E채널", shows: ["<설록 네가지 시선>"] },
-      { network: "SBS Plus", shows: ["<슬로라서>"] },
+      { network: "SBS Plus", shows: ["<솔로라서>"] },
       { network: "tvN", shows: ["<유별난 역사한끼>"] },
       { network: "tvN STORY", shows: ["<이젠 사랑할 수 있을까>"] }
     ]
@@ -91,23 +91,23 @@ const historyData: HistoryItem[] = [
           "<벌거벗은 한국사>",
           "<유별난 역사 한 끼>",
           "<잘생긴 트롯>",
-          "<백억짜리 야짐식사>",
+          "<백억짜리 아침식사>",
           "<남겨서 뭐하게 시즌 1,2>"
         ]
       },
       { 
         network: "JTBC", 
         shows: [
-          "<샬라살라>",
+          "<샬라샬라>",
           "<1호가 될수없어 시즌2>",
-          "<함께합쇼>"
+          "<한끼합쇼>"
         ]
       },
       { network: "SBS플러스", shows: ["<솔로라서 시즌2>"] },
       { network: "LG유플러스", shows: ["<내편하자 시즌4>"] },
       { network: "MBN", shows: ["<이장우의 두유노집밥>"] },
       { network: "KBS Joy", shows: ["<오래된 만남 추구 시즌 1,2>"] },
-      { network: "KBS", shows: ["<누나 내게 여자야>", "<배달 왔수다>"] }
+      { network: "KBS", shows: ["<누난 내게 여자야>", "<배달 왔수다>"] }
     ]
   }
 ];

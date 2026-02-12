@@ -1,8 +1,6 @@
-// app/page.tsx - 모바일 스와이프 추가 버전
 'use client'
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { GraphQLClient, gql } from "graphql-request";
 
@@ -63,6 +61,21 @@ async function getAllWorks(): Promise<Work[]> {
     console.error('Failed to fetch works:', error);
     return [];
   }
+}
+
+// ✅ Hygraph 이미지 최적화 함수
+function optimizeHygraphImage(url: string, width: number = 400): string {
+  if (!url) return url;
+  
+  // Hygraph CDN URL인지 확인
+  if (url.includes('hygraph.com') || url.includes('graphassets.com')) {
+    // 이미 쿼리 파라미터가 있는지 확인
+    const separator = url.includes('?') ? '&' : '?';
+    // width, quality, format 파라미터 추가
+    return `${url}${separator}w=${width}&q=80&fm=webp`;
+  }
+  
+  return url;
 }
 
 // 2025 프로그램 데이터
@@ -155,7 +168,6 @@ export default function Home() {
     const isRightSwipe = distance < -50;
 
     if (isLeftSwipe && activeProgram < programs.length - 1) {
-      // 왼쪽으로 스와이프 → 다음 프로그램
       const nextIndex = activeProgram + 1;
       setActiveProgram(nextIndex);
       
@@ -167,7 +179,6 @@ export default function Home() {
     }
 
     if (isRightSwipe && activeProgram > 0) {
-      // 오른쪽으로 스와이프 → 이전 프로그램
       const prevIndex = activeProgram - 1;
       setActiveProgram(prevIndex);
       
@@ -178,12 +189,10 @@ export default function Home() {
       if (currentVideo) currentVideo.play();
     }
 
-    // 초기화
     setTouchStart(0);
     setTouchEnd(0);
   };
 
-  // 유튜브 영상 재생/일시정지 토글
   const toggleYouTubeVideo = () => {
     if (youtubePlayer) {
       if (isYouTubePlaying) {
@@ -198,7 +207,6 @@ export default function Home() {
     }
   };
 
-  // 유튜브 마우스 이동 시 재생 버튼 숨기기
   useEffect(() => {
     let timeout: NodeJS.Timeout;
 
@@ -220,7 +228,6 @@ export default function Home() {
     };
   }, [isYouTubePlaying]);
 
-  // YouTube iframe API 로드
   useEffect(() => {
     const PLAYER_ID = "youtube-player";
     const SCRIPT_ID = "yt-iframe-api";
@@ -666,6 +673,9 @@ export default function Home() {
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
               {works2025.map((work, idx) => {
                 const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
+                // ✅ Hygraph 이미지 최적화 (400px 너비, WebP, 80% 품질)
+                const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
+                const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
 
                 return (
                   <div
@@ -677,13 +687,12 @@ export default function Home() {
                       animation: `cardDeal 0.6s ease-out ${idx * 0.05}s forwards`,
                     }}
                   >
-                    {img?.url ? (
-                      <Image
-                        src={img.url}
+                    {optimizedUrl ? (
+                      <img
+                        src={optimizedUrl}
                         alt={work.title}
-                        fill
-                        sizes="(max-width: 640px) 25vw, (max-width: 768px) 20vw, (max-width: 1024px) 16vw, 12vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
@@ -691,17 +700,14 @@ export default function Home() {
                       </div>
                     )}
 
-                    {work.client?.logo?.url && (
+                    {logoUrl && (
                       <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={work.client.logo.url}
-                            alt={work.client.name}
-                            fill
-                            sizes="32px"
-                            className="object-contain"
-                          />
-                        </div>
+                        <img
+                          src={logoUrl}
+                          alt={work.client?.name ?? ''}
+                          loading="lazy"
+                          className="w-full h-full object-contain"
+                        />
                       </div>
                     )}
 
@@ -791,35 +797,33 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/20" />
 
         <div
-  className={`absolute inset-0 flex flex-col items-center justify-start pt-8 md:pt-12 z-10 pointer-events-none transition-opacity duration-500 ${
-    isYouTubePlaying ? "opacity-0 group-hover:opacity-80" : "opacity-90"
-  }`}
->
-  <div className="w-full flex flex-col items-center text-center px-8">
-    <div className="inline-flex items-center gap-3 mb-3">
-      <div className="h-px w-12 bg-white/40" />
-      <span className="text-xs font-medium tracking-[0.3em] uppercase text-white/80">
-        YouTube Channel
-      </span>
-      <div className="h-px w-12 bg-white/40" />
-    </div>
+          className={`absolute inset-0 flex flex-col items-center justify-start pt-8 md:pt-12 z-10 pointer-events-none transition-opacity duration-500 ${
+            isYouTubePlaying ? "opacity-0 group-hover:opacity-80" : "opacity-90"
+          }`}
+        >
+          <div className="w-full flex flex-col items-center text-center px-8">
+            <div className="inline-flex items-center gap-3 mb-3">
+              <div className="h-px w-12 bg-white/40" />
+              <span className="text-xs font-medium tracking-[0.3em] uppercase text-white/80">
+                YouTube Channel
+              </span>
+              <div className="h-px w-12 bg-white/40" />
+            </div>
 
-    <a
-      href="https://www.youtube.com/@Ji_Daeri"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 px-6 py-3 mt-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold rounded-full hover:bg-white/20 transition-all pointer-events-auto"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-      </svg>
-      채널 방문하기
-    </a>
-  </div>
-</div>
-
-
+            <a
+              href="https://www.youtube.com/@Ji_Daeri"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 mt-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold rounded-full hover:bg-white/20 transition-all pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+              채널 방문하기
+            </a>
+          </div>
+        </div>
 
         <div className="absolute bottom-8 right-8 z-10">
           <div className="text-right">

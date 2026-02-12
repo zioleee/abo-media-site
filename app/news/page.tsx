@@ -1,17 +1,11 @@
-'use client';
-
-import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { GraphQLClient, gql } from 'graphql-request';
 
-const endpoint = process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT;
+const endpoint = process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT!;
 const token = process.env.NEXT_PUBLIC_HYGRAPH_TOKEN;
 
-if (!endpoint) console.warn('NEXT_PUBLIC_HYGRAPH_ENDPOINT is missing');
-
 const client = new GraphQLClient(
-  endpoint as string,
+  endpoint,
   token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
 );
 
@@ -31,7 +25,6 @@ const QUERY = gql`
     }
   }
 `;
-
 
 type Asset = { url: string; width?: number | null; height?: number | null };
 
@@ -53,6 +46,27 @@ async function getNewsItems(): Promise<NewsItem[]> {
     return [];
   }
 }
+
+// OG 이미지 가져오기 (서버에서 직접)
+async function fetchOgImage(url: string): Promise<string | null> {
+  try {
+    const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const apiUrl = `${base}/api/og?url=${encodeURIComponent(url)}`;
+
+    const res = await fetch(apiUrl, {
+      next: { revalidate: 60 * 60 * 6 }, // 6시간 캐시
+    });
+
+    if (!res.ok) return null;
+
+    const json = await res.json();
+    return (json?.ogImage as string) ?? null;
+  } catch (e) {
+    console.error('Failed to fetch OG for', url, e);
+    return null;
+  }
+}
+
 function formatDate(dateString?: string | null) {
   if (!dateString) return '';
   const d = new Date(dateString);
@@ -63,47 +77,20 @@ function formatDate(dateString?: string | null) {
   return `${yyyy}.${mm}.${dd}`;
 }
 
-export default function NewsPage() {
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
-  const [ogMap, setOgMap] = useState<Record<string, string | null>>({});
+// ✅ Server Component
+export default async function NewsPage() {
+  const newsItems = await getNewsItems();
 
-  useEffect(() => {
-    let alive = true;
+  const externals = newsItems.filter((n) => (n.externalUrl ?? '').trim().length > 0);
 
-    (async () => {
-      const items = await getNewsItems();
-      if (!alive) return;
+  const ogResults = await Promise.all(
+    externals.map(async (n) => {
+      const ogImage = await fetchOgImage(n.externalUrl!);
+      return [n.id, ogImage] as const;
+    })
+  );
 
-      setNewsItems(items);
-console.log("items externalUrl:", items.map(i => ({ id: i.id, title: i.title, externalUrl: i.externalUrl })));
-
-      const externals = items.filter((n) => (n.externalUrl ?? '').trim().length > 0);
-      if (externals.length === 0) return;
-
-      const results = await Promise.all(
-        externals.map(async (n) => {
-          try {
-            const res = await fetch(`/api/og?url=${encodeURIComponent(n.externalUrl!)}`);
-            const json = await res.json();
-            console.log("OG", n.externalUrl, json?.ogImage);
-            return [n.id, (json?.ogImage as string) ?? null] as const;
-          } catch {
-            return [n.id, null] as const;
-          }
-        })
-      );
-
-      const next: Record<string, string | null> = {};
-      results.forEach(([id, ogImage]) => (next[id] = ogImage));
-      console.log("ogMap next:", next);
-
-      if (alive) setOgMap(next);
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const ogMap = Object.fromEntries(ogResults) as Record<string, string | null>;
 
   return (
     <main className="bg-white">
@@ -128,11 +115,10 @@ console.log("items externalUrl:", items.map(i => ({ id: i.id, title: i.title, ex
               {newsItems.map((news) => {
                 const external = (news.externalUrl ?? '').trim().length > 0;
                 const href = external ? news.externalUrl! : `/news/${news.slug}`;
+
                 const rawOg = ogMap[news.id];
-const proxiedOg = rawOg ? `/api/img?url=${encodeURIComponent(rawOg)}` : null;
-
-const thumb = news.coverImage?.url || proxiedOg || null;
-
+                const proxiedOg = rawOg ? `/api/img?url=${encodeURIComponent(rawOg)}` : null;
+                const thumb = news.coverImage?.url || proxiedOg || null;
 
                 const className =
                   'group bg-white rounded-xl border-2 border-gray-100 overflow-hidden hover:border-[#2596be]/30 hover:shadow-lg transition-all';
@@ -143,11 +129,10 @@ const thumb = news.coverImage?.url || proxiedOg || null;
                     <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
                       {thumb ? (
                         <img
-  src={thumb}
-  alt={news.title}
-  className="absolute inset-0 w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-300"
-/>
-
+                          src={thumb}
+                          alt={news.title}
+                          className="absolute inset-0 w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-300"
+                        />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <p className="text-xs text-gray-400">No Image</p>
@@ -156,15 +141,14 @@ const thumb = news.coverImage?.url || proxiedOg || null;
                     </div>
 
                     <div className="p-6">
-  <time className="block text-base font-semibold text-gray-600 mb-3">
-    {formatDate(news.publishedDate)}
-  </time>
+                      <time className="block text-base font-semibold text-gray-600 mb-3">
+                        {formatDate(news.publishedDate)}
+                      </time>
 
-  <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
-    {news.title}
-  </h2>
-</div>
-
+                      <h2 className="text-lg font-bold text-gray-900 line-clamp-3 group-hover:text-[#2596be] transition-colors leading-relaxed">
+                        {news.title}
+                      </h2>
+                    </div>
                   </>
                 );
 

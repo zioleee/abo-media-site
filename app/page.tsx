@@ -78,14 +78,8 @@ function optimizeHygraphImage(url: string, width: number = 400): string {
   return url;
 }
 
-// 2025 프로그램 데이터
+// 2025 프로그램 데이터 - 1개만
 const programs = [
-  {
-    id: 'hankki',
-    title: '밥 해드립니다 한끼합쇼',
-    description: '이웃 간의 정이 허물어진 요즘, 따뜻한 밥상을 준비해 찾아온 <한끼합쇼>! 대한민국 최고 셰프들이 평범한 가정 속 음식 창고를 탈탈 털어 만든 \'선물 같은 한끼\'를 함께하는 프로그램',
-    video: '/trailer-preview.mp4'
-  },
   {
     id: 'nunan',
     title: '누난 내게 여자야',
@@ -99,31 +93,17 @@ export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   
-  // 프로그램 미리보기 상태
-  const [activeProgram, setActiveProgram] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-
-  // 모바일 터치 상태
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-
-  // 유튜브 영상 상태
-  const [isYouTubePlaying, setIsYouTubePlaying] = useState(true);
-  const [showYouTubePlayButton, setShowYouTubePlayButton] = useState(false);
-  const [youtubePlayer, setYoutubePlayer] = useState<any>(null);
+  // Intersection Observer 상태
+  const [aboutInView, setAboutInView] = useState(false);
+  const [lineup2025InView, setLineup2025InView] = useState(false);
+  const [youtubeInView, setYoutubeInView] = useState(false); // 배너 섹션용으로 재사용
 
   const aboutRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const comingSoonRef = useRef<HTMLElement>(null);
   const lineup2025Ref = useRef<HTMLElement>(null);
   const videoRef1 = useRef<HTMLVideoElement>(null);
-  const videoRef2 = useRef<HTMLVideoElement>(null);
-  const youtubeRef = useRef<HTMLDivElement>(null);
-  const youtubeSecRef = useRef<HTMLElement>(null);
-
-  const [aboutInView, setAboutInView] = useState(false);
-  const [lineup2025InView, setLineup2025InView] = useState(false);
-  const [youtubeInView, setYoutubeInView] = useState(false);
+  const youtubeSecRef = useRef<HTMLElement>(null); // 배너 섹션용으로 재사용
 
   const works2025 = allWorks
     .filter(w => Number(w.year) === 2025)
@@ -135,238 +115,69 @@ export default function Home() {
       return a.title.localeCompare(b.title);
     });
 
-  // 프로그램 hover 핸들러 (데스크톱 전용)
-  const handleProgramHover = (index: number) => {
-    setActiveProgram(index);
-    setIsHovering(true);
-    
-    const prevVideo = index === 0 ? videoRef2.current : videoRef1.current;
-    const currentVideo = index === 0 ? videoRef1.current : videoRef2.current;
-    
-    if (prevVideo) prevVideo.pause();
-    if (currentVideo) currentVideo.play();
-  };
+  useEffect(() => {
+    getAllWorks().then(setAllWorks);
+    setIsVisible(true);
 
-  const handleProgramLeave = () => {
-    setIsHovering(false);
-  };
+    const handleScroll = () => {
+      if (!heroRef.current || !comingSoonRef.current) return;
 
-  // 모바일 터치 핸들러
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+      const HEADER_H = 80;
+      const heroBottom = heroRef.current.offsetHeight;
+      const scrolled = window.scrollY;
+      const comingSoonTop = comingSoonRef.current.offsetTop;
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+      const transitionStart = heroBottom * 0.3;
+      const transitionEnd = comingSoonTop - HEADER_H;
+      const denom = Math.max(1, transitionEnd - transitionStart);
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe && activeProgram < programs.length - 1) {
-      const nextIndex = activeProgram + 1;
-      setActiveProgram(nextIndex);
-      
-      const prevVideo = nextIndex === 1 ? videoRef1.current : videoRef2.current;
-      const currentVideo = nextIndex === 1 ? videoRef2.current : videoRef1.current;
-      
-      if (prevVideo) prevVideo.pause();
-      if (currentVideo) currentVideo.play();
-    }
-
-    if (isRightSwipe && activeProgram > 0) {
-      const prevIndex = activeProgram - 1;
-      setActiveProgram(prevIndex);
-      
-      const prevVideo = prevIndex === 0 ? videoRef2.current : videoRef1.current;
-      const currentVideo = prevIndex === 0 ? videoRef1.current : videoRef2.current;
-      
-      if (prevVideo) prevVideo.pause();
-      if (currentVideo) currentVideo.play();
-    }
-
-    setTouchStart(0);
-    setTouchEnd(0);
-  };
-
-  const toggleYouTubeVideo = () => {
-    if (youtubePlayer) {
-      if (isYouTubePlaying) {
-        youtubePlayer.pauseVideo();
-        setIsYouTubePlaying(false);
-        setShowYouTubePlayButton(true);
+      if (scrolled < transitionStart) {
+        setScrollProgress(0);
+      } else if (scrolled > transitionEnd) {
+        setScrollProgress(1);
       } else {
-        youtubePlayer.playVideo();
-        setIsYouTubePlaying(true);
-        setShowYouTubePlayButton(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-
-    const handleMouseMove = () => {
-      if (!isYouTubePlaying) {
-        setShowYouTubePlayButton(true);
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          setShowYouTubePlayButton(false);
-        }, 3000);
+        const progress = (scrolled - transitionStart) / denom;
+        setScrollProgress(progress);
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      clearTimeout(timeout);
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -100px 0px",
     };
-  }, [isYouTubePlaying]);
 
-  useEffect(() => {
-    const PLAYER_ID = "youtube-player";
-    const SCRIPT_ID = "yt-iframe-api";
-
-    let playerInstance: any = null;
-
-    const initPlayer = () => {
-      if (!(window as any).YT?.Player) return;
-
-      playerInstance = new (window as any).YT.Player(PLAYER_ID, {
-        videoId: "Kgvnxaj0cGk",
-        playerVars: {
-          autoplay: 1,
-          mute: 1,
-          loop: 1,
-          playlist: "Kgvnxaj0cGk",
-          controls: 0,
-          showinfo: 0,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-        },
-        events: {
-          onReady: (event: any) => {
-            setYoutubePlayer(event.target);
-            try {
-              event.target.mute();
-              event.target.playVideo();
-            } catch {}
-          },
-          onStateChange: (event: any) => {
-            if (event.data === 0) event.target.playVideo();
-          },
-        },
+    const aboutObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setAboutInView(true);
       });
-    };
+    }, observerOptions);
 
-    if ((window as any).YT?.Player) {
-      initPlayer();
-      return () => {
-        try { playerInstance?.destroy(); } catch {}
-        setYoutubePlayer(null);
-      };
-    }
+    const lineup2025Observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        setLineup2025InView(entry.isIntersecting);
+      });
+    }, observerOptions);
 
-    (window as any).onYouTubeIframeAPIReady = () => {
-      initPlayer();
-    };
+    const youtubeObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setYoutubeInView(true); // 배너 섹션 애니메이션용
+      });
+    }, observerOptions);
 
-    if (!document.getElementById(SCRIPT_ID)) {
-      const tag = document.createElement("script");
-      tag.id = SCRIPT_ID;
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-    } else {
-      const t = setInterval(() => {
-        if ((window as any).YT?.Player) {
-          clearInterval(t);
-          initPlayer();
-        }
-      }, 50);
-
-      return () => {
-        clearInterval(t);
-        try { playerInstance?.destroy(); } catch {}
-        setYoutubePlayer(null);
-      };
-    }
+    if (aboutRef.current) aboutObserver.observe(aboutRef.current);
+    if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
+    if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current); // 배너 섹션
 
     return () => {
-      try { playerInstance?.destroy(); } catch {}
-      setYoutubePlayer(null);
+      window.removeEventListener('scroll', handleScroll);
+      aboutObserver.disconnect();
+      lineup2025Observer.disconnect();
+      youtubeObserver.disconnect();
     };
   }, []);
-
- useEffect(() => {
-  getAllWorks().then(setAllWorks);
-  setIsVisible(true);
-
-  const handleScroll = () => {
-    if (!heroRef.current || !comingSoonRef.current) return;
-
-    const HEADER_H = 80;
-    const heroBottom = heroRef.current.offsetHeight;
-    const scrolled = window.scrollY;
-    const comingSoonTop = comingSoonRef.current.offsetTop;
-
-    const transitionStart = heroBottom * 0.3;
-    const transitionEnd = comingSoonTop - HEADER_H;
-    const denom = Math.max(1, transitionEnd - transitionStart);
-
-    if (scrolled < transitionStart) {
-      setScrollProgress(0);
-    } else if (scrolled > transitionEnd) {
-      setScrollProgress(1);
-    } else {
-      const progress = (scrolled - transitionStart) / denom;
-      setScrollProgress(progress);
-    }
-  };
-
-  window.addEventListener('scroll', handleScroll);
-  handleScroll();
-
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: "0px 0px -100px 0px",
-  };
-
-  const aboutObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) setAboutInView(true);
-    });
-  }, observerOptions);
-
-  // 이 부분 수정: entry.isIntersecting 값을 그대로 전달
-  const lineup2025Observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      setLineup2025InView(entry.isIntersecting);  // if문 제거
-    });
-  }, observerOptions);
-
-  const youtubeObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) setYoutubeInView(true);
-    });
-  }, observerOptions);
-
-  if (aboutRef.current) aboutObserver.observe(aboutRef.current);
-  if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
-  if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current);
-
-  return () => {
-    window.removeEventListener('scroll', handleScroll);
-    aboutObserver.disconnect();
-    lineup2025Observer.disconnect();
-    youtubeObserver.disconnect();
-  };
-}, []);
 
   return (
     <main className="overflow-x-hidden">
@@ -392,100 +203,38 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#1c7a9e]/12 via-[#2596be]/16 to-[#1c7a9e]/20" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(61,179,217,0.06),transparent_70%)]" />
 
-        {/* <div
-          className={`relative z-10 w-full max-w-5xl mx-auto px-8 text-center text-white transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
-        >
-          <div className="inline-flex items-center gap-3 mb-8">
-            <div className="h-px w-12 bg-white/40" />
-            <span className="text-xs font-medium tracking-[0.3em] uppercase text-white/80">
-              ABO Media
-            </span>
-            <div className="h-px w-12 bg-white/40" />
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
+          <div
+            className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
+            style={{ animationDuration: "2s" }}
+          >
+            <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
           </div>
-
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-8">
-            콘텐츠로 사람과<br />시장을 연결합니다
-          </h1>
-
-          <p className="max-w-2xl mx-auto text-base md:text-lg text-white/75 leading-relaxed mb-16 font-light">
-            예능·리얼리티·음악 등 방송/디지털 콘텐츠를 기획·제작하고,<br className="hidden md:block" />
-            파트너십과 유통을 통해 가치를 확장하는 종합 미디어 기업입니다
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-2 text-xs tracking-wider">
-            {["Ability", "Originality", "Brilliant"].map((word, idx) => (
-              <span
-                key={word}
-                className="px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm bg-white/5 text-white/90 transition-all duration-300 hover:bg-white/10 hover:border-white/40"
-                style={{
-                  animationDelay: `${idx * 0.15 + 0.5}s`,
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
-                  transition: `all ${0.6 + idx * 0.1}s ease-out`,
-                }}
-              >
-                {word}
-              </span>
-            ))}
-          </div>
-
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
-            <div
-              className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
-              style={{ animationDuration: "2s" }}
-            >
-              <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </div>
-        </div> */}
-
-        {/* 스크롤 아이콘을 section 직속 자식으로 이동 */}
-  <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
-    <div
-      className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
-      style={{ animationDuration: "2s" }}
-    >
-      <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-      </svg>
-    </div>
-  </div>
+        </div>
       </section>
 
-      {/* 2025 프로그램 미리보기 - 데스크톱: 호버, 모바일: 스와이프 */}
+      {/* 2025 프로그램 미리보기 */}
       <section
         ref={comingSoonRef}
         className="relative overflow-hidden min-h-screen flex items-center justify-center"
         style={{
           opacity: scrollProgress,
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
-        {/* 배경 영상들 */}
-        <div className="absolute inset-0">
-          {programs.map((program, idx) => (
-            <video
-              key={program.id}
-              ref={idx === 0 ? videoRef1 : videoRef2}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 size-full object-cover transition-opacity duration-700"
-              style={{
-                opacity: activeProgram === idx ? 1 : 0,
-              }}
-            >
-              <source src={program.video} type="video/mp4" />
-            </video>
-          ))}
-        </div>
+        {/* 배경 영상 - 1개만 */}
+        <video
+          ref={videoRef1}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 size-full object-cover"
+        >
+          <source src={programs[0].video} type="video/mp4" />
+        </video>
 
         {/* 어두운 오버레이 */}
         <div
@@ -498,85 +247,22 @@ export default function Home() {
         {/* 그라데이션 오버레이 */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
 
-        {/* 프로그램 정보 (중앙 상단) -  진하게 */}
-<div
-  className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
-  style={{
-    opacity: scrollProgress * (isHovering ? 1 : 0.85),  
-  }}
->
-  <div className="bg-white/25 backdrop-blur-md rounded-2xl p-6 border border-white/30">  {/* bg-white/10 border-white/20 → /15 /30 */}
-    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-lg">  {/* drop-shadow-lg 추가 */}
-      {programs[activeProgram].title}
-    </h2>
-    
-    <p className="text-sm text-white/85 leading-relaxed line-clamp-4 font-medium">  {/* text-white/70 → /85, font-medium 추가 */}
-      {programs[activeProgram].description}
-    </p>
-  </div>
-</div>
-
-       {/* 프로그램 선택 리스트 - 데스크톱만 표시 -  크기 증가 */}
-<div
-  className="hidden md:block absolute bottom-32 left-16 z-20 space-y-4"  // space-y-3 → 4
-  style={{
-    opacity: scrollProgress,
-  }}
->
-  
-  
-
-  {programs.map((program, idx) => (
-    <div
-      key={program.id}
-      className={`cursor-pointer transition-all duration-300 ${
-        activeProgram === idx 
-          ? 'translate-x-3'  // translate-x-2 → 3
-          : 'translate-x-0 hover:translate-x-2'  // hover:translate-x-1 → 2
-      }`}
-      onMouseEnter={() => handleProgramHover(idx)}
-      onMouseLeave={handleProgramLeave}
-    >
-      <div className={`flex items-center gap-4 transition-all duration-300 ${  // gap-3 → 4
-        activeProgram === idx
-          ? 'text-white'
-          : 'text-white/60 hover:text-white/90'
-      }`}>
-        <div className={`w-1.5 h-12 rounded-full transition-all duration-300 ${  // w-1 h-8 → w-1.5 h-12
-          activeProgram === idx
-            ? 'bg-white'
-            : 'bg-white/30'
-        }`} />
-        <div>
-          <div className="text-base font-bold leading-tight">  {/* text-sm font-semibold → text-base font-bold */}
-            {program.title}
-          </div>
-          <div className="text-xs text-white/60 mt-1">  {/* text-[10px] text-white/50 mt-0.5 → text-xs text-white/60 mt-1 */}
-            {idx === 0 ? '예능' : '리얼리티'}
-          </div>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-
-        {/* 모바일 페이지 인디케이터 */}
+        {/* 프로그램 정보 */}
         <div
-          className="md:hidden absolute bottom-32 left-1/2 -translate-x-1/2 flex gap-2 z-20"
+          className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
           style={{
-            opacity: scrollProgress,
+            opacity: scrollProgress * 0.85,
           }}
         >
-          {programs.map((_, idx) => (
-            <div
-              key={idx}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                activeProgram === idx
-                  ? 'w-8 bg-white'
-                  : 'w-1.5 bg-white/40'
-              }`}
-            />
-          ))}
+          <div className="bg-white/25 backdrop-blur-md rounded-2xl p-6 border border-white/30">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-lg">
+              {programs[0].title}
+            </h2>
+            
+            <p className="text-sm text-white/85 leading-relaxed line-clamp-4 font-medium">
+              {programs[0].description}
+            </p>
+          </div>
         </div>
 
         {/* ABO Media 워터마크 */}
@@ -630,10 +316,58 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 배너 섹션 - 지상렬 & 한그루 */}
+      <section
+        ref={youtubeSecRef}
+        className="relative py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
+        
+        <div className="container-main relative max-w-7xl">
+          <div className={`space-y-8 md:space-y-12 transition-all duration-1000 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+            
+            {/* 상단 배너 - 지상렬 대리점 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
+              <a 
+                href="https://www.youtube.com/@Ji_Daeri" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <img
+                  src="/지상렬배너.png"
+                  alt="지상렬 대리점 - 지상렬의 당황 디테일"
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </a>
+            </div>
+
+            {/* 하단 배너 - 한그루 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
+              <a 
+                href="https://www.youtube.com/@Han_Groo" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <img
+                  src="/한그루배너.png"
+                  alt="한그루 - 그루나까 말이야"
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* 2025 LINEUP */}
       <section
         ref={lineup2025Ref}
-        className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9]"
+        className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] z-20"
       >
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.1),transparent_50%)]" />
@@ -661,7 +395,6 @@ export default function Home() {
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
               {works2025.map((work, idx) => {
                 const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
-                //  Hygraph 이미지 최적화 (400px 너비, WebP, 80% 품질)
                 const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
                 const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
 
@@ -761,68 +494,6 @@ export default function Home() {
             }
           }
         `}</style>
-      </section>
-
-      {/* YOUTUBE VIDEO SECTION */}
-      <section
-        ref={youtubeSecRef}
-        className={`relative overflow-hidden min-h-screen flex items-center justify-center bg-black cursor-pointer group transition-all duration-1000 ${youtubeInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
-        onClick={toggleYouTubeVideo}
-      >
-        <div ref={youtubeRef} className="absolute inset-0 w-full h-full">
-          <div
-            id="youtube-player"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              width: '177.77777778vh',
-              height: '56.25vw',
-              minHeight: '100vh',
-              minWidth: '100vw',
-            }}
-          />
-        </div>
-
-        <div className="absolute inset-0 bg-black/20" />
-
-        <div
-          className={`absolute inset-0 flex flex-col items-center justify-start pt-8 md:pt-12 z-10 pointer-events-none transition-opacity duration-500 ${
-            isYouTubePlaying ? "opacity-0 group-hover:opacity-80" : "opacity-90"
-          }`}
-        >
-          <div className="w-full flex flex-col items-center text-center px-8">
-            <div className="inline-flex items-center gap-3 mb-3">
-              <div className="h-px w-12 bg-white/40" />
-              <span className="text-xs font-medium tracking-[0.3em] uppercase text-white/80">
-                YouTube Channel
-              </span>
-              <div className="h-px w-12 bg-white/40" />
-            </div>
-
-            <a
-              href="https://www.youtube.com/@Ji_Daeri"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 mt-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold rounded-full hover:bg-white/20 transition-all pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-              </svg>
-              채널 방문하기
-            </a>
-          </div>
-        </div>
-
-        <div className="absolute bottom-8 right-8 z-10">
-          <div className="text-right">
-            <div className="text-white/90 text-sm font-medium mb-1 tracking-wide">
-              ABO Media
-            </div>
-            <div className="text-white/60 text-xs tracking-wider">
-              YouTube
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* CTA */}

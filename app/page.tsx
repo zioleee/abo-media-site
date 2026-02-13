@@ -324,6 +324,25 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
         
         <div className="container-main relative max-w-7xl">
+          {/* 배너 섹션 타이틀 (2025 라인업 톤 통일) */}
+<div className="text-center mb-8 md:mb-12">
+  <div className="inline-flex items-center gap-3 mb-3">
+    <div className="h-px w-8 bg-[#2596be]/30" />
+    <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
+      Digital Contents
+    </span>
+    <div className="h-px w-8 bg-[#2596be]/30" />
+  </div>
+
+  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+    디지털 콘텐츠
+  </h2>
+
+  <p className="text-gray-600 text-sm font-light">
+    유튜브 오리지널부터 아티스트 채널까지, 에이비오미디어의 디지털 제작 라인업
+  </p>
+</div>
+
           <div className={`space-y-8 md:space-y-12 transition-all duration-1000 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
             
             {/* 상단 배너 - 지상렬 대리점 */}

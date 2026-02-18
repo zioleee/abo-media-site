@@ -161,11 +161,11 @@ export default function Home() {
       });
     }, observerOptions);
 
-    const youtubeObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) setYoutubeInView(true); // 배너 섹션 애니메이션용
-      });
-    }, observerOptions);
+   const youtubeObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    setYoutubeInView(entry.isIntersecting); // 들어올 때 true, 나갈 때 false
+  });
+}, observerOptions);
 
     if (aboutRef.current) aboutObserver.observe(aboutRef.current);
     if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
@@ -335,7 +335,7 @@ export default function Home() {
   </div>
 
   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-    디지털 콘텐츠
+    YouTube Originals
   </h2>
 
   <p className="text-gray-600 text-sm font-light">
@@ -343,43 +343,47 @@ export default function Home() {
   </p>
 </div>
 
-          <div className={`space-y-8 md:space-y-12 transition-all duration-1000 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-            
-            {/* 상단 배너 - 지상렬 대리점 */}
-            <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
-              <a 
-                href="https://www.youtube.com/@Ji_Daeri" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <img
-                  src="/지상렬배너.png"
-                  alt="지상렬 대리점 - 지상렬의 당황 디테일"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </a>
-            </div>
+          <div className={`space-y-8 md:space-y-12`}>
 
-            {/* 하단 배너 - 한그루 */}
-            <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
-              <a 
-                href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS"
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <img
-                  src="/한그루배너.png"
-                  alt="한그루 - 그루나까 말이야"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </a>
-            </div>
+  {/* 정성호 배너 */}
+  <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-700 delay-[0ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+    <img
+      src="/정성호배너.png"
+      alt="정성호의 인력사무소"
+      className="w-full h-[120px] md:h-[200px] object-cover object-center"
+    />
+    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+      <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-8 py-3">
+        <span className="text-white font-bold text-lg tracking-[0.2em] uppercase">Coming Soon</span>
+      </div>
+    </div>
+  </div>
 
-          </div>
+  {/* 지상렬 배너 */}
+  <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[200ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+    <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block">
+      <img
+        src="/지상렬배너.png"
+        alt="지상렬 대리점"
+        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    </a>
+  </div>
+
+  {/* 한그루 배너 */}
+  <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[400ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+    <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block">
+      <img
+        src="/한그루배너.png"
+        alt="한그루 - 그루나까 말이야"
+        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    </a>
+  </div>
+
+</div>
         </div>
       </section>
 
@@ -403,7 +407,7 @@ export default function Home() {
               <div className="h-px w-8 bg-white/30" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              2025년 라인업
+              TV · OTT
             </h2>
             <p className="text-white/70 text-sm font-light">
               올해 선보이는 에이비오미디어의 작품들

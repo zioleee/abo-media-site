@@ -365,7 +365,7 @@ export default function Home() {
             {/* 하단 배너 - 한그루 */}
             <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
               <a 
-                href="https://www.youtube.com/@Han_Groo" 
+                href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS"
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="block"

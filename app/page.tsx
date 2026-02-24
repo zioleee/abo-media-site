@@ -414,73 +414,82 @@ export default function Home() {
             </p>
           </div>
 
-          {lineup2025InView && works2025.length > 0 && (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
-              {works2025.map((work, idx) => {
-                const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
-                const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
-                const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
+          {/* ✅ 항상 렌더: inView에 따라 "보이기만" 토글 */}
+<div
+  className={[
+    "transition-all duration-700",
+    lineup2025InView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none",
+  ].join(" ")}
+>
+  {works2025.length > 0 ? (
+    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
+      {works2025.map((work, idx) => {
+        const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
+        const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
+        const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
 
-                return (
-                  <div
-                    key={work.id}
-                    className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer"
-                    style={{
-                      opacity: 0,
-                      transform: 'translateX(-100px) rotate(-10deg)',
-                      animation: `cardDeal 0.6s ease-out ${idx * 0.05}s forwards`,
-                    }}
-                  >
-                    {optimizedUrl ? (
-                      <img
-                        src={optimizedUrl}
-                        alt={work.title}
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                        <span className="text-gray-400 text-xs">No Image</span>
-                      </div>
-                    )}
+        return (
+          <div
+            key={work.id}
+            className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer"
+            style={{
+              opacity: 0,
+              transform: "translateX(-100px) rotate(-10deg)",
+              animation: lineup2025InView
+                ? `cardDeal 0.6s ease-out ${idx * 0.05}s forwards`
+                : "none",
+            }}
+          >
+            {optimizedUrl ? (
+              <img
+                src={optimizedUrl}
+                alt={work.title}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <span className="text-gray-400 text-xs">No Image</span>
+              </div>
+            )}
 
-                    {logoUrl && (
-                      <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
-                        <img
-                          src={logoUrl}
-                          alt={work.client?.name ?? ''}
-                          loading="lazy"
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    )}
+            {logoUrl && (
+              <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
+                <img
+                  src={logoUrl}
+                  alt={work.client?.name ?? ""}
+                  loading="lazy"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute bottom-0 left-0 right-0 p-2">
-                        <p className="text-[9px] text-white/70 mb-0.5">{work.category}</p>
-                        <h3 className="text-[10px] font-bold text-white leading-tight line-clamp-2">
-                          {work.title}
-                        </h3>
-                        {work.client?.name && (
-                          <p className="text-[8px] text-white/60 mt-0.5 truncate">
-                            {work.client.name}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="absolute inset-0 ring-1 ring-white/10 group-hover:ring-white/30 rounded-lg transition-all duration-300" />
-                  </div>
-                );
-              })}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute bottom-0 left-0 right-0 p-2">
+                <p className="text-[9px] text-white/70 mb-0.5">{work.category}</p>
+                <h3 className="text-[10px] font-bold text-white leading-tight line-clamp-2">
+                  {work.title}
+                </h3>
+                {work.client?.name && (
+                  <p className="text-[8px] text-white/60 mt-0.5 truncate">
+                    {work.client.name}
+                  </p>
+                )}
+              </div>
             </div>
-          )}
 
-          {lineup2025InView && works2025.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-white/70">2025년도 작품이 준비 중입니다</p>
-            </div>
-          )}
+            <div className="absolute inset-0 ring-1 ring-white/10 group-hover:ring-white/30 rounded-lg transition-all duration-300" />
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    <div className="text-center py-12">
+      <p className="text-white/70">2025년도 작품이 준비 중입니다</p>
+    </div>
+  )}
+</div>
+
 
           <div className="mt-10 text-center">
             <Link

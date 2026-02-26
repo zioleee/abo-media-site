@@ -303,30 +303,6 @@ export default function AboutEN() {
           </div>
         </div>
       </section>
-
-      {/* Partners Section */}
-      <section className="py-24 bg-gray-50 border-t border-gray-100">
-        <div className="container-main">
-          <div className="mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Partners</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
-            <p className="mt-6 text-lg text-gray-600">Partners we've grown with</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {['KBS', 'MBC', 'SBS', 'tvN', 'JTBC', 'MBN', 'TV Chosun', 'Wavve', 'WATCHA', 'U+ Mobile TV', 'E Channel', 'JYP'].map((partner) => (
-              <div
-                key={partner}
-                className="aspect-square flex items-center justify-center bg-white border border-gray-200 rounded-2xl hover:border-[#2596be]/50 hover:shadow-md transition-all duration-300 group"
-              >
-                <span className="text-lg font-bold text-gray-700 group-hover:text-[#2596be] group-hover:scale-110 transition-all duration-300">
-                  {partner}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

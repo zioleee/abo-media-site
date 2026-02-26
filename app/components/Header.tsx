@@ -39,7 +39,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-subtle shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <nav className="container-main h-20 flex items-center justify-between px-4 md:px-8">
           {/* 로고 */}
           <Link 
@@ -65,7 +65,7 @@ export default function Header() {
                 <Link 
                   key={item.href}
                   href={item.href} 
-                  className="hover:text-[var(--brand)] transition-colors"
+                  className="text-gray-900 hover:text-[var(--brand)] transition-colors"
                 >
                   {item.label}
                 </Link>

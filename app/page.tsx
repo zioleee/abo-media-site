@@ -67,43 +67,26 @@ async function getAllWorks(): Promise<Work[]> {
 function optimizeHygraphImage(url: string, width: number = 400): string {
   if (!url) return url;
   
-  // Hygraph CDN URL인지 확인
   if (url.includes('hygraph.com') || url.includes('graphassets.com')) {
-    // 이미 쿼리 파라미터가 있는지 확인
     const separator = url.includes('?') ? '&' : '?';
-    // width, quality, format 파라미터 추가
     return `${url}${separator}w=${width}&q=80&fm=webp`;
   }
   
   return url;
 }
 
-// 2025 프로그램 데이터 - 1개만
-const programs = [
-  {
-    id: 'nunan',
-    title: '누난 내게 여자야',
-    description: '나이 차이라는 현실의 벽을 넘어, 사랑 앞에 과감하고 솔직한 연상연하 남녀들의 도발적이고 진솔한 연애세포 재생 리얼리티',
-    video: '/nunan-trailer.mp4'
-  }
-];
-
 export default function Home() {
   const [allWorks, setAllWorks] = useState<Work[]>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  
+
   // Intersection Observer 상태
   const [aboutInView, setAboutInView] = useState(false);
   const [lineup2025InView, setLineup2025InView] = useState(false);
-  const [youtubeInView, setYoutubeInView] = useState(false); // 배너 섹션용으로 재사용
+  const [youtubeInView, setYoutubeInView] = useState(false);
 
   const aboutRef = useRef<HTMLElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
-  const comingSoonRef = useRef<HTMLElement>(null);
   const lineup2025Ref = useRef<HTMLElement>(null);
-  const videoRef1 = useRef<HTMLVideoElement>(null);
-  const youtubeSecRef = useRef<HTMLElement>(null); // 배너 섹션용으로 재사용
+  const youtubeSecRef = useRef<HTMLElement>(null);
 
   const works2025 = allWorks
     .filter(w => Number(w.year) === 2025)
@@ -118,31 +101,6 @@ export default function Home() {
   useEffect(() => {
     getAllWorks().then(setAllWorks);
     setIsVisible(true);
-
-    const handleScroll = () => {
-      if (!heroRef.current || !comingSoonRef.current) return;
-
-      const HEADER_H = 80;
-      const heroBottom = heroRef.current.offsetHeight;
-      const scrolled = window.scrollY;
-      const comingSoonTop = comingSoonRef.current.offsetTop;
-
-      const transitionStart = heroBottom * 0.3;
-      const transitionEnd = comingSoonTop - HEADER_H;
-      const denom = Math.max(1, transitionEnd - transitionStart);
-
-      if (scrolled < transitionStart) {
-        setScrollProgress(0);
-      } else if (scrolled > transitionEnd) {
-        setScrollProgress(1);
-      } else {
-        const progress = (scrolled - transitionStart) / denom;
-        setScrollProgress(progress);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
 
     const observerOptions = {
       threshold: 0.1,
@@ -161,18 +119,17 @@ export default function Home() {
       });
     }, observerOptions);
 
-   const youtubeObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    setYoutubeInView(entry.isIntersecting); // 들어올 때 true, 나갈 때 false
-  });
-}, observerOptions);
+    const youtubeObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        setYoutubeInView(entry.isIntersecting);
+      });
+    }, observerOptions);
 
     if (aboutRef.current) aboutObserver.observe(aboutRef.current);
     if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
-    if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current); // 배너 섹션
+    if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       aboutObserver.disconnect();
       lineup2025Observer.disconnect();
       youtubeObserver.disconnect();
@@ -183,12 +140,7 @@ export default function Home() {
     <main className="overflow-x-hidden">
       {/* HERO - 회사 소개 영상 */}
       <section
-        ref={heroRef}
         className="relative overflow-hidden min-h-screen flex items-center justify-center"
-        style={{
-          opacity: 1 - scrollProgress * 0.5,
-          transform: `scale(${1 - scrollProgress * 0.1})`,
-        }}
       >
         <video
           autoPlay
@@ -212,73 +164,6 @@ export default function Home() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
-          </div>
-        </div>
-      </section>
-
-      {/* 2025 프로그램 미리보기 */}
-      <section
-        ref={comingSoonRef}
-        className="relative overflow-hidden min-h-screen flex items-center justify-center"
-        style={{
-          opacity: scrollProgress,
-        }}
-      >
-        {/* 배경 영상 - 1개만 */}
-        <video
-          ref={videoRef1}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 size-full object-cover"
-        >
-          <source src={programs[0].video} type="video/mp4" />
-        </video>
-
-        {/* 어두운 오버레이 */}
-        <div
-          className="absolute inset-0 bg-black"
-          style={{
-            opacity: Math.max(0, 1 - scrollProgress * 1.5),
-          }}
-        />
-        
-        {/* 그라데이션 오버레이 */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
-
-        {/* 프로그램 정보 */}
-        <div
-          className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
-          style={{
-            opacity: scrollProgress * 0.85,
-          }}
-        >
-          <div className="bg-white/25 backdrop-blur-md rounded-2xl p-6 border border-white/30">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-lg">
-              {programs[0].title}
-            </h2>
-            
-            <p className="text-sm text-white/85 leading-relaxed line-clamp-4 font-medium">
-              {programs[0].description}
-            </p>
-          </div>
-        </div>
-
-        {/* ABO Media 워터마크 */}
-        <div
-          className="absolute bottom-8 right-8 z-10"
-          style={{
-            opacity: scrollProgress,
-          }}
-        >
-          <div className="text-right">
-            <div className="text-white/90 text-sm font-medium mb-1 tracking-wide">
-              ABO Media
-            </div>
-            <div className="text-white/60 text-xs tracking-wider">
-              2025
-            </div>
           </div>
         </div>
       </section>
@@ -324,66 +209,65 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
         
         <div className="container-main relative max-w-7xl">
-          {/* 배너 섹션 타이틀 (2025 라인업 톤 통일) */}
-<div className="text-center mb-8 md:mb-12">
-  <div className="inline-flex items-center gap-3 mb-3">
-    <div className="h-px w-8 bg-[#2596be]/30" />
-    <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
-      Digital Contents
-    </span>
-    <div className="h-px w-8 bg-[#2596be]/30" />
-  </div>
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center gap-3 mb-3">
+              <div className="h-px w-8 bg-[#2596be]/30" />
+              <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
+                Digital Contents
+              </span>
+              <div className="h-px w-8 bg-[#2596be]/30" />
+            </div>
 
-  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-    YouTube Originals
-  </h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              YouTube Originals
+            </h2>
 
-  <p className="text-gray-600 text-sm font-light">
-    유튜브 오리지널부터 아티스트 채널까지, 에이비오미디어의 디지털 제작 라인업
-  </p>
-</div>
+            <p className="text-gray-600 text-sm font-light">
+              유튜브 오리지널부터 아티스트 채널까지, 에이비오미디어의 디지털 제작 라인업
+            </p>
+          </div>
 
-          <div className={`space-y-8 md:space-y-12`}>
+          <div className="space-y-8 md:space-y-12">
 
-  {/* 정성호 배너 */}
-  <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-700 delay-[0ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-    <img
-      src="/정성호배너.png"
-      alt="정성호의 인력사무소"
-      className="w-full h-[120px] md:h-[200px] object-cover object-center"
-    />
-    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-      <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-8 py-3">
-        <span className="text-white font-bold text-lg tracking-[0.2em] uppercase">Coming Soon</span>
-      </div>
-    </div>
-  </div>
+            {/* 정성호 배너 */}
+            <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-700 delay-[0ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+              <img
+                src="/정성호배너.png"
+                alt="정성호의 인력사무소"
+                className="w-full h-[120px] md:h-[200px] object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-8 py-3">
+                  <span className="text-white font-bold text-lg tracking-[0.2em] uppercase">Coming Soon</span>
+                </div>
+              </div>
+            </div>
 
-  {/* 지상렬 배너 */}
-  <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[200ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-    <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block">
-      <img
-        src="/지상렬배너.png"
-        alt="지상렬 대리점"
-        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    </a>
-  </div>
+            {/* 지상렬 배너 */}
+            <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[200ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+              <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block">
+                <img
+                  src="/지상렬배너.png"
+                  alt="지상렬 대리점"
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </a>
+            </div>
 
-  {/* 한그루 배너 */}
-  <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[400ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-    <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block">
-      <img
-        src="/한그루배너.png"
-        alt="한그루 - 그루나까 말이야"
-        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    </a>
-  </div>
+            {/* 한그루 배너 */}
+            <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[400ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+              <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block">
+                <img
+                  src="/한그루배너.png"
+                  alt="한그루 - 그루나까 말이야"
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </a>
+            </div>
 
-</div>
+          </div>
         </div>
       </section>
 
@@ -414,82 +298,80 @@ export default function Home() {
             </p>
           </div>
 
-          {/* ✅ 항상 렌더: inView에 따라 "보이기만" 토글 */}
-<div
-  className={[
-    "transition-all duration-700",
-    lineup2025InView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none",
-  ].join(" ")}
->
-  {works2025.length > 0 ? (
-    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
-      {works2025.map((work, idx) => {
-        const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
-        const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
-        const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
-
-        return (
           <div
-            key={work.id}
-            className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer"
-            style={{
-              opacity: 0,
-              transform: "translateX(-100px) rotate(-10deg)",
-              animation: lineup2025InView
-                ? `cardDeal 0.6s ease-out ${idx * 0.05}s forwards`
-                : "none",
-            }}
+            className={[
+              "transition-all duration-700",
+              lineup2025InView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none",
+            ].join(" ")}
           >
-            {optimizedUrl ? (
-              <img
-                src={optimizedUrl}
-                alt={work.title}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+            {works2025.length > 0 ? (
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
+                {works2025.map((work, idx) => {
+                  const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
+                  const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
+                  const logoUrl = work.client?.logo?.url ? optimizeHygraphImage(work.client.logo.url, 80) : null;
+
+                  return (
+                    <div
+                      key={work.id}
+                      className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer"
+                      style={{
+                        opacity: 0,
+                        transform: "translateX(-100px) rotate(-10deg)",
+                        animation: lineup2025InView
+                          ? `cardDeal 0.6s ease-out ${idx * 0.05}s forwards`
+                          : "none",
+                      }}
+                    >
+                      {optimizedUrl ? (
+                        <img
+                          src={optimizedUrl}
+                          alt={work.title}
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                          <span className="text-gray-400 text-xs">No Image</span>
+                        </div>
+                      )}
+
+                      {logoUrl && (
+                        <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
+                          <img
+                            src={logoUrl}
+                            alt={work.client?.name ?? ""}
+                            loading="lazy"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-0 left-0 right-0 p-2">
+                          <p className="text-[9px] text-white/70 mb-0.5">{work.category}</p>
+                          <h3 className="text-[10px] font-bold text-white leading-tight line-clamp-2">
+                            {work.title}
+                          </h3>
+                          {work.client?.name && (
+                            <p className="text-[8px] text-white/60 mt-0.5 truncate">
+                              {work.client.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="absolute inset-0 ring-1 ring-white/10 group-hover:ring-white/30 rounded-lg transition-all duration-300" />
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                <span className="text-gray-400 text-xs">No Image</span>
+              <div className="text-center py-12">
+                <p className="text-white/70">2025년도 작품이 준비 중입니다</p>
               </div>
             )}
-
-            {logoUrl && (
-              <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
-                <img
-                  src={logoUrl}
-                  alt={work.client?.name ?? ""}
-                  loading="lazy"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            )}
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="absolute bottom-0 left-0 right-0 p-2">
-                <p className="text-[9px] text-white/70 mb-0.5">{work.category}</p>
-                <h3 className="text-[10px] font-bold text-white leading-tight line-clamp-2">
-                  {work.title}
-                </h3>
-                {work.client?.name && (
-                  <p className="text-[8px] text-white/60 mt-0.5 truncate">
-                    {work.client.name}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="absolute inset-0 ring-1 ring-white/10 group-hover:ring-white/30 rounded-lg transition-all duration-300" />
           </div>
-        );
-      })}
-    </div>
-  ) : (
-    <div className="text-center py-12">
-      <p className="text-white/70">2025년도 작품이 준비 중입니다</p>
-    </div>
-  )}
-</div>
-
 
           <div className="mt-10 text-center">
             <Link

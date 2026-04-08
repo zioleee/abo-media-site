@@ -62,7 +62,101 @@ async function getAllWorks(): Promise<Work[]> {
     return [];
   }
 }
+// ===== 모바일 캐러셀 =====
+const YOUTUBE_CARDS = [
+  { href: "https://www.youtube.com/@sookyung.yi_career", src: "/이수경배너.png", alt: "이수경", objPos: "object-top" },
+  { href: "https://www.youtube.com/@알바_정", src: "/정성호배너.png", alt: "정성호의 인력사무소", objPos: "" },
+  { href: "https://www.youtube.com/@Ji_Daeri", src: "/지상렬배너.jpg", alt: "지상렬 대리점", objPos: "" },
+  { href: "https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS", src: "/한그루배너.png", alt: "한그루 - 그루니까 말이야", objPos: "" },
+];
 
+function MobileCarousel() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const animRef = useRef<number>(0);
+  const posRef = useRef(0);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startPos = useRef(0);
+
+  const cards = [...YOUTUBE_CARDS, ...YOUTUBE_CARDS];
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const SPEED = 1.5;
+
+    const tick = () => {
+      if (!isDragging.current) {
+        const halfWidth = track.scrollWidth / 2;
+        posRef.current += SPEED;
+        if (posRef.current >= halfWidth) posRef.current = 0;
+        track.style.transform = `translateX(-${posRef.current}px)`;
+      }
+      animRef.current = requestAnimationFrame(tick);
+    };
+
+    animRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    isDragging.current = true;
+    startX.current = e.touches[0].clientX;
+    startPos.current = posRef.current;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    const delta = startX.current - e.touches[0].clientX;
+    posRef.current = Math.max(0, startPos.current + delta);
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translateX(-${posRef.current}px)`;
+    }
+  };
+
+  const onTouchEnd = () => {
+    isDragging.current = false;
+  };
+
+  return (
+    <div
+      className="md:hidden overflow-hidden select-none"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      <div
+        ref={trackRef}
+        className="flex gap-3 px-4 will-change-transform"
+        style={{ width: "max-content" }}
+      >
+        {cards.map((card, idx) => (
+          <a
+            key={idx}
+            href={card.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative w-[220px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg"
+            onClick={(e) => {
+              if (Math.abs(posRef.current - startPos.current) > 8) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <img
+              src={card.src}
+              alt={card.alt}
+              draggable={false}
+              className={`absolute inset-0 w-full h-full object-cover ${card.objPos}`}
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+// ===== 모바일 캐러셀 끝 =====
 // Hygraph 이미지 최적화 함수
 function optimizeHygraphImage(url: string, width: number = 400): string {
   if (!url) return url;
@@ -202,74 +296,80 @@ export default function Home() {
       </section>
 
       {/* 배너 섹션 - YouTube Originals */}
-      <section
-        ref={youtubeSecRef}
-        className="relative py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
+<section
+  ref={youtubeSecRef}
+  className="relative py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden"
+>
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
 
-        <div className="mx-auto max-w-7xl px-4 relative">
-          <div className="text-center mb-8 md:mb-12">
-            <div className="inline-flex items-center gap-3 mb-3">
-              <div className="h-px w-8 bg-[#2596be]/30" />
-              <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
-                Digital Contents
-              </span>
-              <div className="h-px w-8 bg-[#2596be]/30" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              YouTube Originals
-            </h2>
-            <p className="text-gray-600 text-sm font-light">
-              유튜브 오리지널부터 아티스트 채널까지, 에이비오미디어의 디지털 제작 라인업
-            </p>
-          </div>
+  <div className="relative">
+    <div className="text-center mb-8 md:mb-12 px-4">
+      <div className="inline-flex items-center gap-3 mb-3">
+        <div className="h-px w-8 bg-[#2596be]/30" />
+        <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
+          Digital Contents
+        </span>
+        <div className="h-px w-8 bg-[#2596be]/30" />
+      </div>
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+        YouTube Originals
+      </h2>
+      <p className="text-gray-600 text-sm font-light">
+        유튜브 오리지널부터 아티스트 채널까지, 에이비오미디어의 디지털 제작 라인업
+      </p>
+    </div>
 
-          {/* 4열 그리드 → 자동 스크롤로 교체 */}
-<div className="overflow-hidden">
-  <div className="flex gap-4 md:gap-8 animate-scroll">
-    {/* 카드 2번 반복 (무한 루프 효과) */}
-    {[...Array(2)].map((_, setIdx) => (
-      <div key={setIdx} className="flex gap-4 md:gap-8 shrink-0">
-        
+    {/* 모바일: 자동스크롤 + 스와이프 */}
+    <MobileCarousel />
+
+    {/* 데스크탑: 4열 그리드 */}
+    <div className="hidden md:block mx-auto max-w-7xl px-4">
+      <div className="grid grid-cols-4 gap-8">
+
         {/* 이수경 */}
-        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+          style={{ transitionDelay: '0ms' }}>
           <a href="https://www.youtube.com/@sookyung.yi_career" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/이수경배너.png" alt="이수경" className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
+            <img src="/이수경배너.png" alt="이수경"
+              className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
           </a>
         </div>
 
         {/* 정성호 */}
-        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg transition-all duration-500">
+        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+          style={{ transitionDelay: '100ms' }}>
           <a href="https://www.youtube.com/@알바_정" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/정성호배너.png" alt="정성호의 인력사무소" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <img src="/정성호배너.png" alt="정성호의 인력사무소"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
           </a>
         </div>
 
         {/* 지상렬 */}
-        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+          style={{ transitionDelay: '200ms' }}>
           <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/지상렬배너.jpg" alt="지상렬 대리점" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <img src="/지상렬배너.jpg" alt="지상렬 대리점"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
           </a>
         </div>
 
         {/* 한그루 */}
-        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+          style={{ transitionDelay: '300ms' }}>
           <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/한그루배너.png" alt="한그루 - 그루니까 말이야" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <img src="/한그루배너.png" alt="한그루 - 그루니까 말이야"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
           </a>
         </div>
 
       </div>
-    ))}
+    </div>
   </div>
-</div>
-        </div>
-      </section>
+</section>
 
       {/* 2025 LINEUP */}
       <section

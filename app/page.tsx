@@ -66,12 +66,12 @@ async function getAllWorks(): Promise<Work[]> {
 // Hygraph 이미지 최적화 함수
 function optimizeHygraphImage(url: string, width: number = 400): string {
   if (!url) return url;
-  
+
   if (url.includes('hygraph.com') || url.includes('graphassets.com')) {
     const separator = url.includes('?') ? '&' : '?';
     return `${url}${separator}w=${width}&q=80&fm=webp`;
   }
-  
+
   return url;
 }
 
@@ -201,14 +201,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 배너 섹션 - 지상렬 & 한그루 */}
+      {/* 배너 섹션 - YouTube Originals */}
       <section
         ref={youtubeSecRef}
         className="relative py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
-        
-        <div className="container-main relative max-w-7xl">
+
+        <div className="mx-auto max-w-7xl px-4 relative">
           <div className="text-center mb-8 md:mb-12">
             <div className="inline-flex items-center gap-3 mb-3">
               <div className="h-px w-8 bg-[#2596be]/30" />
@@ -217,53 +217,74 @@ export default function Home() {
               </span>
               <div className="h-px w-8 bg-[#2596be]/30" />
             </div>
-
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               YouTube Originals
             </h2>
-
             <p className="text-gray-600 text-sm font-light">
               유튜브 오리지널부터 아티스트 채널까지, 에이비오미디어의 디지털 제작 라인업
             </p>
           </div>
 
-          <div className="space-y-8 md:space-y-12">
+          {/* 4열 그리드 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
 
-            {/* 정성호 배너 */}
-            <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-700 delay-[0ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-              <img
-                src="/정성호배너.png"
-                alt="정성호의 인력사무소"
-                className="w-full h-[120px] md:h-[200px] object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-8 py-3">
-                  <span className="text-white font-bold text-lg tracking-[0.2em] uppercase">Coming Soon</span>
-                </div>
-              </div>
+            {/* 이수경 */}
+            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+              style={{ transitionDelay: '0ms' }}>
+              <a href="https://www.youtube.com/@sookyung.yi_career" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                <img
+                  src="/이수경배너.png"
+                  alt="이수경"
+                  className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+              </a>              
             </div>
 
-            {/* 지상렬 배너 */}
-            <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[200ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-              <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block">
+            {/* 정성호 */}
+            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+              style={{ transitionDelay: '100ms' }}>
+              <a href="https://www.youtube.com/@알바_정" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <img
-                  src="/지상렬배너.png"
-                  alt="지상렬 대리점"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="/정성호배너.png"
+                  alt="정성호의 인력사무소"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
               </a>
             </div>
 
-            {/* 한그루 배너 */}
-            <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[400ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-              <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block">
+            {/* 지상렬 */}
+            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+              style={{ transitionDelay: '200ms' }}>
+              <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                <img
+                  src="/지상렬배너.jpg"
+                  alt="지상렬 대리점"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
+                  <span className="text-[10px] text-white/70 tracking-widest uppercase">YouTube</span>
+                  <p className="text-white font-bold text-sm mt-0.5">지상렬 대리점</p>
+                </div>
+              </a>
+            </div>
+
+            {/* 한그루 */}
+            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+              style={{ transitionDelay: '300ms' }}>
+              <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <img
                   src="/한그루배너.png"
-                  alt="한그루 - 그루나까 말이야"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                  alt="한그루 - 그루니까 말이야"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
+                  <span className="text-[10px] text-white/70 tracking-widest uppercase">YouTube</span>
+                  <p className="text-white font-bold text-sm mt-0.5">그루니까 말이야</p>
+                </div>
               </a>
             </div>
 

@@ -56,7 +56,18 @@
     --muted: #9ca3af;
   }
 }
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 
+.animate-scroll {
+  animation: scroll 12s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
 /* ========================================
    기본 스타일
    ======================================== */

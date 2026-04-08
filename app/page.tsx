@@ -225,70 +225,49 @@ export default function Home() {
             </p>
           </div>
 
-          {/* 4열 그리드 */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+          {/* 4열 그리드 → 자동 스크롤로 교체 */}
+<div className="overflow-hidden">
+  <div className="flex gap-4 md:gap-8 animate-scroll">
+    {/* 카드 2번 반복 (무한 루프 효과) */}
+    {[...Array(2)].map((_, setIdx) => (
+      <div key={setIdx} className="flex gap-4 md:gap-8 shrink-0">
+        
+        {/* 이수경 */}
+        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+          <a href="https://www.youtube.com/@sookyung.yi_career" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+            <img src="/이수경배너.png" alt="이수경" className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+          </a>
+        </div>
 
-            {/* 이수경 */}
-            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-              style={{ transitionDelay: '0ms' }}>
-              <a href="https://www.youtube.com/@sookyung.yi_career" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                <img
-                  src="/이수경배너.png"
-                  alt="이수경"
-                  className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-              </a>              
-            </div>
+        {/* 정성호 */}
+        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg transition-all duration-500">
+          <a href="https://www.youtube.com/@알바_정" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+            <img src="/정성호배너.png" alt="정성호의 인력사무소" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+          </a>
+        </div>
 
-            {/* 정성호 */}
-            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-              style={{ transitionDelay: '100ms' }}>
-              <a href="https://www.youtube.com/@알바_정" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                <img
-                  src="/정성호배너.png"
-                  alt="정성호의 인력사무소"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-              </a>
-            </div>
+        {/* 지상렬 */}
+        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+          <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+            <img src="/지상렬배너.jpg" alt="지상렬 대리점" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+          </a>
+        </div>
 
-            {/* 지상렬 */}
-            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-              style={{ transitionDelay: '200ms' }}>
-              <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                <img
-                  src="/지상렬배너.jpg"
-                  alt="지상렬 대리점"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
-                  <span className="text-[10px] text-white/70 tracking-widest uppercase">YouTube</span>
-                  <p className="text-white font-bold text-sm mt-0.5">지상렬 대리점</p>
-                </div>
-              </a>
-            </div>
+        {/* 한그루 */}
+        <div className="group relative w-[200px] md:w-[280px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+          <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+            <img src="/한그루배너.png" alt="한그루 - 그루니까 말이야" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+          </a>
+        </div>
 
-            {/* 한그루 */}
-            <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-              style={{ transitionDelay: '300ms' }}>
-              <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                <img
-                  src="/한그루배너.png"
-                  alt="한그루 - 그루니까 말이야"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
-                  <span className="text-[10px] text-white/70 tracking-widest uppercase">YouTube</span>
-                  <p className="text-white font-bold text-sm mt-0.5">그루니까 말이야</p>
-                </div>
-              </a>
-            </div>
-
-          </div>
+      </div>
+    ))}
+  </div>
+</div>
         </div>
       </section>
 
@@ -358,7 +337,7 @@ export default function Home() {
                       )}
 
                       {logoUrl && (
-                        <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
+                        <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm hidden md:block">
                           <img
                             src={logoUrl}
                             alt={work.client?.name ?? ""}

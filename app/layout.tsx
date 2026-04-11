@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
   // B안: 완전 한글
   title: {
-    default: "에이비오미디어 - 콘텐츠로 사람과 시장을 연결합니다",
+    default: "에이비오미디어",
     template: "%s | 에이비오미디어",
   },
 
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
 
     // OG도 한글로
-    title: "에이비오미디어 - 콘텐츠로 사람과 시장을 연결합니다",
+    title: "에이비오미디어",
     description:
       "예능·리얼리티·음악 등 방송/디지털 콘텐츠를 기획·제작하는 종합 미디어 기업",
     siteName: "에이비오미디어",

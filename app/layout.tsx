@@ -96,6 +96,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
+
+        <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "에이비오미디어",
+        alternateName: "ABO MEDIA",
+        url: SITE_URL,
+      }),
+    }}
+  />
       </head>
 
       <body className="min-h-dvh flex flex-col bg-background text-foreground antialiased">

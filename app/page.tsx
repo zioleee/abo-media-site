@@ -182,15 +182,40 @@ export default function Home() {
   const lineup2025Ref = useRef<HTMLElement>(null);
   const youtubeSecRef = useRef<HTMLElement>(null);
 
-  const works2025 = allWorks
-    .filter(w => Number(w.year) === 2025)
-    .sort((a, b) => {
-      const aKey = a.client?.logo?.url ?? a.client?.name ?? "";
-      const bKey = b.client?.logo?.url ?? b.client?.name ?? "";
-      const keyCompare = aKey.localeCompare(bKey);
-      if (keyCompare !== 0) return keyCompare;
-      return a.title.localeCompare(b.title);
-    });
+  const WORK_ORDER = [
+  "namgyeoseo-mwohage",
+  "sagikkundeul",
+  "beolgeobeoseun-segyesa25",
+  "beolgeobeoseun-hanguksa2",
+  "nunan-naege-yeojaya",
+  "solloraseo-sijeun2",        // 6번째로 이동
+  "ijen-saranghal-su-isseulkka25",
+  "jalsaenggin-teurot",        // 8번째로 이동
+  "neujgi-jeone-eohagyeonsu-syallasyalla",
+  "hankkihapsyo",
+  "oraedoen-mannam-chugu-1gi",
+  "yubyeolnan-yeoksa-han-kki",
+  "baedarwasssuda",
+  "naepyeonhaja4",
+  "ijanguui-duyunojipbap",
+  "1ho-ga-doel-sun-eopseo-2",
+];
+
+const works2025 = allWorks
+  .filter(w =>
+    (Number(w.year) === 2025 || Number(w.year) === 2026) &&
+    w.slug !== "baeckupjjari-achimsiksa" &&
+    w.slug !== "beolgeobeoseun-segyesa26" &&
+    w.slug !== "namgyeoseo-mwohage26"
+  )
+  .sort((a, b) => {
+    const ai = WORK_ORDER.indexOf(a.slug);
+    const bi = WORK_ORDER.indexOf(b.slug);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
 
   useEffect(() => {
     getAllWorks().then(setAllWorks);
@@ -323,8 +348,8 @@ export default function Home() {
     <MobileCarousel />
 
     {/* 데스크탑: 4열 그리드 */}
-    <div className="hidden md:block mx-auto max-w-7xl px-4">
-      <div className="grid grid-cols-4 gap-8">
+    <div className="hidden md:block mx-auto max-w-[92%] px-4">
+  <div className="grid grid-cols-4 gap-4">
 
         {/* 이수경 */}
         <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}

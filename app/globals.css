@@ -237,3 +237,9 @@ html {
 .animate-scale-in {
   animation: scaleIn 0.4s ease-out forwards;
 }
+
+/* ========================================
+   Scrollbar Hide
+   ======================================== */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

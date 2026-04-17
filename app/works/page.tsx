@@ -2,7 +2,7 @@
 'use client'
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GraphQLClient, gql } from "graphql-request";
 
 const client = new GraphQLClient(process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT as string, {
@@ -48,6 +48,77 @@ async function getWorks(): Promise<Work[]> {
   }
 }
 
+function MobileYearRow({ year, works }: { year: string; works: Work[] }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div className="py-5">
+      <div className="px-4 mb-3">
+        <span className="text-2xl font-bold text-gray-900">{year}</span>
+      </div>
+
+      <div className="overflow-x-auto scrollbar-hide">
+        <div
+          ref={scrollRef}
+          className="flex gap-3 w-max pl-4 pr-4"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
+          {works.map((w) => {
+            const img = Array.isArray(w.coverImage) ? w.coverImage[0] : w.coverImage;
+            return (
+              <div
+                key={w.id}
+                className="group flex-shrink-0 w-[42vw]"
+                style={{ scrollSnapAlign: "start" }}
+              >
+                <div className="relative aspect-[2/3] bg-gray-100 rounded-xl overflow-hidden mb-2">
+                  {img?.url ? (
+                    <Image
+                      src={img.url}
+                      alt={w.title}
+                      fill
+                      sizes="42vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                <h2 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug mb-1">
+                  {w.title}
+                </h2>
+
+                {w.client?.name && (
+                  <div className="flex items-center gap-1">
+                    {w.client.logo?.url && (
+                      <div className="relative w-6 h-6 flex-shrink-0">
+                        <Image
+                          src={w.client.logo.url}
+                          alt={w.client.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    )}
+                    <span className="text-xs text-gray-500 truncate">
+                      {w.client.name}
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function WorksPage() {
   const [works, setWorks] = useState<Work[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("전체");
@@ -56,14 +127,20 @@ export default function WorksPage() {
     getWorks().then(setWorks);
   }, []);
 
-  // 연도 목록 추출
   const years = ["전체", ...Array.from(new Set(works.map(w => w.year.toString()))).sort((a, b) => Number(b) - Number(a))];
 
-  // 필터링 (연도만)
-  const filteredWorks = works.filter(w => {
-    const yearMatch = selectedYear === "전체" || w.year.toString() === selectedYear;
-    return yearMatch;
-  });
+  const filteredWorks = works.filter(w =>
+    selectedYear === "전체" || w.year.toString() === selectedYear
+  );
+
+  // 모바일용 연도별 그룹핑
+  const yearGroups = works.reduce<Record<string, Work[]>>((acc, w) => {
+    const y = w.year.toString();
+    if (!acc[y]) acc[y] = [];
+    acc[y].push(w);
+    return acc;
+  }, {});
+  const sortedYears = Object.keys(yearGroups).sort((a, b) => Number(b) - Number(a));
 
   return (
     <main className="bg-white">
@@ -73,18 +150,15 @@ export default function WorksPage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">WORKS</h1>
-              <p className="text-lg text-white/90">
-                에이비오미디어의 작품을 소개합니다
-              </p>
+              <p className="text-lg text-white/90">에이비오미디어의 작품을 소개합니다</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Filter Section (연도만 남김) */}
-      <section className="py-8 bg-gray-50 border-b border-gray-200">
+      {/* ── 데스크탑 전용 필터 (md 이상) ── */}
+      <section className="hidden md:block py-8 bg-gray-50 border-b border-gray-200">
         <div className="container-main">
-          {/* 연도 필터 */}
           <div className="max-w-4xl">
             <label className="block text-sm font-semibold text-gray-700 mb-3">연도</label>
             <div className="flex flex-wrap gap-2">
@@ -108,8 +182,8 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* Works Grid */}
-      <section className="py-16 md:py-20">
+      {/* ── 데스크탑 전용 그리드 (md 이상) ── */}
+      <section className="hidden md:block py-16 md:py-20">
         <div className="container-main">
           {filteredWorks.length === 0 ? (
             <div className="text-center py-20">
@@ -122,23 +196,21 @@ export default function WorksPage() {
               <p className="text-gray-600">다른 연도를 선택해주세요</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredWorks.map((w) => {
                 const img = Array.isArray(w.coverImage) ? w.coverImage[0] : w.coverImage;
-
                 return (
                   <div
                     key={w.id}
                     className="group bg-white rounded-xl border-2 border-gray-100 overflow-hidden hover:border-[#2596be]/30 hover:shadow-brand transition-all"
                   >
-                    {/* 이미지 영역 */}
                     <div className="relative aspect-[2/3] bg-gray-100 overflow-hidden">
                       {img?.url ? (
                         <Image
                           src={img.url}
                           alt={w.title}
                           fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
@@ -151,8 +223,6 @@ export default function WorksPage() {
                           </div>
                         </div>
                       )}
-
-                      {/* 연도/카테고리 배지 (카테고리는 카드 안에서만 유지) */}
                       <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
                         <span className="px-2 py-1 rounded-md text-xs font-semibold bg-white/90 text-gray-900 backdrop-blur-sm">
                           {w.year}
@@ -162,30 +232,19 @@ export default function WorksPage() {
                         </span>
                       </div>
                     </div>
-
-                    {/* 정보 영역 */}
                     <div className="p-4">
                       <h2 className="font-bold text-gray-900 line-clamp-2 mb-2 min-h-[3rem]">
                         {w.title}
                       </h2>
-
-                      {/* 클라이언트 정보 */}
                       {w.client?.name && (
                         <div className="mt-3 pt-3 border-t border-gray-100">
                           <div className="flex items-center gap-2">
                             {w.client.logo?.url && (
                               <div className="relative w-6 h-6 flex-shrink-0">
-                                <Image
-                                  src={w.client.logo.url}
-                                  alt={w.client.name}
-                                  fill
-                                  className="object-contain"
-                                />
+                                <Image src={w.client.logo.url} alt={w.client.name} fill className="object-contain" />
                               </div>
                             )}
-                            <span className="text-sm text-gray-600 truncate">
-                              {w.client.name}
-                            </span>
+                            <span className="text-sm text-gray-600 truncate">{w.client.name}</span>
                           </div>
                         </div>
                       )}
@@ -197,6 +256,13 @@ export default function WorksPage() {
           )}
         </div>
       </section>
+
+      {/* ── 모바일 전용 연도별 가로 스크롤 (md 미만) ── */}
+      <div className="md:hidden divide-y divide-gray-100 py-4">
+        {sortedYears.map((year) => (
+          <MobileYearRow key={year} year={year} works={yearGroups[year]} />
+        ))}
+      </div>
     </main>
   );
 }

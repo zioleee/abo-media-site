@@ -63,6 +63,102 @@ async function getAllWorks(): Promise<Work[]> {
   }
 }
 
+// ===== Mobile Carousel =====
+const YOUTUBE_CARDS = [
+  { href: "https://www.youtube.com/@sookyung.yi_career", src: "/이수경배너.png", alt: "Lee Sookyung", objPos: "object-top" },
+  { href: "https://www.youtube.com/@알바_정", src: "/정성호배너.png", alt: "Jung Sung-ho's Employment Agency", objPos: "" },
+  { href: "https://www.youtube.com/@Ji_Daeri", src: "/지상렬배너.jpg", alt: "Ji Sang-ryul Agency", objPos: "" },
+  { href: "https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS", src: "/한그루배너.png", alt: "Han Gru - Because It's Gru", objPos: "" },
+];
+
+function MobileCarousel() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const animRef = useRef<number>(0);
+  const posRef = useRef(0);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startPos = useRef(0);
+
+  const cards = [...YOUTUBE_CARDS, ...YOUTUBE_CARDS];
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const SPEED = 1.5;
+
+    const tick = () => {
+      if (!isDragging.current) {
+        const halfWidth = track.scrollWidth / 2;
+        posRef.current += SPEED;
+        if (posRef.current >= halfWidth) posRef.current = 0;
+        track.style.transform = `translateX(-${posRef.current}px)`;
+      }
+      animRef.current = requestAnimationFrame(tick);
+    };
+
+    animRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    isDragging.current = true;
+    startX.current = e.touches[0].clientX;
+    startPos.current = posRef.current;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    const delta = startX.current - e.touches[0].clientX;
+    posRef.current = Math.max(0, startPos.current + delta);
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translateX(-${posRef.current}px)`;
+    }
+  };
+
+  const onTouchEnd = () => {
+    isDragging.current = false;
+  };
+
+  return (
+    <div
+      className="md:hidden overflow-hidden select-none"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      <div
+        ref={trackRef}
+        className="flex gap-3 px-4 will-change-transform"
+        style={{ width: "max-content" }}
+      >
+        {cards.map((card, idx) => (
+          <a
+            key={idx}
+            href={card.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative w-[220px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg"
+            onClick={(e) => {
+              if (Math.abs(posRef.current - startPos.current) > 8) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <img
+              src={card.src}
+              alt={card.alt}
+              draggable={false}
+              className={`absolute inset-0 w-full h-full object-cover ${card.objPos}`}
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+// ===== Mobile Carousel End =====
+
 // Hygraph image optimization
 function optimizeHygraphImage(url: string, width: number = 400): string {
   if (!url) return url;
@@ -73,71 +169,57 @@ function optimizeHygraphImage(url: string, width: number = 400): string {
   return url;
 }
 
-// 2025 program data - 1 program (mirroring KO)
-const programs = [
-  {
-    id: 'nunan',
-    title: "Noona, You're My Woman",
-    description: "Beyond the real-world barrier of age gaps—bold and honest older-woman/younger-man couples reignite their love cells in a provocative, sincere reality romance.",
-    video: '/nunan-trailer.mp4'
-  }
-];
-
 export default function EnHome() {
   const [allWorks, setAllWorks] = useState<Work[]>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   // Intersection Observer states
   const [aboutInView, setAboutInView] = useState(false);
   const [lineup2025InView, setLineup2025InView] = useState(false);
-  const [youtubeInView, setYoutubeInView] = useState(false); // banner section
+  const [youtubeInView, setYoutubeInView] = useState(false);
 
   const aboutRef = useRef<HTMLElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
-  const comingSoonRef = useRef<HTMLElement>(null);
   const lineup2025Ref = useRef<HTMLElement>(null);
-  const videoRef1 = useRef<HTMLVideoElement>(null);
-  const youtubeSecRef = useRef<HTMLElement>(null); // banner section
+  const youtubeSecRef = useRef<HTMLElement>(null);
+
+  const WORK_ORDER = [
+    "namgyeoseo-mwohage",
+    "sagikkundeul",
+    "beolgeobeoseun-segyesa25",
+    "beolgeobeoseun-hanguksa2",
+    "nunan-naege-yeojaya",
+    "solloraseo-sijeun2",
+    "ijen-saranghal-su-isseulkka25",
+    "jalsaenggin-teurot",
+    "neujgi-jeone-eohagyeonsu-syallasyalla",
+    "hankkihapsyo",
+    "oraedoen-mannam-chugu-1gi",
+    "yubyeolnan-yeoksa-han-kki",
+    "baedarwasssuda",
+    "naepyeonhaja4",
+    "ijanguui-duyunojipbap",
+    "1ho-ga-doel-sun-eopseo-2",
+  ];
 
   const works2025 = allWorks
-    .filter(w => Number(w.year) === 2025)
+    .filter(w =>
+      (Number(w.year) === 2025 || Number(w.year) === 2026) &&
+      w.slug !== "baeckupjjari-achimsiksa" &&
+      w.slug !== "beolgeobeoseun-segyesa26" &&
+      w.slug !== "namgyeoseo-mwohage26"
+    )
     .sort((a, b) => {
-      const aKey = a.client?.logo?.url ?? a.client?.name ?? "";
-      const bKey = b.client?.logo?.url ?? b.client?.name ?? "";
-      const keyCompare = aKey.localeCompare(bKey);
-      if (keyCompare !== 0) return keyCompare;
-      return a.title.localeCompare(b.title);
+      const ai = WORK_ORDER.indexOf(a.slug);
+      const bi = WORK_ORDER.indexOf(b.slug);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
     });
 
   useEffect(() => {
     getAllWorks().then(setAllWorks);
     setIsVisible(true);
-
-    const handleScroll = () => {
-      if (!heroRef.current || !comingSoonRef.current) return;
-
-      const HEADER_H = 80;
-      const heroBottom = heroRef.current.offsetHeight;
-      const scrolled = window.scrollY;
-      const comingSoonTop = comingSoonRef.current.offsetTop;
-
-      const transitionStart = heroBottom * 0.3;
-      const transitionEnd = comingSoonTop - HEADER_H;
-      const denom = Math.max(1, transitionEnd - transitionStart);
-
-      if (scrolled < transitionStart) {
-        setScrollProgress(0);
-      } else if (scrolled > transitionEnd) {
-        setScrollProgress(1);
-      } else {
-        const progress = (scrolled - transitionStart) / denom;
-        setScrollProgress(progress);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
 
     const observerOptions = {
       threshold: 0.1,
@@ -167,7 +249,6 @@ export default function EnHome() {
     if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       aboutObserver.disconnect();
       lineup2025Observer.disconnect();
       youtubeObserver.disconnect();
@@ -178,12 +259,7 @@ export default function EnHome() {
     <main className="overflow-x-hidden">
       {/* HERO - Company Introduction Video */}
       <section
-        ref={heroRef}
         className="relative overflow-hidden min-h-screen flex items-center justify-center"
-        style={{
-          opacity: 1 - scrollProgress * 0.5,
-          transform: `scale(${1 - scrollProgress * 0.1})`,
-        }}
       >
         <video
           autoPlay
@@ -207,72 +283,6 @@ export default function EnHome() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
-          </div>
-        </div>
-      </section>
-
-      {/* 2025 Program Preview */}
-      <section
-        ref={comingSoonRef}
-        className="relative overflow-hidden min-h-screen flex items-center justify-center"
-        style={{
-          opacity: scrollProgress,
-        }}
-      >
-        {/* Background video */}
-        <video
-          ref={videoRef1}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 size-full object-cover"
-        >
-          <source src={programs[0].video} type="video/mp4" />
-        </video>
-
-        {/* Dark overlay */}
-        <div
-          className="absolute inset-0 bg-black"
-          style={{
-            opacity: Math.max(0, 1 - scrollProgress * 1.5),
-          }}
-        />
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
-
-        {/* Program info */}
-        <div
-          className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:right-16 md:translate-x-0 w-[90%] md:w-auto max-w-md z-20 transition-all duration-700"
-          style={{
-            opacity: scrollProgress * 0.85,
-          }}
-        >
-          <div className="bg-white/25 backdrop-blur-md rounded-2xl p-6 border border-white/30">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-lg">
-              {programs[0].title}
-            </h2>
-            <p className="text-sm text-white/85 leading-relaxed line-clamp-4 font-medium">
-              {programs[0].description}
-            </p>
-          </div>
-        </div>
-
-        {/* ABO Media watermark */}
-        <div
-          className="absolute bottom-8 right-8 z-10"
-          style={{
-            opacity: scrollProgress,
-          }}
-        >
-          <div className="text-right">
-            <div className="text-white/90 text-sm font-medium mb-1 tracking-wide">
-              ABO Media
-            </div>
-            <div className="text-white/60 text-xs tracking-wider">
-              2025
-            </div>
           </div>
         </div>
       </section>
@@ -317,9 +327,8 @@ export default function EnHome() {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
 
-        <div className="container-main relative max-w-7xl">
-          {/* Section title */}
-          <div className="text-center mb-8 md:mb-12">
+        <div className="relative">
+          <div className="text-center mb-8 md:mb-12 px-4">
             <div className="inline-flex items-center gap-3 mb-3">
               <div className="h-px w-8 bg-[#2596be]/30" />
               <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
@@ -327,56 +336,62 @@ export default function EnHome() {
               </span>
               <div className="h-px w-8 bg-[#2596be]/30" />
             </div>
-
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               YouTube Originals
             </h2>
-
             <p className="text-gray-600 text-sm font-light">
               From YouTube originals to artist channels — ABO Media's digital content lineup
             </p>
           </div>
 
-          <div className="space-y-8 md:space-y-12">
+          {/* Mobile: auto-scroll + swipe */}
+          <MobileCarousel />
 
-            {/* Jungsung-ho Banner */}
-            <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-700 delay-[0ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-              <img
-                src="/정성호배너.png"
-                alt="Jungsung-ho's Employment Agency"
-                className="w-full h-[120px] md:h-[200px] object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-8 py-3">
-                  <span className="text-white font-bold text-lg tracking-[0.2em] uppercase">Coming Soon</span>
-                </div>
+          {/* Desktop: 4-column grid */}
+          <div className="hidden md:block mx-auto max-w-[92%] px-4">
+            <div className="grid grid-cols-4 gap-4">
+
+              {/* Lee Sookyung */}
+              <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                style={{ transitionDelay: '0ms' }}>
+                <a href="https://www.youtube.com/@sookyung.yi_career" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                  <img src="/이수경배너.png" alt="Lee Sookyung"
+                    className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                </a>
               </div>
-            </div>
 
-            {/* Ji Sang-ryul Banner */}
-            <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[200ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-              <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block">
-                <img
-                  src="/지상렬배너.png"
-                  alt="Ji Sang-ryul Agency"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </a>
-            </div>
+              {/* Jung Sung-ho */}
+              <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                style={{ transitionDelay: '100ms' }}>
+                <a href="https://www.youtube.com/@알바_정" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                  <img src="/정성호배너.png" alt="Jung Sung-ho's Employment Agency"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                </a>
+              </div>
 
-            {/* Han Gru Banner */}
-            <div className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 delay-[400ms] ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
-              <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block">
-                <img
-                  src="/한그루배너.png"
-                  alt="Han Gru - Because It's Gru"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </a>
-            </div>
+              {/* Ji Sang-ryul */}
+              <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                style={{ transitionDelay: '200ms' }}>
+                <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                  <img src="/지상렬배너.jpg" alt="Ji Sang-ryul Agency"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                </a>
+              </div>
 
+              {/* Han Gru */}
+              <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                style={{ transitionDelay: '300ms' }}>
+                <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                  <img src="/한그루배너.png" alt="Han Gru - Because It's Gru"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                </a>
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
@@ -408,7 +423,6 @@ export default function EnHome() {
             </p>
           </div>
 
-          {/* Always render: toggle visibility only via inView */}
           <div
             className={[
               "transition-all duration-700",
@@ -448,7 +462,7 @@ export default function EnHome() {
                       )}
 
                       {logoUrl && (
-                        <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm">
+                        <div className="absolute bottom-1.5 right-1.5 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-md p-1 shadow-sm hidden md:block">
                           <img
                             src={logoUrl}
                             alt={work.client?.name ?? ""}

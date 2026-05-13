@@ -116,7 +116,7 @@ export default function About() {
   return (
     <main className="bg-white">
       {/* Hero Section */}
-     <section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white py-20">
+      <section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white py-16 md:py-20">
         <div className="container-main">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">ABOUT</h1>
           <p className="text-lg text-white/90">
@@ -126,7 +126,7 @@ export default function About() {
       </section>
 
       {/* ABO Identity Section */}
-      <section className="relative bg-[#0A0F1A] text-white py-32 overflow-hidden border-t border-white/5">
+      <section className="relative bg-[#0A0F1A] text-white py-16 md:py-32 overflow-hidden border-t border-white/5">
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
           <div className="absolute top-[10%] right-[20%] w-96 h-96 bg-[#2596be]/30 rounded-full blur-3xl" />
           <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-[#3db3d9]/20 rounded-full blur-3xl" />
@@ -134,173 +134,165 @@ export default function About() {
 
         <div className="relative container-main max-w-7xl">
           {/* Section Title */}
-          <div className="mb-24">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">Our Identity</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
-            <p className="mt-6 text-xl text-white/60">
+          <div className="mb-10 md:mb-24">
+            <h2 className="text-4xl md:text-6xl font-bold mb-5 md:mb-6">
+              Our Identity
+            </h2>
+            <div className="w-20 md:w-24 h-1 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
+            <p className="mt-5 md:mt-6 text-base md:text-xl text-white/60 leading-relaxed">
               ABO MEDIA는 세 가지 핵심 가치로 콘텐츠를 창조합니다
             </p>
           </div>
 
           {/* ABO Grid */}
-          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-            {/* A - Ability */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#2596be]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative border border-white/10 rounded-3xl p-10 lg:p-12 hover:border-[#2596be]/50 transition-all duration-500">
-                <div className="mb-8">
-                  <span className="text-8xl font-black text-white/10 group-hover:text-[#2596be]/30 transition-colors duration-500">
-                    A
-                  </span>
-                </div>
-                <h3 className="text-3xl font-bold mb-4 tracking-tight">
-                  <span className="text-[#3db3d9]">A</span>BILITY
-                </h3>
-                <p className="text-white/60 leading-relaxed text-lg">
-                  재능과 실력을 겸비한<br />
-                  <span className="text-white/90 font-semibold">우수한 제작진</span>
-                </p>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 lg:gap-12">
+            {[
+              {
+                letter: "A",
+                word: "ABILITY",
+                desc1: "재능과 실력을 겸비한",
+                desc2: "우수한 제작진",
+              },
+              {
+                letter: "B",
+                word: "BRILLIANT",
+                desc1: "우수하고 성공적인",
+                desc2: "성과와 제작 이력",
+              },
+              {
+                letter: "O",
+                word: "ORIGINALITY",
+                desc1: "독창적인 아이디어가",
+                desc2: "가득한 연출과 기획력",
+              },
+            ].map((item) => (
+              <div key={item.letter} className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2596be]/10 to-transparent rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className="relative border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-10 lg:p-12 hover:border-[#2596be]/50 transition-all duration-500">
+                  <div className="flex items-start gap-5 md:block">
+                    <div className="shrink-0 md:mb-8">
+                      <span className="text-5xl md:text-8xl font-black text-white/10 group-hover:text-[#2596be]/30 transition-colors duration-500 leading-none">
+                        {item.letter}
+                      </span>
+                    </div>
 
-            {/* B - Brilliant */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#2596be]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative border border-white/10 rounded-3xl p-10 lg:p-12 hover:border-[#2596be]/50 transition-all duration-500">
-                <div className="mb-8">
-                  <span className="text-8xl font-black text-white/10 group-hover:text-[#2596be]/30 transition-colors duration-500">
-                    B
-                  </span>
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 tracking-tight">
+                        <span className="text-[#3db3d9]">{item.letter}</span>
+                        {item.word.slice(1)}
+                      </h3>
+                      <p className="text-white/60 leading-relaxed text-base md:text-lg">
+                        {item.desc1}<br />
+                        <span className="text-white/90 font-semibold">{item.desc2}</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-3xl font-bold mb-4 tracking-tight">
-                  <span className="text-[#3db3d9]">B</span>RILLIANT
-                </h3>
-                <p className="text-white/60 leading-relaxed text-lg">
-                  우수하고 성공적인<br />
-                  <span className="text-white/90 font-semibold">성과와 제작 이력</span>
-                </p>
               </div>
-            </div>
-
-            {/* O - Originality */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#2596be]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative border border-white/10 rounded-3xl p-10 lg:p-12 hover:border-[#2596be]/50 transition-all duration-500">
-                <div className="mb-8">
-                  <span className="text-8xl font-black text-white/10 group-hover:text-[#2596be]/30 transition-colors duration-500">
-                    O
-                  </span>
-                </div>
-                <h3 className="text-3xl font-bold mb-4 tracking-tight">
-                  <span className="text-[#3db3d9]">O</span>RIGINALITY
-                </h3>
-                <p className="text-white/60 leading-relaxed text-lg">
-                  독창적인 아이디어가<br />
-                  <span className="text-white/90 font-semibold">가득한 연출과 기획력</span>
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Bottom Message */}
-          <div className="mt-24 text-center max-w-3xl mx-auto">
-            <p className="text-xl md:text-2xl text-white/80 leading-relaxed">
-              에이비오미디어는 <span className="text-[#3db3d9] font-bold">재능</span>, <span className="text-[#3db3d9] font-bold">성과</span>, <span className="text-[#3db3d9] font-bold">독창성</span>을 바탕으로<br className="hidden md:block" />
+          <div className="mt-12 md:mt-24 text-left md:text-center max-w-3xl mx-auto">
+            <p className="text-base md:text-2xl text-white/80 leading-relaxed">
+              에이비오미디어는 <span className="text-[#3db3d9] font-bold">재능</span>,{" "}
+              <span className="text-[#3db3d9] font-bold">성과</span>,{" "}
+              <span className="text-[#3db3d9] font-bold">독창성</span>을 바탕으로
+              <br className="hidden md:block" />
               시청자에게 감동과 즐거움을 선사하는 콘텐츠를 만듭니다.
             </p>
           </div>
         </div>
       </section>
 
-     {/* History Timeline */}
-<section className="relative py-32 bg-white border-t border-gray-100">
-  <div className="container-main">
-    {/* Title */}
-    <div className="mb-28">
-      <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-        HISTORY
-      </h2>
-      <div className="w-24 h-1 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
-    </div>
-
-    {/* Cards Grid */}
-    {/* 핵심: 위로 올라가는 커넥터를 위한 공간 */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-28 pt-24">
-      {historyData.map((item) => (
-        <div key={item.year} className="relative group">
-          {/* Connector (Desktop only) */}
-          <div className="hidden lg:flex pointer-events-none absolute left-1/2 -translate-x-1/2 -top-24 z-0 flex-col items-center">
-            <div className="w-2 h-2 rounded-full bg-[#2596be] group-hover:scale-150 transition-transform duration-300" />
-            <div className="mt-3 h-20 w-px bg-[#2596be]/30" />
+      {/* History Timeline */}
+      <section className="relative py-16 md:py-32 bg-white border-t border-gray-100">
+        <div className="container-main">
+          {/* Title */}
+          <div className="mb-10 md:mb-28">
+            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-5 md:mb-6">
+              HISTORY
+            </h2>
+            <div className="w-20 md:w-24 h-1 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
           </div>
 
-          {/* Card */}
-          <div className="relative z-10 bg-white border border-gray-100 rounded-2xl p-10 hover:border-[#2596be]/30 hover:shadow-brand transition-all duration-300">
-            {/* Year */}
-            <div className="mb-10">
-              <h3 className="text-6xl font-bold text-[#2596be] tracking-tight mb-4">
-                {item.year}
-              </h3>
-              <div className="h-px w-12 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
-            </div>
-
-            {/* Events */}
-            <div className="space-y-7">
-              {item.events.map((event, eventIndex) => (
-                <div key={eventIndex}>
-                  <h4 className="text-sm font-bold text-gray-900 mb-2 tracking-wide">
-                    {event.network}
-                  </h4>
-                  {event.shows.length > 0 && (
-                    <div className="space-y-1">
-                      {event.shows.map((show, showIndex) => (
-                        <p
-                          key={showIndex}
-                          className="text-sm text-gray-600 leading-relaxed"
-                        >
-                          {show}
-                        </p>
-                      ))}
-                    </div>
-                  )}
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-x-8 md:gap-y-28 md:pt-24">
+            {historyData.map((item) => (
+              <div key={item.year} className="relative group">
+                {/* Connector (Desktop only) */}
+                <div className="hidden lg:flex pointer-events-none absolute left-1/2 -translate-x-1/2 -top-24 z-0 flex-col items-center">
+                  <div className="w-2 h-2 rounded-full bg-[#2596be] group-hover:scale-150 transition-transform duration-300" />
+                  <div className="mt-3 h-20 w-px bg-[#2596be]/30" />
                 </div>
-              ))}
-            </div>
+
+                {/* Card */}
+                <div className="relative z-10 bg-white border border-gray-100 rounded-2xl p-6 md:p-10 hover:border-[#2596be]/30 hover:shadow-brand transition-all duration-300">
+                  {/* Year */}
+                  <div className="mb-5 md:mb-10">
+                    <h3 className="text-4xl md:text-6xl font-bold text-[#2596be] tracking-tight mb-3 md:mb-4">
+                      {item.year}
+                    </h3>
+                    <div className="h-px w-12 bg-gradient-to-r from-[#2596be] to-[#3db3d9]" />
+                  </div>
+
+                  {/* Events */}
+                  <div className="space-y-4 md:space-y-7">
+                    {item.events.map((event, eventIndex) => (
+                      <div key={eventIndex}>
+                        <h4 className="text-sm font-bold text-gray-900 mb-1.5 md:mb-2 tracking-wide">
+                          {event.network}
+                        </h4>
+                        {event.shows.length > 0 && (
+                          <div className="space-y-1">
+                            {event.shows.map((show, showIndex) => (
+                              <p
+                                key={showIndex}
+                                className="text-sm text-gray-600 leading-relaxed"
+                              >
+                                {show}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
-
+      </section>
 
       {/* Stats Section */}
-      <section className="py-24 bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9]">
+      <section className="py-16 md:py-24 bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9]">
         <div className="container-main">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-16">
             <div className="text-center group">
-              <div className="text-6xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
+              <div className="text-5xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
                 7+
               </div>
-              <p className="text-white/70 text-sm tracking-[0.2em] uppercase">Years</p>
+              <p className="text-white/70 text-xs md:text-sm tracking-[0.2em] uppercase">Years</p>
             </div>
             <div className="text-center group">
-              <div className="text-6xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
+              <div className="text-5xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
                 70+
               </div>
-              <p className="text-white/70 text-sm tracking-[0.2em] uppercase">Programs</p>
+              <p className="text-white/70 text-xs md:text-sm tracking-[0.2em] uppercase">Programs</p>
             </div>
             <div className="text-center group">
-              <div className="text-6xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
+              <div className="text-5xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
                 15+
               </div>
-              <p className="text-white/70 text-sm tracking-[0.2em] uppercase">Partners</p>
+              <p className="text-white/70 text-xs md:text-sm tracking-[0.2em] uppercase">Partners</p>
             </div>
             <div className="text-center group">
-              <div className="text-6xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
+              <div className="text-5xl md:text-7xl font-bold mb-3 text-white group-hover:scale-110 transition-transform duration-300">
                 10+
               </div>
-              <p className="text-white/70 text-sm tracking-[0.2em] uppercase">Platforms</p>
+              <p className="text-white/70 text-xs md:text-sm tracking-[0.2em] uppercase">Platforms</p>
             </div>
           </div>
         </div>

@@ -8,18 +8,7 @@ type IconProps = { className?: string; strokeWidth?: number };
 
 function IconTv({ className, strokeWidth = 1.25 }: IconProps) {
   return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
       <path d="m17 2-5 5-5-5" />
       <rect width="20" height="15" x="2" y="7" rx="2" />
     </svg>
@@ -28,18 +17,7 @@ function IconTv({ className, strokeWidth = 1.25 }: IconProps) {
 
 function IconYoutube({ className, strokeWidth = 1.25 }: IconProps) {
   return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
       <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
       <path d="m10 15 5-3-5-3z" />
     </svg>
@@ -48,18 +26,7 @@ function IconYoutube({ className, strokeWidth = 1.25 }: IconProps) {
 
 function IconSparkles({ className, strokeWidth = 1.25 }: IconProps) {
   return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
       <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
       <path d="M20 3v4" />
       <path d="M22 5h-4" />
@@ -71,18 +38,7 @@ function IconSparkles({ className, strokeWidth = 1.25 }: IconProps) {
 
 function IconShoppingBag({ className, strokeWidth = 1.25 }: IconProps) {
   return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
       <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
       <path d="M3 6h18" />
       <path d="M16 10a4 4 0 0 1-8 0" />
@@ -211,12 +167,11 @@ export default function EnBusiness() {
       {/* ===== HERO ===== */}
       <section
         ref={heroRef}
-        className="relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-40"
+        className="relative overflow-hidden pt-18 pb-16 md:pt-36 md:pb-40"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(37,150,190,0.04),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(28,122,158,0.03),transparent_60%)]" />
 
-        {/* Background grid */}
         <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
           <div
             className="h-full w-full"
@@ -234,14 +189,14 @@ export default function EnBusiness() {
               heroInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
             }`}
           >
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6 md:mb-8">
               <div className="h-px w-12 bg-[#2596be]" />
               <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
                 Business Areas
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.95] text-gray-900 tracking-tight mb-8">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.95] text-gray-900 tracking-tight mb-6 md:mb-8">
               BUSINESS
             </h1>
 
@@ -253,18 +208,17 @@ export default function EnBusiness() {
               </p>
             </div>
 
-            {/* ===== Index list ===== */}
             <div
-              className={`mt-20 md:mt-32 pt-8 transition-all duration-1000 delay-300 ${
+              className={`mt-8 md:mt-32 pt-4 md:pt-8 transition-all duration-1000 delay-300 ${
                 heroInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
                 {businesses.map((b) => (
                   <a
                     key={b.id}
                     href={`#section-${b.id}`}
-                    className="group flex flex-col gap-3 cursor-pointer"
+                    className="group flex flex-col gap-2 md:gap-3 cursor-pointer"
                   >
                     <span className="text-sm md:text-base font-mono tracking-[0.2em] text-[#2596be] font-semibold">
                       {b.id}
@@ -281,17 +235,18 @@ export default function EnBusiness() {
         </div>
       </section>
 
-      {/* ===== BUSINESS SECTIONS (ZIGZAG) ===== */}
-      <section className="py-16 md:py-24">
+      {/* ===== BUSINESS SECTIONS ===== */}
+      <section className="py-8 md:py-24">
         <div className="container-main max-w-7xl">
           {businesses.map((business, index) => {
             const isReversed = index % 2 === 1;
+
             return (
               <div
                 key={business.id}
                 id={`section-${business.id}`}
                 ref={sectionRefs[index]}
-                className="relative py-16 md:py-32 scroll-mt-24"
+                className="relative py-10 md:py-32 scroll-mt-24"
               >
                 {index > 0 && (
                   <div className="absolute top-0 left-0 right-0 h-px bg-gray-100" />
@@ -304,15 +259,15 @@ export default function EnBusiness() {
                       : "opacity-0 translate-y-16"
                   }`}
                 >
-                  {/* Visual side */}
+                  {/* PC 전용 큰 비주얼 */}
                   <div
-                    className={`md:col-span-5 ${
+                    className={`hidden md:block md:col-span-5 ${
                       isReversed ? "md:order-2" : "md:order-1"
                     }`}
                   >
                     <div className="relative">
                       <div
-                        className="absolute -top-8 md:-top-16 -left-4 md:-left-8 text-[180px] md:text-[280px] font-bold leading-none text-gray-50 select-none pointer-events-none"
+                        className="absolute -top-16 -left-8 text-[280px] font-bold leading-none text-gray-50 select-none pointer-events-none"
                         aria-hidden
                       >
                         {business.id}
@@ -338,7 +293,7 @@ export default function EnBusiness() {
                           >
                             <BusinessIcon
                               id={business.id}
-                              className="w-20 h-20 md:w-28 md:h-28 text-[#1c7a9e]"
+                              className="w-28 h-28 text-[#1c7a9e]"
                               strokeWidth={1.25}
                             />
                           </div>
@@ -357,9 +312,24 @@ export default function EnBusiness() {
                       isReversed ? "md:order-1" : "md:order-2"
                     }`}
                   >
-                    <div className="space-y-6 md:space-y-8">
+                    <div className="space-y-5 md:space-y-8">
+                      {/* 모바일 전용 작은 아이콘 */}
+                      <div className="md:hidden flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-[#2596be]/10 flex items-center justify-center">
+                          <BusinessIcon
+                            id={business.id}
+                            className="w-6 h-6 text-[#1c7a9e]"
+                            strokeWidth={1.5}
+                          />
+                        </div>
+
+                        <span className="text-sm font-mono tracking-[0.2em] text-[#2596be] font-semibold">
+                          {business.id}
+                        </span>
+                      </div>
+
                       <div className="flex items-center gap-4">
-                        <span className="text-xs font-mono tracking-[0.2em] text-[#2596be]">
+                        <span className="hidden md:inline text-xs font-mono tracking-[0.2em] text-[#2596be]">
                           — {business.id}
                         </span>
                         <span className="text-[10px] font-medium tracking-[0.25em] uppercase text-gray-400">

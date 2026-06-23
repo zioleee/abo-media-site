@@ -2,7 +2,6 @@
 import { Metadata } from "next";
 import { SITE_URL } from "../lib/site";
 
-// OG 미리보기 전용 이미지 (한국어 버전과 통일)
 const OG_IMAGE = "/og_abomedia_white.png";
 
 export const metadata: Metadata = {
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "A comprehensive media company planning and producing entertainment, reality, music, and other broadcast/digital content",
+    "A creative content group that creates stories and moves the world. From entertainment, OTT, and YouTube Originals to AI production",
 
   keywords: [
     "ABO Media",
@@ -23,9 +22,10 @@ export const metadata: Metadata = {
     "Content Production",
     "Entertainment",
     "Reality Show",
-    "Music Production",
-    "Broadcast Production",
-    "Media Company",
+    "OTT Content",
+    "YouTube Original",
+    "AI Video Production",
+    "Korean Media",
   ],
 
   authors: [{ name: "ABO MEDIA" }],
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/en`,
     title: "ABO MEDIA",
     description:
-      "A comprehensive media company planning and producing entertainment, reality, music, and other broadcast/digital content",
+      "A creative content group that creates stories and moves the world. From entertainment, OTT, and YouTube Originals to AI production",
     siteName: "ABO MEDIA",
     images: [
       {
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ABO MEDIA",
     description:
-      "A comprehensive media company planning and producing entertainment, reality, music, and other broadcast/digital content",
+      "A creative content group that creates stories and moves the world. From entertainment, OTT, and YouTube Originals to AI production",
     images: [OG_IMAGE],
   },
 };
@@ -68,7 +68,6 @@ export const metadata: Metadata = {
 export default function EnLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {/* 회사명 신호 강화: 구조화데이터 */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

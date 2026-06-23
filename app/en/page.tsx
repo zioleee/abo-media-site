@@ -268,11 +268,8 @@ export default function EnHome() {
           playsInline
           className="absolute inset-0 size-full object-cover scale-105 opacity-90"
         >
-          <source src="/ALPHA.mp4" type="video/mp4" />
-        </video>
+<source src="/ABO_introduce.mp4" type="video/mp4" />        </video>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1c7a9e]/12 via-[#2596be]/16 to-[#1c7a9e]/20" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(61,179,217,0.06),transparent_70%)]" />
 
         <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
           <div

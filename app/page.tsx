@@ -258,15 +258,13 @@ const works2025 = allWorks
   return (
     <main className="overflow-x-hidden">
       {/* HERO - 회사 소개 영상 */}
-      <section
-        className="relative overflow-hidden min-h-screen flex items-center justify-center"
-      >
+      <section className="relative overflow-hidden min-h-screen flex items-center justify-center bg-black">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 size-full object-cover scale-105 opacity-90"
+          className="absolute inset-0 size-full object-contain md:object-cover md:scale-105 opacity-90"
         >
           <source src="/ABO_introduce.mp4" type="video/mp4" />
         </video>

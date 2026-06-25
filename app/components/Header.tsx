@@ -40,8 +40,7 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-        <nav className="container-main h-20 flex items-center justify-between px-4 md:px-8">
-          {/* 로고 */}
+<nav className="container-main h-20 flex items-center justify-between md:px-8">          {/* 로고 */}
           <Link 
             href={isEnglish ? '/en' : '/'} 
             className="flex items-center flex-shrink-0" 

@@ -295,7 +295,7 @@ const works2025 = allWorks
 </section>
 
       {/* About */}
-      <section ref={aboutRef} className="relative py-32 md:py-48 bg-white">
+      <section ref={aboutRef} className="relative pt-14 pb-32 md:py-48 bg-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
 
         <div className="container-main relative max-w-4xl">

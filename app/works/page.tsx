@@ -1,7 +1,6 @@
 // app/works/page.tsx
 'use client'
 
-import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { GraphQLClient, gql } from "graphql-request";
 
@@ -73,12 +72,10 @@ function MobileYearRow({ year, works }: { year: string; works: Work[] }) {
               >
                 <div className="relative aspect-[2/3] bg-gray-100 rounded-xl overflow-hidden mb-2">
                   {img?.url ? (
-                    <Image
+                    <img
                       src={img.url}
                       alt={w.title}
-                      fill
-                      sizes="42vw"
-                      className="object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -97,11 +94,10 @@ function MobileYearRow({ year, works }: { year: string; works: Work[] }) {
                   <div className="flex items-center gap-1">
                     {w.client.logo?.url && (
                       <div className="relative w-6 h-6 flex-shrink-0">
-                        <Image
+                        <img
                           src={w.client.logo.url}
                           alt={w.client.name}
-                          fill
-                          className="object-contain"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     )}
@@ -133,7 +129,6 @@ export default function WorksPage() {
     selectedYear === "전체" || w.year.toString() === selectedYear
   );
 
-  // 모바일용 연도별 그룹핑
   const yearGroups = works.reduce<Record<string, Work[]>>((acc, w) => {
     const y = w.year.toString();
     if (!acc[y]) acc[y] = [];
@@ -156,7 +151,7 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* ── 데스크탑 전용 필터 (md 이상) ── */}
+      {/* 데스크탑 전용 필터 */}
       <section className="hidden md:block py-8 bg-gray-50 border-b border-gray-200">
         <div className="container-main">
           <div className="max-w-4xl">
@@ -182,7 +177,7 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* ── 데스크탑 전용 그리드 (md 이상) ── */}
+      {/* 데스크탑 전용 그리드 */}
       <section className="hidden md:block py-16 md:py-20">
         <div className="container-main">
           {filteredWorks.length === 0 ? (
@@ -206,12 +201,10 @@ export default function WorksPage() {
                   >
                     <div className="relative aspect-[2/3] bg-gray-100 overflow-hidden">
                       {img?.url ? (
-                        <Image
+                        <img
                           src={img.url}
                           alt={w.title}
-                          fill
-                          sizes="(max-width: 1024px) 50vw, 25vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -240,9 +233,11 @@ export default function WorksPage() {
                         <div className="mt-3 pt-3 border-t border-gray-100">
                           <div className="flex items-center gap-2">
                             {w.client.logo?.url && (
-                              <div className="relative w-6 h-6 flex-shrink-0">
-                                <Image src={w.client.logo.url} alt={w.client.name} fill className="object-contain" />
-                              </div>
+                              <img
+                                src={w.client.logo.url}
+                                alt={w.client.name}
+                                className="w-6 h-6 object-contain flex-shrink-0"
+                              />
                             )}
                             <span className="text-sm text-gray-600 truncate">{w.client.name}</span>
                           </div>
@@ -257,7 +252,7 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* ── 모바일 전용 연도별 가로 스크롤 (md 미만) ── */}
+      {/* 모바일 전용 연도별 가로 스크롤 */}
       <div className="md:hidden divide-y divide-gray-100 py-4">
         {sortedYears.map((year) => (
           <MobileYearRow key={year} year={year} works={yearGroups[year]} />

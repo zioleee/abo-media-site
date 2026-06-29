@@ -256,8 +256,7 @@ export default function EnHome() {
   }, []);
 
   return (
-    <main className="overflow-x-hidden">
-      {/* HERO - Company Introduction Video */}
+<main className="overflow-x-hidden pt-20 md:pt-0">      {/* HERO - Company Introduction Video */}
       <section className="relative overflow-hidden bg-white md:min-h-screen md:flex md:items-center md:justify-center md:bg-black">
   <video
     autoPlay

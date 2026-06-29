@@ -116,7 +116,7 @@ export default function AboutEN() {
   return (
     <main className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white py-16 md:py-20">
+      <section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white pt-24 pb-16 md:pt-28 md:pb-20">
         <div className="container-main">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">
             ABOUT

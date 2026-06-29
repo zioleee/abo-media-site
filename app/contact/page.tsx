@@ -86,8 +86,7 @@ export default function Contact() {
   return (
     <main className="bg-white">
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white py-20">
-        <div className="container-main">
+<section className="relative bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] text-white pt-24 pb-16 md:pt-28 md:pb-20">        <div className="container-main">
           <h1 className="text-4xl md:text-5xl font-bold">CONTACT</h1>
           <p className="mt-4 text-lg text-white/90">
             에이비오미디어와 함께 콘텐츠의 미래를 만들어보세요

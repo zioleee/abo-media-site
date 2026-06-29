@@ -258,30 +258,42 @@ const works2025 = allWorks
   return (
     <main className="overflow-x-hidden">
       {/* HERO - 회사 소개 영상 */}
-      <section className="relative overflow-hidden min-h-screen flex items-center justify-center bg-black">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 size-full object-contain md:object-cover md:scale-105 opacity-90"
-        >
-          <source src="/ABO_introduce.mp4" type="video/mp4" />
-        </video>
+      {/* HERO - 회사 소개 영상 */}
+<section className="relative overflow-hidden bg-white md:min-h-screen md:flex md:items-center md:justify-center md:bg-black">
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="relative block w-full h-auto object-contain opacity-90 md:absolute md:inset-0 md:size-full md:object-cover md:scale-105 md:translate-y-8"
+  >
+    <source src="/ABO_introduce.mp4" type="video/mp4" />
+  </video>
 
-
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
-          <div
-            className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
-            style={{ animationDuration: "2s" }}
-          >
-            <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </div>
-        </div>
-      </section>
+  <div className="hidden md:block absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
+    <div
+      className="flex flex-col items-center gap-2 text-white/50 animate-bounce"
+      style={{ animationDuration: "2s" }}
+    >
+      <span className="text-[10px] font-light tracking-[0.2em] uppercase">
+        Scroll
+      </span>
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19 14l-7 7m0 0l-7-7m7 7V3"
+        />
+      </svg>
+    </div>
+  </div>
+</section>
 
       {/* About */}
       <section ref={aboutRef} className="relative py-32 md:py-48 bg-white">

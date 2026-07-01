@@ -166,8 +166,7 @@ export default function Business() {
       {/* ===== HERO ===== */}
       <section
         ref={heroRef}
-        className="relative overflow-hidden pt-18 pb-16 md:pt-36 md:pb-40"
-      >
+className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-40"      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(37,150,190,0.04),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(28,122,158,0.03),transparent_60%)]" />
 

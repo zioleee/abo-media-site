@@ -62,14 +62,21 @@ async function getAllWorks(): Promise<Work[]> {
     return [];
   }
 }
-// ===== 모바일 캐러셀 =====
-const YOUTUBE_CARDS = [
-  { href: "https://www.youtube.com/@sookyung.yi_career", src: "/이수경배너.png", alt: "이수경", objPos: "object-top" },
-  { href: "https://www.youtube.com/@알바_정", src: "/정성호배너.png", alt: "정성호의 인력사무소", objPos: "" },
-  { href: "https://www.youtube.com/@Ji_Daeri", src: "/지상렬배너.jpg", alt: "지상렬 대리점", objPos: "" },
+
+// ===== YouTube 배너 데이터 (모바일 캐러셀 / 데스크탑 그리드 공통) =====
+// href가 빈 문자열("")이면 링크 없이 이미지만 렌더링됩니다.
+type YoutubeCard = { href: string; src: string; alt: string; objPos: string };
+
+const YOUTUBE_CARDS: YoutubeCard[] = [
+  { href: "https://www.youtube.com/@jung_eum", src: "/황정음배너.png", alt: "황정음", objPos: "object-top" },
+  { href: "", src: "/한채아배너.png", alt: "한채아 - 채아뜰", objPos: "object-top" },
+  { href: "https://www.youtube.com/@sookyung.yi_career", src: "/이수경배너.png", alt: "이수경 경력직", objPos: "object-top" },
   { href: "https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS", src: "/한그루배너.png", alt: "한그루 - 그루니까 말이야", objPos: "" },
+  { href: "", src: "/헬로민영배너.png", alt: "헬로민영", objPos: "object-top" },
+  { href: "https://www.youtube.com/@Ji_Daeri", src: "/지상렬배너.jpg", alt: "지상렬 대리점", objPos: "" },
 ];
 
+// ===== 모바일 캐러셀 =====
 function MobileCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number>(0);
@@ -119,6 +126,9 @@ function MobileCarousel() {
     isDragging.current = false;
   };
 
+  const cardClass =
+    "relative w-[260px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg";
+
   return (
     <div
       className="md:hidden overflow-hidden select-none"
@@ -131,32 +141,44 @@ function MobileCarousel() {
         className="flex gap-3 px-4 will-change-transform"
         style={{ width: "max-content" }}
       >
-        {cards.map((card, idx) => (
-          <a
-            key={idx}
-            href={card.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative w-[220px] aspect-[2/3] shrink-0 overflow-hidden rounded-2xl shadow-lg"
-            onClick={(e) => {
-              if (Math.abs(posRef.current - startPos.current) > 8) {
-                e.preventDefault();
-              }
-            }}
-          >
+        {cards.map((card, idx) => {
+          const img = (
             <img
               src={card.src}
               alt={card.alt}
               draggable={false}
               className={`absolute inset-0 w-full h-full object-cover ${card.objPos}`}
             />
-          </a>
-        ))}
+          );
+
+          // href가 있으면 링크(<a>), 없으면 이미지만(<div>)
+          return card.href ? (
+            <a
+              key={idx}
+              href={card.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cardClass}
+              onClick={(e) => {
+                if (Math.abs(posRef.current - startPos.current) > 8) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              {img}
+            </a>
+          ) : (
+            <div key={idx} className={cardClass}>
+              {img}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 // ===== 모바일 캐러셀 끝 =====
+
 // Hygraph 이미지 최적화 함수
 function optimizeHygraphImage(url: string, width: number = 400): string {
   if (!url) return url;
@@ -177,10 +199,12 @@ export default function Home() {
   const [aboutInView, setAboutInView] = useState(false);
   const [lineup2025InView, setLineup2025InView] = useState(false);
   const [youtubeInView, setYoutubeInView] = useState(false);
+  const [ctaInView, setCtaInView] = useState(false);
 
   const aboutRef = useRef<HTMLElement>(null);
   const lineup2025Ref = useRef<HTMLElement>(null);
   const youtubeSecRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
 
   const WORK_ORDER = [
   "namgyeoseo-mwohage",
@@ -244,14 +268,22 @@ const works2025 = allWorks
       });
     }, observerOptions);
 
+    const ctaObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setCtaInView(true);
+      });
+    }, observerOptions);
+
     if (aboutRef.current) aboutObserver.observe(aboutRef.current);
     if (lineup2025Ref.current) lineup2025Observer.observe(lineup2025Ref.current);
     if (youtubeSecRef.current) youtubeObserver.observe(youtubeSecRef.current);
+    if (ctaRef.current) ctaObserver.observe(ctaRef.current);
 
     return () => {
       aboutObserver.disconnect();
       lineup2025Observer.disconnect();
       youtubeObserver.disconnect();
+      ctaObserver.disconnect();
     };
   }, []);
 
@@ -295,14 +327,15 @@ const works2025 = allWorks
 </section>
 
       {/* About */}
-      <section ref={aboutRef} className="relative pt-14 pb-32 md:py-48 bg-white">
+      <section ref={aboutRef} className="relative pt-24 pb-40 md:py-56 bg-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
 
         <div className="container-main relative max-w-4xl">
-          <div
-            className={`text-center space-y-8 transition-all duration-1000 ${aboutInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"}`}
-          >
-            <div className="inline-flex items-center gap-3 mb-4">
+          <div className="text-center space-y-12">
+            <div
+              className={`inline-flex items-center gap-3 mb-4 transition-all duration-700 ease-out ${aboutInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "0ms" }}
+            >
               <div className="h-px w-8 bg-[#2596be]/30" />
               <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
                 About Us
@@ -310,15 +343,24 @@ const works2025 = allWorks
               <div className="h-px w-8 bg-[#2596be]/30" />
             </div>
 
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.15] text-gray-900">
+            <h2
+              className={`text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.15] text-gray-900 transition-all duration-700 ease-out ${aboutInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "150ms" }}
+            >
               이야기를 만들고<br />세상을 움직이는
             </h2>
 
-            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-light">
+            <p
+              className={`text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-700 ease-out ${aboutInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "300ms" }}
+            >
               예능·리얼리티·음악·디지털 콘텐츠 기획부터 제작·유통까지
             </p>
 
-            <div className="pt-4">
+            <div
+              className={`pt-4 transition-all duration-700 ease-out ${aboutInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "450ms" }}
+            >
               <span className="text-2xl md:text-3xl font-semibold bg-gradient-to-r from-[#2596be] to-[#3db3d9] bg-clip-text text-transparent">
                 크리에이티브 콘텐츠 그룹
               </span>
@@ -330,7 +372,7 @@ const works2025 = allWorks
       {/* 배너 섹션 - YouTube Originals */}
 <section
   ref={youtubeSecRef}
-  className="relative py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden"
+  className="relative pt-20 pb-36 md:pt-32 md:pb-48 bg-gradient-to-b from-gray-50 to-white overflow-hidden"
 >
   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
 
@@ -354,50 +396,37 @@ const works2025 = allWorks
     {/* 모바일: 자동스크롤 + 스와이프 */}
     <MobileCarousel />
 
-    {/* 데스크탑: 4열 그리드 */}
-    <div className="hidden md:block mx-auto max-w-[92%] px-4">
-  <div className="grid grid-cols-4 gap-4">
+    {/* 데스크탑: 6열 그리드 (lg 미만은 3열 2줄) */}
+    <div className="hidden md:block mx-auto max-w-[96%] px-4">
+      <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
+        {YOUTUBE_CARDS.map((card, idx) => {
+          const inner = (
+            <>
+              <img
+                src={card.src}
+                alt={card.alt}
+                className={`absolute inset-0 w-full h-full object-cover ${card.objPos} group-hover:scale-105 transition-transform duration-700`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+            </>
+          );
 
-        {/* 이수경 */}
-        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-          style={{ transitionDelay: '0ms' }}>
-          <a href="https://www.youtube.com/@sookyung.yi_career" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/이수경배너.png" alt="이수경"
-              className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-          </a>
-        </div>
-
-        {/* 정성호 */}
-        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-          style={{ transitionDelay: '100ms' }}>
-          <a href="https://www.youtube.com/@알바_정" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/정성호배너.png" alt="정성호의 인력사무소"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-          </a>
-        </div>
-
-        {/* 지상렬 */}
-        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-          style={{ transitionDelay: '200ms' }}>
-          <a href="https://www.youtube.com/@Ji_Daeri" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/지상렬배너.jpg" alt="지상렬 대리점"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-          </a>
-        </div>
-
-        {/* 한그루 */}
-        <div className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${youtubeInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-          style={{ transitionDelay: '300ms' }}>
-          <a href="https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-            <img src="/한그루배너.png" alt="한그루 - 그루니까 말이야"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-          </a>
-        </div>
-
+          return (
+            <div
+              key={card.src}
+              className={`group relative aspect-[2/3] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 ${card.href ? "cursor-pointer" : ""} ${youtubeInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              style={{ transitionDelay: `${idx * 100}ms` }}
+            >
+              {card.href ? (
+                <a href={card.href} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                  {inner}
+                </a>
+              ) : (
+                <div className="block w-full h-full">{inner}</div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   </div>
@@ -543,12 +572,15 @@ const works2025 = allWorks
       </section>
 
       {/* CTA */}
-      <section className="relative overflow-hidden bg-white">
+      <section ref={ctaRef} className="relative overflow-hidden bg-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(37,150,190,0.03),transparent_70%)]" />
 
         <div className="relative container-main py-32 md:py-48 max-w-4xl">
           <div className="text-center space-y-8">
-            <div className="inline-flex items-center gap-3 mb-6">
+            <div
+              className={`inline-flex items-center gap-3 mb-6 transition-all duration-700 ease-out ${ctaInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "0ms" }}
+            >
               <div className="h-px w-8 bg-[#2596be]/30" />
               <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#2596be]">
                 Contact
@@ -556,15 +588,24 @@ const works2025 = allWorks
               <div className="h-px w-8 bg-[#2596be]/30" />
             </div>
 
-            <h3 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
+            <h3
+              className={`text-4xl md:text-6xl font-bold text-gray-900 leading-tight transition-all duration-700 ease-out ${ctaInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "150ms" }}
+            >
               함께 만들어갈<br className="md:hidden" /> 콘텐츠의 미래
             </h3>
 
-            <p className="text-base md:text-lg text-gray-600 max-w-xl mx-auto font-light leading-relaxed">
+            <p
+              className={`text-base md:text-lg text-gray-600 max-w-xl mx-auto font-light leading-relaxed transition-all duration-700 ease-out ${ctaInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "300ms" }}
+            >
               에이비오미디어와 협력하여 새로운 가치를 창조하세요
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
+            <div
+              className={`flex flex-col sm:flex-row justify-center gap-4 pt-8 transition-all duration-700 ease-out ${ctaInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: "450ms" }}
+            >
               <Link
                 href="/contact"
                 className="inline-flex items-center justify-center gap-3 px-10 py-5 bg-gradient-to-r from-[#2596be] to-[#3db3d9] text-white font-semibold rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-500 shadow-lg group text-sm tracking-wide"

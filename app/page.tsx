@@ -206,42 +206,23 @@ export default function Home() {
   const youtubeSecRef = useRef<HTMLElement>(null);
   const ctaRef = useRef<HTMLElement>(null);
 
-  const WORK_ORDER = [
-  "yeonaejeonjaeng",            // 연애전쟁 - 맨 앞
-  "yeolhyeolnonggudan2",        // 열혈농구단2 - 연애전쟁 바로 뒤
-  "namgyeoseo-mwohage",
-  "sagikkundeul",
-  "beolgeobeoseun-segyesa25",
-  "beolgeobeoseun-hanguksa2",
-  "nunan-naege-yeojaya",
-  "solloraseo-sijeun2",        // 6번째로 이동
-  "ijen-saranghal-su-isseulkka25",
-  "jalsaenggin-teurot",        // 8번째로 이동
-  "neujgi-jeone-eohagyeonsu-syallasyalla",
-  "hankkihapsyo",
-  "oraedoen-mannam-chugu-1gi",
-  "yubyeolnan-yeoksa-han-kki",
-  "baedarwasssuda",
-  "naepyeonhaja4",
-  "ijanguui-duyunojipbap",
-  "1ho-ga-doel-sun-eopseo-2",
+  // 메인에 노출할 작품만 화이트리스트로 지정 (이 배열의 순서대로 정렬됨)
+  // 여기에 없는 작품은 메인에 나오지 않음 (CMS·works 페이지엔 그대로 남음)
+  const HOME_WORKS = [
+  "yeonaejeonjaeng",            // 연애전쟁
+  "yeolhyeolnonggudan2",        // 열혈농구단2
+  "namgyeoseo-mwohage26",       // 남겨서 뭐하게
+  "sagikkundeul",               // 史기꾼들
+  "beolgeobeoseun-segyesa26",   // 벌거벗은 세계사
+  "beolgeobeoseun-hanguksa2",   // 벌거벗은 한국사
+  "seollok-ne-gaji-siseon-2",   // 시간추적자 셜록 - 한국사 다음
+  "nunan-naege-yeojaya",        // 누난 내게 여자야
+  "solloraseo-sijeun2",         // 솔로라서
 ];
 
 const works2025 = allWorks
-  .filter(w =>
-    (Number(w.year) === 2025 || Number(w.year) === 2026) &&
-    w.slug !== "baeckupjjari-achimsiksa" &&
-    w.slug !== "beolgeobeoseun-segyesa26" &&
-    w.slug !== "namgyeoseo-mwohage26"
-  )
-  .sort((a, b) => {
-    const ai = WORK_ORDER.indexOf(a.slug);
-    const bi = WORK_ORDER.indexOf(b.slug);
-    if (ai === -1 && bi === -1) return 0;
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
+  .filter(w => HOME_WORKS.includes(w.slug))
+  .sort((a, b) => HOME_WORKS.indexOf(a.slug) - HOME_WORKS.indexOf(b.slug));
 
   useEffect(() => {
     getAllWorks().then(setAllWorks);
@@ -468,7 +449,7 @@ const works2025 = allWorks
             ].join(" ")}
           >
             {works2025.length > 0 ? (
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
+              <div className="flex flex-wrap justify-center gap-3 md:gap-6 max-w-5xl mx-auto">
                 {works2025.map((work, idx) => {
                   const img = Array.isArray(work.coverImage) ? work.coverImage[0] : work.coverImage;
                   const optimizedUrl = img?.url ? optimizeHygraphImage(img.url, 400) : null;
@@ -477,7 +458,7 @@ const works2025 = allWorks
                   return (
                     <div
                       key={work.id}
-                      className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer"
+                      className="group relative w-[calc(33.333%-0.5rem)] sm:w-[calc(25%-0.5rem)] md:w-[calc(20%-1.2rem)] aspect-[2/3] overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer"
                       style={{
                         opacity: 0,
                         transform: "translateX(-100px) rotate(-10deg)",

@@ -207,6 +207,8 @@ export default function Home() {
   const ctaRef = useRef<HTMLElement>(null);
 
   const WORK_ORDER = [
+  "yeonaejeonjaeng",            // 연애전쟁 - 맨 앞
+  "yeolhyeolnonggudan2",        // 열혈농구단2 - 연애전쟁 바로 뒤
   "namgyeoseo-mwohage",
   "sagikkundeul",
   "beolgeobeoseun-segyesa25",
@@ -432,7 +434,7 @@ const works2025 = allWorks
   </div>
 </section>
 
-      {/* 2025 LINEUP */}
+      {/* 2026 LINEUP */}
       <section
         ref={lineup2025Ref}
         className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-[#1c7a9e] via-[#2596be] to-[#3db3d9] z-20"
@@ -447,7 +449,7 @@ const works2025 = allWorks
             <div className="inline-flex items-center gap-3 mb-3">
               <div className="h-px w-8 bg-white/30" />
               <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-white/80">
-                2025 Lineup
+                2026 Lineup
               </span>
               <div className="h-px w-8 bg-white/30" />
             </div>

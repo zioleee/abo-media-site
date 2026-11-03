@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { GraphQLClient, gql } from "graphql-request";
+import NewsPopup from "./components/NewsPopup";
 
 // ENV 가드
 const endpoint = process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT ?? "";
@@ -272,6 +273,7 @@ const works2025 = allWorks
 
   return (
 <main className="overflow-x-hidden pt-20 md:pt-0">      {/* HERO - 회사 소개 영상 */}
+      <NewsPopup />
       {/* HERO - 회사 소개 영상 */}
 <section className="relative overflow-hidden bg-white md:min-h-screen md:flex md:items-center md:justify-center md:bg-black">
   <video

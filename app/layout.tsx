@@ -1,5 +1,6 @@
 // app/layout.tsx
 import "./globals.css";
+import "./counter.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { SITE_URL } from "./lib/site";

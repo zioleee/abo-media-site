@@ -77,23 +77,9 @@ function renderRichText(raw?: RichTextRaw | null) {
         .map((c: any) => (typeof c?.text === 'string' ? c.text : ''))
         .join('');
 
-      if (!text.trim()) return <div key={idx} className="h-5" />;
+      if (!text.trim()) return <div key={idx} style={{ height: 20 }} />;
 
-      return (
-        <p
-          key={idx}
-          className="
-            text-gray-900
-            text-[17px] md:text-[19px]
-            font-normal
-            leading-8 md:leading-9
-            mb-6
-            whitespace-pre-line
-          "
-        >
-          {text}
-        </p>
-      );
+      return <p key={idx}>{text}</p>;
     }
     return null;
   });
@@ -114,29 +100,29 @@ export default async function NewsDetailPage({
   const categoryLabel = (news.category ?? '').trim();
 
   return (
-    <main className="bg-white">
-      <article className="py-14 md:py-16">
-        <div className="max-w-4xl mx-auto px-6">
-          {/* 메타(카테고리 | 날짜) : 더 크고 굵게 */}
-          <div className="flex items-center gap-3 text-[16px] md:text-[17px] font-bold text-gray-800 mb-6">
-            {categoryLabel ? (
-              <>
-                <span className="uppercase tracking-wide">{categoryLabel}</span>
-                <span className="text-gray-400">|</span>
-              </>
-            ) : null}
-            <time className="font-bold">{formatDate(news.publishedDate)}</time>
-          </div>
+    <div className="c-page">
+      <section className="c-phead c-wrap">
+        <p className="c-h">News</p>
+        <p className="c-phead-sub">
+          {categoryLabel ? <span style={{ textTransform: 'uppercase', marginRight: 10 }}>{categoryLabel}</span> : null}
+          <time>{formatDate(news.publishedDate)}</time>
+        </p>
+        <p className="c-crumb">
+          <Link href="/">TOP</Link>
+          <span aria-hidden="true" style={{ color: 'inherit', margin: '0 6px' }}>·</span>
+          <Link href="/news" style={{ color: 'var(--c-blue)' }}>News</Link>
+        </p>
+      </section>
 
-          {/* 제목: 더 굵고 큼 */}
-          <h1 className="text-[30px] md:text-[42px] font-extrabold text-gray-900 leading-tight tracking-tight mb-10">
+      <article className="c-wrap" style={{ paddingTop: 64, paddingBottom: 140 }}>
+        <div className="c-article">
+          <h1 style={{ margin: '0 0 48px', fontSize: 'clamp(28px, 3vw, 42px)', lineHeight: 1.35, fontWeight: 800, letterSpacing: '-0.01em', color: 'var(--c-blue)' }}>
             {news.title}
           </h1>
 
-          {/* 대표 이미지: 너무 커 보이지 않게 박스 높이 줄임 + unoptimized */}
           {news.coverImage?.url ? (
-            <div className="mb-12">
-              <div className="relative w-full max-w-[720px] mx-auto h-[320px] md:h-[420px] rounded-2xl overflow-hidden ">
+            <div style={{ marginBottom: 48, background: '#fff', border: '1px solid var(--c-line)' }}>
+              <div className="relative w-full max-w-[720px] mx-auto h-[320px] md:h-[420px] overflow-hidden">
                 <Image
                   src={news.coverImage.url}
                   alt={news.title}
@@ -150,20 +136,18 @@ export default async function NewsDetailPage({
             </div>
           ) : null}
 
-          {/* 본문 */}
-          <div className="mt-2">{renderRichText(news.content?.raw ?? null)}</div>
+          <div className="c-article-body">{renderRichText(news.content?.raw ?? null)}</div>
 
-          {/* 하단 버튼 */}
-          <div className="mt-16 pt-10 border-t border-gray-200 flex justify-end">
-            <Link
-              href="/news"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-gray-300 bg-white text-gray-800 font-semibold hover:bg-gray-50 transition"
-            >
+          <div style={{ marginTop: 64, paddingTop: 40, borderTop: '1px solid var(--c-blue)', display: 'flex', justifyContent: 'flex-end' }}>
+            <Link href="/news" className="c-btn-line">
               목록보기
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden="true">
+                <path d="M4 12h16M14 6l6 6-6 6" />
+              </svg>
             </Link>
           </div>
         </div>
       </article>
-    </main>
+    </div>
   );
 }

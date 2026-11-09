@@ -6,8 +6,16 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import transparentLogo from "@/public/ABO_Logo_Transparent.png";
+import CounterHeader from "./counter/CounterHeader";
 
+// The landing page keeps the original header; every sub page uses the COUNTER-style header.
 export default function Header() {
+  const pathname = usePathname();
+  if (pathname === '/' || pathname === '/en') return <LegacyHeader />;
+  return <CounterHeader pathname={pathname} />;
+}
+
+function LegacyHeader() {
   const pathname = usePathname();
   const isEnglish = pathname.startsWith('/en');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

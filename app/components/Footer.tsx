@@ -2,10 +2,17 @@
 'use client'
 
 import { usePathname } from "next/navigation";
+import CounterFooter from "./counter/CounterFooter";
 
+// The landing page keeps the original footer; every sub page uses the COUNTER-style footer.
 export default function Footer() {
   const pathname = usePathname();
   const isEnglish = pathname.startsWith('/en');
+  if (pathname !== '/' && pathname !== '/en') return <CounterFooter lang={isEnglish ? 'en' : 'ko'} />;
+  return <LegacyFooter isEnglish={isEnglish} />;
+}
+
+function LegacyFooter({ isEnglish }: { isEnglish: boolean }) {
 
   return (
     <footer className="bg-[#0A0F1A] text-white py-16">

@@ -51,9 +51,11 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
    (cqw, not cqi: in vertical text the inline axis is the height) */
 .mono-home[lang=en] .h-vt{font-size:min(4.45cqw,calc((clamp(460px,47cqw,690px) - 6.2cqw - 48px) / (var(--vn,7) * 1.12)))}
 @container (max-width: 760px){.mono-home[lang=en] .h-vt{font-size:min(9cqw,calc((138cqw - 15cqw - 24px) / (var(--vn,7) * 1.12)))}}
-/* the channel list on a phone: a name may take two lines (the English ones are longer), so the band under the row being
-   looked at is drawn word by word — the pieces overlap across the spaces, each line gets one band with the board's ends */
-@container (max-width: 760px){
+/* the channel list where it is narrow (tablet, phone): a name may take two lines (the English ones are longer), so the band
+   under the row being looked at is drawn word by word — the pieces overlap across the spaces, each line gets one band with
+   the board's ends */
+@container (max-width: 1000px){
+.mono-home .b-yr .kw{white-space:normal}
 .mono-home .b-yr .kw::before{display:none}
 .mono-home .b-yr .wd{position:relative}
 .mono-home .b-yr .wd::before{content:"";position:absolute;z-index:-1;left:-.13em;right:-.13em;top:.2em;bottom:.12em;background:var(--t2);transform:skewX(25.15deg) scaleX(0);transform-origin:0 50%}
@@ -61,6 +63,9 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-home.live .b-yr .wd::before{transform-origin:100% 50%;transition:transform .32s var(--qt)}
 .m1.mono-home.live .b-yr.on .wd::before{transform-origin:0 50%;transition:transform .9s var(--ex) calc(var(--wi,0) * 70ms)}
 }
+/* (on a tablet a row whose name takes two lines keeps a little air above and below it, and the one-line rows give it the room,
+   so the list still ends with the poster; where every name keeps to one line nothing changes) */
+@container (max-width: 1000px) and (min-width: 761px){.m1.mono-home .b-yr .rw{box-sizing:border-box;min-height:5.6cqi;padding-top:.6cqi;padding-bottom:.6cqi}}
 /* the lineup's cards carry no numbers (user, 2026-11-11): the caption is the channel over the title */
 .mono-home .b-lc .cp{display:block}
 @container (max-width: 760px){.mono-home .b-lc .ch{margin-top:0}}

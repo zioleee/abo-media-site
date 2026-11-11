@@ -280,14 +280,15 @@ export const HOME = {
 export const FILM = "/ABO_introduce.mp4";
 export const FILM_STILL = "/mono/intro-still.jpg";
 
-/** the channels of YouTube Originals (live main page). English names: the live English page's where it had one; the others are romanised (to confirm) */
+/** the channels of YouTube Originals (live main page; names and links as the user gave them, 2026-11-11). English names: the live
+ *  English page's where it had one; the others romanised or translated by us (to confirm). Links without share-tracking parameters. */
 export const CHANNELS: { ko: string; en: string; src: string; href: string }[] = [
   { ko: "황정음", en: "Hwang Jung-eum", src: "/mono/yt/hwangjungeum.jpg", href: "https://www.youtube.com/@jung_eum" },
-  { ko: "한채아 - 채아뜰", en: "Han Chae-ah - Chaeatteul", src: "/mono/yt/hanchaea.jpg", href: "" },
+  { ko: "한채아 - 채아뜰", en: "Han Chae-ah - Chaeatteul", src: "/mono/yt/hanchaea.jpg", href: "https://www.youtube.com/channel/UCUnNHwrx0aBC8Dvl5askLTg" },
   { ko: "이수경 경력직", en: "Lee Sookyung", src: "/mono/yt/leesukyung.jpg", href: "https://www.youtube.com/@sookyung.yi_career" },
-  { ko: "한그루 - 그루니까 말이야", en: "Han Gru - Because It's Gru", src: "/mono/yt/hangeuru.jpg", href: "https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" },
-  { ko: "헬로민영", en: "Hello Minyoung", src: "/mono/yt/minyoung.jpg", href: "" },
-  { ko: "지상렬 대리만족", en: "Ji Sang-ryul - Vicarious Satisfaction", src: "/mono/yt/jisangryul.jpg", href: "https://www.youtube.com/@Ji_Daeri" },
+  { ko: "한그루 - 그루니까 말이야", en: "Han Gru - Because It's Gru", src: "/mono/yt/hangeuru.jpg", href: "https://www.youtube.com/@guru_han_s2" },
+  { ko: "헬로민영", en: "Hello Minyoung", src: "/mono/yt/minyoung.jpg", href: "https://www.youtube.com/@hello_minyoung" },
+  { ko: "지상렬 KCM의 대리만족", en: "Ji Sang-ryul & KCM's Vicarious Satisfaction", src: "/mono/yt/jisangryul.jpg", href: "https://www.youtube.com/@Ji_Daeri" },
 ];
 
 /** the works the main page shows, in this order (the rest stay on the Works page) */

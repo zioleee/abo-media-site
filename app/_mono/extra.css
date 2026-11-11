@@ -66,7 +66,7 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono-article .m1-ameta{grid-column:1 / 4;display:grid;justify-items:start;row-gap:1.6cqi}
 .mono-article .m1-ameta .m1-tag{font-size:3.4cqi}
 .mono-article .m1-ameta time{font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:2.1cqi;line-height:1}
-.mono-article .m1-ameta .cat{font-size:12px;line-height:1.3;font-weight:700;letter-spacing:.08em;color:var(--c)}
+.mono-article .m1-ameta .cat{font-size:12px;line-height:1.3;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
 .mono-article .m1-atitle{grid-column:4 / 13;font-size:3.1cqi;line-height:1.38;font-weight:300;letter-spacing:-.04em;color:var(--b)}
 .mono-article .m1-abody{padding-top:5cqi;padding-bottom:8cqi}
 .mono-article .m1-acol{grid-column:4 / 11}

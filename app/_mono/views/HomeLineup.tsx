@@ -1,9 +1,10 @@
 "use client";
-// The main page's lineup: the works the page names (HOME_WORKS, in that order) on the blue field. While the page
-// moves, the section holds and the row of posters travels sideways (motion/home.js); the poster being passed is in
-// its own colours. The works are read in the browser, as before; until they are in, the row holds empty frames.
+// The main page's lineup: the works the page names (HOME_WORKS, in that order) on the blue field, without numbers or a
+// count. While the page moves, the row of posters moves on by itself, slowly (motion/home.js); the poster passing the
+// middle of the window is in its own colours. The works are read in the browser, as before; until they are in, the row
+// holds empty frames.
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMono } from "../MonoRoot";
 import { ArrowUR, Poster, Tag, vars } from "../parts";
 import { HOME, HOME_WORKS, hrefOf, type Lang } from "../content";
@@ -25,7 +26,6 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
   const list = works ? (HOME_WORKS.map((s) => works.find((w) => w.slug === s)).filter(Boolean) as Work[]) : null;
   if (list && list.length === 0) return null;
   const n = list ? list.length : HOME_WORKS.length;
-  const two = (i: number) => String(i).padStart(2, "0");
 
   return (
     <section className="b-lu">
@@ -48,7 +48,6 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
                   <div key={i} className="b-lc" data-m="rise" style={vars({ "--d": `${((i % 5) * 0.07).toFixed(2)}s` })}>
                     <span className="th">{w ? <Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} lazy={false} /> : <span className="pst" />}</span>
                     <span className="cp">
-                      <span className="no" aria-hidden="true">{two(i + 1)}</span>
                       <span className="ch">{w?.client?.name?.trim() || NB}</span>
                       <span className="ti">{w ? w.title : NB}</span>
                     </span>
@@ -58,11 +57,6 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
             </div>
           </div>
           <div className="b-lb">
-            <p className="b-ix" aria-hidden="true">
-              <span className="rl"><span>{Array.from({ length: n }, (_, i) => (<Fragment key={i}>{i > 0 && <br />}{two(i + 1)}</Fragment>))}</span></span>
-              <span className="of">/ {two(n)}</span>
-            </p>
-            <div className="b-pg" aria-hidden="true"><i /></div>
             <p className="b-more" data-m="rise">
               <Link href={hrefOf(lang, "/works")} className="m1-btn inv"><span>{h.luCta}</span><ArrowUR /></Link>
             </p>

@@ -1,6 +1,6 @@
 // The main page (Home B): what moves besides the arrivals — the mark leaving the header to become the window onto the
-// film, the way in through the O, the channel list, the lineup that travels while its section holds, Contact's slab.
-// Ported from the board (round11/homeb.js as generated); see round13/make_home_js.py for the changes.
+// film, the way in through the O, the channel list, the lineup that moves on by itself, Contact's slab.
+// Ported from the board (round11/homeb.js, via round13/make_home_js.py); the lineup's motion is the site's own (user, 2026-11-11).
 /* eslint-disable */
 export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure, remeasure, W, H0, sy0, X }) {
   // ===== draft B: what moves (only while the page scrolls in a window; the page as laid out is complete without it) =====
@@ -104,42 +104,54 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     for (let k = 0; k < ypcs.length; k++) ypcs[k].classList.toggle('was', k === yCur);
     ypcs[yCur].classList.remove('on'); yrs[yCur].classList.remove('on');
     yCur = i; ypcs[i].classList.remove('was'); ypcs[i].classList.add('on'); yrs[i].classList.add('on');
-    yct.textContent = (i < 9 ? '0' : '') + (i + 1);
+    if (yct) yct.textContent = (i < 9 ? '0' : '') + (i + 1);
   };
   yrs.forEach((el, i) => { on(el, 'mouseenter', () => { yHover = i; ySet(i); }); });
   on(yl, 'mouseleave', () => { yHover = -1; });
 
-  // ---------- 2026 Lineup: the section holds while the row of posters travels ----------
-  let lu = null, tkw = null, tk = null, lcs = [], ixr = null, pgi = null, NL = 0, gal = false;
-  let lx = 0, maxShift = 0, lpos = 0, lCur = -1, cl = [], cwd = 0, lgap = 0, xA = 0, xB = 0, pair = false;
-  const LHOLD = 0.07, GALV = ['--lh', '--lx', '--lpt', '--lpb', '--ltf', '--lg', '--cw'];
-  // (set up again when the list arrives from the CMS — before that the row holds empty frames)
-  const setupGal = () => {
-    lcs.forEach((el) => { el.__lit = false; el.classList.remove('on'); });
-    lu = $('.b-lu'); tkw = $('.b-tkw'); tk = $('.b-tk'); lcs = $$('.b-lc'); ixr = $('.b-ix .rl > span'); pgi = $('.b-pg i');
-    NL = lcs.length; lCur = -1;
-    gal = canPin && !!lu && NL > 1;
-    if (!gal) { root.classList.remove('gal'); GALV.forEach((k) => root.style.removeProperty(k)); if (tk) tk.style.transform = ''; return; }
-    lpos = Math.min(lpos, NL - 1);
-    const st = root.style;
-    st.setProperty('--lh', H0 + 'px'); st.setProperty('--lpt', Math.round(clamp(H0 * 0.085, 44, 96)) + 'px'); st.setProperty('--lpb', Math.round(clamp(H0 * 0.06, 28, 64)) + 'px');
-    st.setProperty('--ltf', (desk ? clamp(H0 * 0.07, 40, 72) : W * 0.13).toFixed(1) + 'px'); st.setProperty('--lg', (desk ? 28 : 14) + 'px'); st.setProperty('--cw', '200px');
-    lx = Math.round((NL - 1) * H0 * (desk ? 0.3 : 0.27)); st.setProperty('--lx', lx + 'px');
-    root.classList.add('gal'); void root.offsetWidth;
-    // the posters' size from the room the stage leaves them
-    const room = tkw.getBoundingClientRect().height, cap = lcs[0].querySelector('.cp').getBoundingClientRect().height;
-    const cw = clamp((room - cap - (desk ? 66 : 48)) * 0.7072, 110, desk ? W * 0.24 : W * 0.62);
-    st.setProperty('--cw', cw.toFixed(1) + 'px'); void root.offsetWidth;
-    maxShift = Math.max(0, tk.scrollWidth - tkw.clientWidth);
-    // where each poster stands in the row; the line that picks the poster in colour runs from the first poster's far edge
-    // to the last one's near edge, so the poster in colour is never one the window cuts
-    const t0 = tk.getBoundingClientRect().left;
-    cl = lcs.map((el) => el.getBoundingClientRect().left - t0); cwd = lcs[0].getBoundingClientRect().width; lgap = NL > 1 ? cl[1] - cl[0] - cwd : 0;
-    xA = cl[0] + cwd * 0.88; xB = cl[NL - 1] - maxShift + cwd * 0.12;
-    pair = tkw.clientWidth >= 2 * cwd + lgap + 40;      // room for two posters side by side (not on a phone)
+  // ---------- 2026 Lineup: one row of posters that moves on by itself, slowly — leftwards, the next poster coming in from
+  // the right; it slows to a stop while the pointer rests on it, and the poster passing the middle of the window is in its
+  // own colours. A conveyor: a poster that has left on the left comes round again on the right, out of sight (no copies).
+  // The page as laid out keeps the board's grid.
+  let lu = null, tk = null, tkw = null, lcs = [], NL = 0, drift = false;
+  let cl = [], cwd = 0, pitch = 0, loop = 0, tkx = 0, dpos = 0, dv = 0, lCur = -1;
+  const SPEED = desk ? 30 : 22;                      // px per second
+  // the row stops for a pointer that rests on it (a mouse; a finger leaves no pointer behind)
+  const fine = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+  let away = true;
+  on(window, 'mousemove', () => { away = false; });
+  on(document, 'mouseout', (e) => { if (!e.relatedTarget) away = true; });
+  const placeRow = () => {
+    const lo = -tkx - pitch;                         // further left than this (in the row's own measure), a poster comes round
+    let best = -1, bd = cwd * 0.62;
+    for (let i = 0; i < NL; i++) {
+      let x = cl[i] - dpos;
+      x = ((x - lo) % loop + loop) % loop + lo;
+      lcs[i].style.translate = (x - cl[i]).toFixed(2) + 'px 0';
+      const d = Math.abs(tkx + x + cwd / 2 - W / 2);
+      if (d < bd) { bd = d; best = i; }
+    }
+    if (best !== lCur) { if (lCur >= 0 && lcs[lCur]) lcs[lCur].classList.remove('on'); lCur = best; if (best >= 0) lcs[best].classList.add('on'); }
   };
-  setupGal();
-  if (canPin) { void root.offsetWidth; remeasure(); }
+  // (set up again when the list arrives from the CMS — before that the row holds empty frames)
+  const setupDrift = () => {
+    lcs.forEach((el) => { el.style.translate = ''; el.classList.remove('on'); });
+    lu = $('.b-lu'); tk = $('.b-tk'); tkw = $('.b-tkw'); lcs = $$('.b-lc');
+    NL = lcs.length; lCur = -1; drift = false;
+    root.classList.remove('drift');
+    if (!lu || !tk || !tkw || NL < 3) return;
+    root.classList.add('drift'); void root.offsetWidth;
+    const r0 = tk.getBoundingClientRect();
+    cl = lcs.map((el) => el.getBoundingClientRect().left - r0.left);
+    cwd = lcs[0].getBoundingClientRect().width; pitch = cl[1] - cl[0]; loop = NL * pitch; tkx = r0.left;
+    // too few posters to fill the window and come round out of sight: the grid stays
+    if (!(pitch > 0) || loop < W + 2 * pitch) { root.classList.remove('drift'); return; }
+    drift = true;
+    dpos %= loop;
+    placeRow();                                      // where the row has got to (no frame in its laid-out place)
+  };
+  setupDrift();
+  void root.offsetWidth; remeasure();
 
   const ct = $('.h-ct'), ctSlab = $('.h-ct .m1-slabw');
   X.frame = (c) => {
@@ -178,43 +190,30 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
       const mid = lr.top + lr.height / 2, lit = mid > c.H * 0.1 && mid < c.H * 0.9;
       if (lit !== yLit) { yLit = lit; yp.classList.toggle('lit', lit); }
     }
-    // the lineup
-    const r = lu ? lu.getBoundingClientRect() : null;
-    if (r && r.top < c.H + 40 && r.bottom > -40) {
-      if (gal) {
-        const target = clamp((clamp(-r.top / lx, 0, 1) - LHOLD) / (1 - 2 * LHOLD), 0, 1) * (NL - 1);
-        lpos += (target - lpos) * (1 - Math.exp(-c.dt * 9)); if (Math.abs(target - lpos) < 0.0005) lpos = target;
-        const u = lpos / (NL - 1), sh = u * maxShift;
-        tk.style.transform = 'translate3d(' + (-sh).toFixed(1) + 'px,0,0)';
-        pgi.style.transform = 'scaleX(' + u.toFixed(4) + ')';
-        let idx = -1;
-        if (r.top < c.H * 0.42 && r.bottom > c.H * 0.7) {
-          if (pair) {
-            const xf = xA + (xB - xA) * u + sh;        // the line, in the row's own measure
-            idx = NL - 1;
-            for (let i = 0; i < NL - 1; i++) { if (xf < cl[i] + cwd + lgap / 2) { idx = i; break; } }
-          } else idx = clamp(Math.round(lpos), 0, NL - 1);
-        }
-        if (idx !== lCur) { if (lCur >= 0) lcs[lCur].classList.remove('on'); lCur = idx; if (idx >= 0) { lcs[idx].classList.add('on'); if (ixr) ixr.style.setProperty('--k', idx); } }
-      } else {
-        for (let i = 0; i < NL; i++) { const el = lcs[i], b = el.getBoundingClientRect(), m = b.top + b.height * 0.5, lit = m > c.H * 0.08 && m < c.H * 0.9; if (lit !== !!el.__lit) { el.__lit = lit; el.classList.toggle('on', lit); } }
-      }
+    // the lineup, while it is in sight
+    const lr2 = drift ? lu.getBoundingClientRect() : null;
+    if (lr2 && lr2.top < c.H + 40 && lr2.bottom > -40) {
+      let rest = false;
+      if (fine && !away) { const wr = tkw.getBoundingClientRect(); rest = c.ptr.cx >= wr.left && c.ptr.cx <= wr.right && c.ptr.cy >= wr.top && c.ptr.cy <= wr.bottom; }
+      dv += ((rest ? 0 : SPEED) - dv) * (1 - Math.exp(-c.dt * (rest ? 6 : 2.2)));
+      dpos = (dpos + dv * c.dt) % loop;
+      placeRow();
     }
     const cr = ct.getBoundingClientRect();
     if (cr.top < c.H && cr.bottom > 0) ctSlab.style.transform = 'translate3d(' + (-c.ptr.sx * 16).toFixed(2) + 'px,' + ((cr.top - (c.H - cr.height)) * -0.1).toFixed(1) + 'px,0)';
   };
-  X.rescan = () => { setupGal(); };
+  X.rescan = () => { setupDrift(); };
   X.stop = () => {
-    root.classList.remove('pin', 'tall', 'gal', 'wa', 'wb', 'wc');
+    root.classList.remove('pin', 'tall', 'drift', 'wa', 'wb', 'wc');
     und.style.opacity = ''; und.style.transform = ''; und.style.visibility = '';
-    ['--hx', '--lh', '--lx', '--lpt', '--lpb', '--ltf', '--lg', '--cw'].forEach((k) => root.style.removeProperty(k));
+    root.style.removeProperty('--hx');
     film.style.clipPath = clip0; film.style.pointerEvents = '';
     ['left', 'top', 'width', 'height', 'right', 'bottom'].forEach((k) => { vd.style[k] = ''; });
     ['transform', 'transformOrigin', 'filter', 'left', 'top', 'width', 'height'].forEach((k) => { vid.style[k] = ''; stl.style[k] = ''; });
     [tone, ov, shade, fcue, bar2].forEach((el) => { el.style.opacity = ''; });
     ypcs.forEach((el, k) => { el.classList.remove('was'); el.classList.toggle('on', k === 0); }); yrs.forEach((el, k) => el.classList.toggle('on', k === 0));
-    yct.textContent = '01'; yp.classList.remove('lit');
-    lcs.forEach((el) => { el.__lit = false; el.classList.remove('on'); }); if (tk) tk.style.transform = ''; if (pgi) pgi.style.transform = ''; if (ixr) ixr.style.removeProperty('--k');
+    if (yct) yct.textContent = '01'; yp.classList.remove('lit');
+    lcs.forEach((el) => { el.style.translate = ''; el.classList.remove('on'); });
     ctSlab.style.transform = '';
   };
 }

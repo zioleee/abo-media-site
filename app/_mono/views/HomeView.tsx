@@ -1,6 +1,8 @@
 // The main page (board: M4-HomeB): the mark as the window onto the film; YouTube Originals as a list with one large
-// poster; the lineup that travels while its section holds; Contact's close; the footer.
+// poster; the lineup, a row that moves on by itself; Contact's close; the footer. No numbers, counts or arrows on the
+// lists (user, 2026-11-11).
 import Link from "next/link";
+import { Fragment } from "react";
 import MonoRoot from "../MonoRoot";
 import Footer from "../Footer";
 import HomeHero from "./HomeHero";
@@ -8,10 +10,16 @@ import HomeLineup from "./HomeLineup";
 import { ArrowUR, Poster, Tag, vars, verticalTitle } from "../parts";
 import { CHANNELS, HOME, hrefOf, type Lang } from "../content";
 
+// a channel's name word by word: on a phone a long name takes two lines, and the band that marks the row being looked at is
+// drawn under each word (on wider windows a name keeps to one line and the band is one piece)
+const words = (s: string) =>
+  s.split(" ").map((w, k, a) => (
+    <Fragment key={k}><span className="wd" style={vars({ "--wi": k })}>{w}</span>{k < a.length - 1 ? " " : null}</Fragment>
+  ));
+
 export default function HomeView({ lang }: { lang: Lang }) {
   const h = HOME[lang];
   const ct = verticalTitle(h.ctH.map((s, i) => (i === h.ctBold ? [{ b: s }] : [s])), lang);
-  const two = (i: number) => String(i).padStart(2, "0");
   return (
     <MonoRoot key={hrefOf(lang, "/")} page="home" lang={lang} path="/" motion="home">
       <main>
@@ -35,10 +43,8 @@ export default function HomeView({ lang }: { lang: Lang }) {
                     <>
                       <span className="th" aria-hidden="true"><Poster src={c.src} ratio={1 / 1.414} alt="" /></span>
                       <span className="tx">
-                        <span className="no" aria-hidden="true">{two(i + 1)}</span>
-                        <span className="nm"><span className="kw">{name}</span></span>
+                        <span className="nm"><span className="kw">{words(name)}</span></span>
                       </span>
-                      {c.href && <span className="ar" aria-hidden="true"><ArrowUR /></span>}
                     </>
                   );
                   return (
@@ -54,7 +60,6 @@ export default function HomeView({ lang }: { lang: Lang }) {
                     <div key={c.src} className={"pc" + (i === 0 ? " on" : "")}><Poster src={c.src} ratio={1 / 1.414} alt={lang === "ko" ? c.ko : c.en} /></div>
                   ))}
                 </div>
-                <p className="ct"><b>01</b> / {two(CHANNELS.length)}</p>
               </div>
             </div>
           </div>

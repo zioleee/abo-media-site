@@ -287,7 +287,7 @@ export const CHANNELS: { ko: string; en: string; src: string; href: string }[] =
   { ko: "이수경 경력직", en: "Lee Sookyung", src: "/mono/yt/leesukyung.jpg", href: "https://www.youtube.com/@sookyung.yi_career" },
   { ko: "한그루 - 그루니까 말이야", en: "Han Gru - Because It's Gru", src: "/mono/yt/hangeuru.jpg", href: "https://youtube.com/@guru_han_s2?si=Ke-cFE9bAnuukKwS" },
   { ko: "헬로민영", en: "Hello Minyoung", src: "/mono/yt/minyoung.jpg", href: "" },
-  { ko: "지상렬 대리점", en: "Ji Sang-ryul Agency", src: "/mono/yt/jisangryul.jpg", href: "https://www.youtube.com/@Ji_Daeri" },
+  { ko: "지상렬 대리만족", en: "Ji Sang-ryul - Vicarious Satisfaction", src: "/mono/yt/jisangryul.jpg", href: "https://www.youtube.com/@Ji_Daeri" },
 ];
 
 /** the works the main page shows, in this order (the rest stay on the Works page) */

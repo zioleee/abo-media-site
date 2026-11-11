@@ -51,6 +51,35 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
    (cqw, not cqi: in vertical text the inline axis is the height) */
 .mono-home[lang=en] .h-vt{font-size:min(4.45cqw,calc((clamp(460px,47cqw,690px) - 6.2cqw - 48px) / (var(--vn,7) * 1.12)))}
 @container (max-width: 760px){.mono-home[lang=en] .h-vt{font-size:min(9cqw,calc((138cqw - 15cqw - 24px) / (var(--vn,7) * 1.12)))}}
+/* the channel list on a phone: a name may take two lines (the English ones are longer), so the band under the row being
+   looked at is drawn word by word — the pieces overlap across the spaces, each line gets one band with the board's ends */
+@container (max-width: 760px){
+.mono-home .b-yr .kw::before{display:none}
+.mono-home .b-yr .wd{position:relative}
+.mono-home .b-yr .wd::before{content:"";position:absolute;z-index:-1;left:-.13em;right:-.13em;top:.2em;bottom:.12em;background:var(--t2);transform:skewX(25.15deg) scaleX(0);transform-origin:0 50%}
+.mono-home .b-yr.on .wd::before{transform:skewX(25.15deg)}
+.m1.mono-home.live .b-yr .wd::before{transform-origin:100% 50%;transition:transform .32s var(--qt)}
+.m1.mono-home.live .b-yr.on .wd::before{transform-origin:0 50%;transition:transform .9s var(--ex) calc(var(--wi,0) * 70ms)}
+}
+/* the lineup's cards carry no numbers (user, 2026-11-11): the caption is the channel over the title */
+.mono-home .b-lc .cp{display:block}
+@container (max-width: 760px){.mono-home .b-lc .ch{margin-top:0}}
+/* while the page moves, the row moves on by itself (motion/home.js): one line of posters running out past the window's
+   edges; the one passing the middle stands up a little, in its own colours. (Room above the row for that: the row starts
+   as far below the text as the cards on the board.) */
+.m1.mono-home.drift .b-tkw{margin:calc(5.2cqi - 18px) calc(var(--px) * -1) 0;overflow:hidden}
+.m1.mono-home.drift .b-tk{display:flex;gap:max(24px,1.95cqi);width:max-content;margin:0;padding:18px var(--px) 2px}
+.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(200px,16.5cqi);will-change:translate}
+.m1.mono-home.drift .b-lc.on .th{transform:translateY(-14px);box-shadow:0 26px 44px -18px rgba(6,40,56,.6)}
+.m1.mono-home.drift .b-lc .cp{opacity:.7;transition:opacity .7s var(--qt)}
+.m1.mono-home.drift .b-lc.on .cp,.m1.mono-home.drift .b-lc:hover .cp{opacity:1}
+@container (max-width: 760px){
+.m1.mono-home.drift .b-tkw{margin-top:calc(9cqi - 16px)}
+.m1.mono-home.drift .b-tk{gap:3.6cqi;padding-top:16px}
+.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){width:42cqi}
+.m1.mono-home.drift .b-lc .ch{font-size:11px}
+.m1.mono-home.drift .b-lc .ti{font-size:3.9cqi}
+}
 
 /* ---------- Business: the longer English names wrap inside the tube ---------- */
 .mono-business[lang=en] .m1-tube > div > span{white-space:normal;max-width:calc(100% - 2.4cqi);align-items:center}

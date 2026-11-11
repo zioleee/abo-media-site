@@ -1,13 +1,16 @@
 // app/layout.tsx
 import "./globals.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import "./_mono/mono.css";
+import "./_mono/extra.css";
 import { SITE_URL } from "./lib/site";
 import type { Metadata } from "next";
 
 const NAVER_VERIFICATION = "358efa793fdb1d77773d4c5232f93baa8f272d33";
 
 const OG_IMAGE = "/og_abomedia_white.png";
+
+// Pretendard (variable, loaded in pieces as the page needs them) — the serif (Instrument Serif) is served from /mono/fonts
+const PRETENDARD = "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -73,9 +76,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <meta name="naver-site-verification" content={NAVER_VERIFICATION} />
+        {/* scripts are on: the pages wait (at most 3 s) for their motion to be set up before they show */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+        <link rel="stylesheet" href={PRETENDARD} />
+        <link rel="preload" href="/mono/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossOrigin="" />
 
         <script
           type="application/ld+json"
@@ -105,11 +113,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      <body className="min-h-dvh flex flex-col bg-background text-foreground antialiased">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

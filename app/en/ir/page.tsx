@@ -1,5 +1,7 @@
 // app/en/ir/page.tsx
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
+import NoteView from "../../_mono/views/NoteView";
+import { HERO, IR } from "../../_mono/content";
 
 export const metadata: Metadata = {
   robots: {
@@ -9,12 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function EnIrPage() {
-  return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">IR Information</h1>
-        <p className="text-gray-600">Coming soon</p>
-      </div>
-    </main>
-  );
+  return <NoteView lang="en" path="/ir" page="ir" name="IR" columns={HERO.ir.en} text={IR.en.text} />;
 }

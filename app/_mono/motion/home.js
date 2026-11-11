@@ -110,17 +110,26 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
   on(yl, 'mouseleave', () => { yHover = -1; });
 
   // ---------- 2026 Lineup: one row of posters that moves on by itself, slowly — leftwards, the next poster coming in from
-  // the right; it slows to a stop while the pointer rests on it, and the poster passing the middle of the window is in its
-  // own colours. A conveyor: a poster that has left on the left comes round again on the right, out of sight (no copies).
+  // the right. One poster at a time is chosen (in its own colours, standing up a little): the one passing the middle of the
+  // window, or — while a mouse rests on the row, which then slows to a stop — the one under it; the one left goes back.
+  // A conveyor: a poster that has left on the left comes round again on the right, out of sight (no copies).
   // The page as laid out keeps the board's grid.
   let lu = null, tk = null, tkw = null, lcs = [], NL = 0, drift = false;
-  let cl = [], cwd = 0, pitch = 0, loop = 0, tkx = 0, dpos = 0, dv = 0, lCur = -1;
-  const SPEED = desk ? 30 : 22;                      // px per second
-  // the row stops for a pointer that rests on it (a mouse; a finger leaves no pointer behind)
+  let cl = [], lx = [], cwd = 0, pitch = 0, loop = 0, tkx = 0, dpos = 0, dv = 0, speed = 0, lCur = -1, pick = -1;
+  // the same pace on every screen: a new poster reaches the middle every PER seconds (about 44 px/s at 1440, 30 on a phone)
+  const PER = 6;
+  // a mouse can rest on the row (a finger leaves no pointer behind)
   const fine = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
   let away = true;
   on(window, 'mousemove', () => { away = false; });
   on(document, 'mouseout', (e) => { if (!e.relatedTarget) away = true; });
+  const choose = (i) => {
+    if (i === lCur) return;
+    if (lCur >= 0 && lcs[lCur]) lcs[lCur].classList.remove('on');
+    lCur = i;
+    if (i >= 0 && lcs[i]) lcs[i].classList.add('on');
+  };
+  // puts every poster where the row has got to; gives the one nearest the middle of the window
   const placeRow = () => {
     const lo = -tkx - pitch;                         // further left than this (in the row's own measure), a poster comes round
     let best = -1, bd = cwd * 0.62;
@@ -128,27 +137,28 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
       let x = cl[i] - dpos;
       x = ((x - lo) % loop + loop) % loop + lo;
       lcs[i].style.translate = (x - cl[i]).toFixed(2) + 'px 0';
-      const d = Math.abs(tkx + x + cwd / 2 - W / 2);
+      lx[i] = tkx + x;                               // its left edge in the window
+      const d = Math.abs(lx[i] + cwd / 2 - W / 2);
       if (d < bd) { bd = d; best = i; }
     }
-    if (best !== lCur) { if (lCur >= 0 && lcs[lCur]) lcs[lCur].classList.remove('on'); lCur = best; if (best >= 0) lcs[best].classList.add('on'); }
+    return best;
   };
   // (set up again when the list arrives from the CMS — before that the row holds empty frames)
   const setupDrift = () => {
     lcs.forEach((el) => { el.style.translate = ''; el.classList.remove('on'); });
     lu = $('.b-lu'); tk = $('.b-tk'); tkw = $('.b-tkw'); lcs = $$('.b-lc');
-    NL = lcs.length; lCur = -1; drift = false;
+    NL = lcs.length; lCur = -1; pick = -1; drift = false;
     root.classList.remove('drift');
     if (!lu || !tk || !tkw || NL < 3) return;
     root.classList.add('drift'); void root.offsetWidth;
     const r0 = tk.getBoundingClientRect();
     cl = lcs.map((el) => el.getBoundingClientRect().left - r0.left);
-    cwd = lcs[0].getBoundingClientRect().width; pitch = cl[1] - cl[0]; loop = NL * pitch; tkx = r0.left;
+    cwd = lcs[0].getBoundingClientRect().width; pitch = cl[1] - cl[0]; loop = NL * pitch; tkx = r0.left; speed = pitch / PER;
     // too few posters to fill the window and come round out of sight: the grid stays
     if (!(pitch > 0) || loop < W + 2 * pitch) { root.classList.remove('drift'); return; }
     drift = true;
     dpos %= loop;
-    placeRow();                                      // where the row has got to (no frame in its laid-out place)
+    choose(placeRow());                              // where the row has got to (no frame in its laid-out place)
   };
   setupDrift();
   void root.offsetWidth; remeasure();
@@ -195,9 +205,19 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     if (lr2 && lr2.top < c.H + 40 && lr2.bottom > -40) {
       let rest = false;
       if (fine && !away) { const wr = tkw.getBoundingClientRect(); rest = c.ptr.cx >= wr.left && c.ptr.cx <= wr.right && c.ptr.cy >= wr.top && c.ptr.cy <= wr.bottom; }
-      dv += ((rest ? 0 : SPEED) - dv) * (1 - Math.exp(-c.dt * (rest ? 6 : 2.2)));
+      dv += ((rest ? 0 : speed) - dv) * (1 - Math.exp(-c.dt * (rest ? 6 : 2.2)));
       dpos = (dpos + dv * c.dt) % loop;
-      placeRow();
+      const best = placeRow();
+      if (rest) {
+        // the poster under the mouse is the chosen one (between two posters the last one stays chosen)
+        for (let i = 0; i < NL; i++) {
+          if (c.ptr.cx < lx[i] || c.ptr.cx > lx[i] + cwd) continue;
+          const r = lcs[i].getBoundingClientRect();
+          if (c.ptr.cy >= r.top && c.ptr.cy <= r.bottom) pick = i;
+          break;
+        }
+      } else pick = -1;
+      choose(pick >= 0 ? pick : best);
     }
     const cr = ct.getBoundingClientRect();
     if (cr.top < c.H && cr.bottom > 0) ctSlab.style.transform = 'translate3d(' + (-c.ptr.sx * 16).toFixed(2) + 'px,' + ((cr.top - (c.H - cr.height)) * -0.1).toFixed(1) + 'px,0)';

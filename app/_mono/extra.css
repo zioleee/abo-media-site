@@ -77,7 +77,11 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(200px,16.5cqi);will-change:translate}
 .m1.mono-home.drift .b-lc.on .th{transform:translateY(-14px);box-shadow:0 26px 44px -18px rgba(6,40,56,.6)}
 .m1.mono-home.drift .b-lc .cp{opacity:.7;transition:opacity .7s var(--qt)}
-.m1.mono-home.drift .b-lc.on .cp,.m1.mono-home.drift .b-lc:hover .cp{opacity:1}
+.m1.mono-home.drift .b-lc.on .cp{opacity:1}
+/* one chosen poster at a time: the script moves the choice to the poster under the mouse, so the board's own hover colouring
+   (which would add a second one — and stick after a tap on a phone) stays off here */
+.m1.mono-home.drift .b-lc:hover:not(.on) .th .pst{filter:grayscale(1) contrast(1.12)}
+.m1.mono-home.drift .b-lc:hover:not(.on) .th::after{opacity:1}
 @container (max-width: 760px){
 .m1.mono-home.drift .b-tkw{margin-top:calc(9cqi - 16px)}
 .m1.mono-home.drift .b-tk{gap:3.6cqi;padding-top:16px}

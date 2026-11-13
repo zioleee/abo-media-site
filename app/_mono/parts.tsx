@@ -4,6 +4,7 @@ import { Fragment, type CSSProperties, type HTMLAttributes, type ReactNode } fro
 import { FORMS, MARK } from "./marks";
 import type { Columns, Lang } from "./content";
 import { hygraphSrcSet, optimizeHygraphImage } from "./data";
+import CmsImg from "./CmsImg";
 
 /** inline styles with custom properties */
 export const vars = (o: Record<string, string | number | undefined>) => o as CSSProperties;
@@ -54,7 +55,7 @@ export function Poster({ src, ratio, alt, lazy = true, width = 400, sizes }: { s
   const set = sizes ? hygraphSrcSet(src, [400, 800]) : undefined;
   const io = { ...(lazy ? ({ loading: "lazy", decoding: "async" } as const) : ({ decoding: "async" } as const)), ...(set ? { srcSet: set, sizes } : {}) };
   if (ratio && Math.abs((ratio - FRAME) / FRAME) <= 0.015) {
-    return <span className="pst"><img className="cv" src={url} alt={alt} {...io} /></span>;
+    return <span className="pst"><CmsImg className="cv" src={url} fallback={src} alt={alt} {...io} /></span>;
   }
   if (ratio && Math.abs((ratio - FRAME) / FRAME) <= 0.1) {
     let main: CSSProperties, c1: CSSProperties, c2: CSSProperties;
@@ -73,16 +74,16 @@ export function Poster({ src, ratio, alt, lazy = true, width = 400, sizes }: { s
     }
     return (
       <span className="pst mr">
-        <img src={url} alt="" aria-hidden="true" style={c1} {...io} />
-        <img src={url} alt="" aria-hidden="true" style={c2} {...io} />
-        <img src={url} alt={alt} style={main} {...io} />
+        <CmsImg src={url} fallback={src} alt="" aria-hidden="true" style={c1} {...io} />
+        <CmsImg src={url} fallback={src} alt="" aria-hidden="true" style={c2} {...io} />
+        <CmsImg src={url} fallback={src} alt={alt} style={main} {...io} />
       </span>
     );
   }
   return (
     <span className="pst whole">
-      <img className="bk" src={url} alt="" aria-hidden="true" loading={lazy ? "lazy" : undefined} decoding="async" />
-      <img src={url} alt={alt} {...io} />
+      <CmsImg className="bk" src={url} fallback={src} alt="" aria-hidden="true" loading={lazy ? "lazy" : undefined} decoding="async" />
+      <CmsImg src={url} fallback={src} alt={alt} {...io} />
     </span>
   );
 }

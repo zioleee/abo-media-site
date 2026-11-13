@@ -4,6 +4,7 @@
 import MonoRoot from "../MonoRoot";
 import Hero from "../Hero";
 import Footer from "../Footer";
+import NextDoor from "../NextDoor";
 import AboutHistory from "./AboutHistory";
 import { GridForm, Tag, vars } from "../parts";
 import { ABOUT, HERO, STATS, TAGW, hrefOf, type Lang } from "../content";
@@ -56,6 +57,7 @@ export default function AboutView({ lang }: { lang: Lang }) {
             </div>
           </div>
         </section>
+        <NextDoor lang={lang} cur="about" />
       </main>
       <Footer lang={lang} path={path} cur="about" />
     </MonoRoot>

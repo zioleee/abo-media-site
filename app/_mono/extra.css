@@ -390,3 +390,54 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .cur.on .cur-chip span{opacity:1;transition:opacity .28s linear .1s}
 .cur[data-tone=dark] .cur-chip{color:#1c7a9e}
 .cur[data-tone=dark] .cur-chip::before{background:#fff}
+
+/* ---------- a tab ends with a door to the next tab (NextDoor.tsx) ----------
+   The main page closes on "Contact"; the tabs just ran into the footer. Here each one closes on the next tab's name — the
+   big serif label of the first screens — with that page's own title as a line beside it. Under the pointer the slab of the
+   first screens sweeps across the whole band, with the logo's lean, and everything on it turns white. */
+.mono .m1-door{position:relative;overflow:hidden;border-top:1px solid var(--ln);background:#fff}
+.m1.mono a.m1-door-a{position:relative;isolation:isolate;box-sizing:border-box;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr);column-gap:24px;align-items:end;height:calc(29 * var(--u));padding-top:calc(4.4 * var(--u));padding-bottom:calc(4.2 * var(--u));color:var(--b)}
+.mono .m1-door .sw{position:absolute;z-index:-1;top:0;bottom:0;left:-30%;width:160%;overflow:hidden;background:linear-gradient(180deg,#3db3d9 0%,#2596be 46%,#1c7a9e 100%);transform-origin:0 0;transform:skewX(25.15deg) translateX(-130%)}
+.mono .m1-door .sw i{position:absolute;inset:0;--gl:rgba(255,255,255,.3);background-image:linear-gradient(var(--gl) 1px,transparent 1px),linear-gradient(90deg,var(--gl) 1px,transparent 1px);background-size:calc(2.1 * var(--u)) calc(2.1 * var(--u))}
+.mono .m1-door .k{grid-column:1 / 7;grid-row:1;align-self:start;font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:calc(2.1 * var(--u));line-height:1}
+.mono .m1-door .ar{grid-column:7 / 13;grid-row:1;align-self:start;justify-self:end;line-height:0}
+.mono .m1-door .ar svg{width:calc(2.5 * var(--u));height:calc(2.5 * var(--u));stroke-width:.72}
+.mono .m1-door .lb{grid-column:1 / 9;grid-row:2;display:block}
+.mono .m1-door .lb .m1-tag{font-size:calc(10 * var(--u));letter-spacing:-.015em;color:inherit}
+.mono .m1-door .lb .m1-tag > i:first-child{margin-left:.16em}
+.mono .m1-door .tl{grid-column:8 / 13;grid-row:2;justify-self:end;display:block;padding-bottom:calc(1.25 * var(--u));text-align:right;font-size:calc(2.15 * var(--u));line-height:1.5;font-weight:300;letter-spacing:-.035em}
+.mono .m1-door .tl b{font-weight:700}
+.m1.mono.live a.m1-door-a{transition:color .55s var(--qt)}
+.m1.mono.live .m1-door .sw{transition:transform .7s var(--qt)}
+@media (hover: hover){
+.m1.mono.live a.m1-door-a:hover{color:#fff}
+.m1.mono.live a.m1-door-a:hover .sw{transform:skewX(25.15deg);transition:transform 1.2s var(--ex)}
+}
+.mono a.m1-door-a:focus-visible{outline-offset:-6px}
+@container (max-width: 760px){
+.m1.mono a.m1-door-a{display:block;height:auto;padding-top:calc(11 * var(--u));padding-bottom:calc(12 * var(--u))}
+.mono .m1-door .k{display:block;font-size:calc(5.4 * var(--u))}
+.mono .m1-door .ar{position:absolute;right:var(--px);top:calc(10.2 * var(--u))}
+.mono .m1-door .ar svg{width:calc(7 * var(--u));height:calc(7 * var(--u))}
+.mono .m1-door .lb{margin-top:calc(10 * var(--u))}
+.mono .m1-door .lb .m1-tag{font-size:min(calc(18 * var(--u)),calc(calc(88 * var(--u)) / (var(--tgw,3.6) + .5)))}
+.mono .m1-door .tl{justify-self:auto;margin-top:calc(5 * var(--u));padding-bottom:0;text-align:left;font-size:calc(4.4 * var(--u));line-height:1.55}
+}
+
+/* ---------- between two pages: the sheet sweeps across the window (PageSheet.tsx) ----------
+   The phone menu's sheet once more: in from the left with the logo's lean, out on the right. */
+.pgs{position:fixed;inset:0;z-index:120;overflow:hidden;visibility:hidden;pointer-events:none}
+.pgs.in,.pgs.out{visibility:visible}
+.pgs.in{pointer-events:auto}
+.pgs > i{position:absolute;top:0;bottom:0;left:-60vh;right:-60vh;overflow:hidden;background:linear-gradient(180deg,#3db3d9 0%,#2596be 46%,#1c7a9e 100%);transform-origin:0 0;transform:skewX(25.15deg) translateX(-101%)}
+.pgs > i > b{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.17) 1px,transparent 1px);background-size:min(2.1vw,36.3px) min(2.1vw,36.3px)}
+.pgs.in > i{transform:skewX(25.15deg);transition:transform .56s cubic-bezier(.645,.045,.355,1)}
+.pgs.out > i{transform:skewX(25.15deg) translateX(101%);transition:transform .9s cubic-bezier(.19,1,.22,1)}
+/* (from the phone menu: the menu's own sheet stays while its lines go out, then this one is there in its place — the same
+   blue and the same grid — and leaves as usual) */
+.pgs.now.in > i{transition:none}
+.mm[data-go] .mm-sheet{transform:skewX(25.15deg);transition:none}
+.mm[data-go] .mm-bar,.mm[data-go] .mm-it,.mm[data-go] .mm-foot{transition:opacity .16s linear}
+.mm[data-go]:not(.on){transition:visibility 0s linear .3s}
+.pgs.now > i > b{background-size:34px 34px}
+@media (max-width: 760px){.pgs > i > b,.pgs.now > i > b{background-size:5.4vw 5.4vw}}

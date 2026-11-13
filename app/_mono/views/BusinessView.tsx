@@ -4,6 +4,7 @@ import Link from "next/link";
 import MonoRoot from "../MonoRoot";
 import Hero from "../Hero";
 import Footer from "../Footer";
+import NextDoor from "../NextDoor";
 import { ArrowUR, Tag, vars } from "../parts";
 import { BUSINESS, HERO, TAGW, hrefOf, type Lang } from "../content";
 
@@ -59,6 +60,7 @@ export default function BusinessView({ lang }: { lang: Lang }) {
             </div>
           </div>
         </section>
+        <NextDoor lang={lang} cur="business" />
       </main>
       <Footer lang={lang} path={path} cur="business" />
     </MonoRoot>

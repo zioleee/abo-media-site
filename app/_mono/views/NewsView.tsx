@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import MonoRoot from "../MonoRoot";
 import Hero from "../Hero";
 import Footer from "../Footer";
+import NextDoor from "../NextDoor";
 import { ArrowUR, Tag, vars } from "../parts";
 import { HERO, NEWS, TAGW, hrefOf, type Lang } from "../content";
 import { dateParts, getNewsItems, sourceOf } from "../data";
@@ -63,6 +64,7 @@ export default async function NewsView({ lang }: { lang: Lang }) {
             </div>
           </div>
         </section>
+        <NextDoor lang={lang} cur="news" />
       </main>
       <Footer lang={lang} path={path} cur="news" />
     </MonoRoot>

@@ -3,6 +3,7 @@
 import MonoRoot from "../MonoRoot";
 import Hero from "../Hero";
 import Footer from "../Footer";
+import NextDoor from "../NextDoor";
 import WorksWall from "./WorksWall";
 import { HERO, TAGW, hrefOf, type Lang } from "../content";
 
@@ -13,6 +14,7 @@ export default function WorksView({ lang }: { lang: Lang }) {
       <main>
         <Hero lang={lang} path={path} cur="works" name="Works" tgw={TAGW.works} columns={HERO.works[lang]} />
         <WorksWall lang={lang} />
+        <NextDoor lang={lang} cur="works" />
       </main>
       <Footer lang={lang} path={path} cur="works" />
     </MonoRoot>

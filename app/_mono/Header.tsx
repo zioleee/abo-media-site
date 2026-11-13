@@ -2,13 +2,14 @@
 // The header of the boards: the logo, the five tabs (the current one in bold after a leaning stroke), the language
 // switch; on a phone the language and the menu button. `wordmark`: the main page's header, where the mark has left the
 // logo to become the first screen. `ghost`: the same header once more, drawn in white over the main page's film
-// (not read out, not in the tab order — the real one is).
+// (not read out, not in the tab order — the real one is). `sticky`: the header that stays at the top of the window once
+// the page's own header has scrolled away (MonoRoot puts it there and switches between the two).
 import Link from "next/link";
 import { LOGO, TABS, UI, hrefOf, type Lang, type TabKey } from "./content";
 import { Hamburger } from "./parts";
 import { useMono } from "./MonoRoot";
 
-export default function Header({ lang, path, cur, wordmark = false, ghost = false }: { lang: Lang; path: string; cur?: TabKey; wordmark?: boolean; ghost?: boolean }) {
+export default function Header({ lang, path, cur, wordmark = false, ghost = false, sticky = false }: { lang: Lang; path: string; cur?: TabKey; wordmark?: boolean; ghost?: boolean; sticky?: boolean }) {
   const { openMenu, menuOpen } = useMono();
   const t = UI[lang];
   const tab = ghost ? -1 : undefined;
@@ -44,5 +45,5 @@ export default function Header({ lang, path, cur, wordmark = false, ghost = fals
       </div>
     </>
   );
-  return ghost ? <div className="m1-bar m1-pad">{inner}</div> : <header className="m1-bar m1-pad">{inner}</header>;
+  return ghost ? <div className="m1-bar m1-pad">{inner}</div> : <header className={"m1-bar m1-pad" + (sticky ? " sk" : "")}>{inner}</header>;
 }

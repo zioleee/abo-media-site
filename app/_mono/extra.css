@@ -18,6 +18,12 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono .m1-lang a,.mono .m1-fbot a{color:inherit}
 .m1.mono.live .m1-lang a,.m1.mono.live .m1-fbot a{transition:opacity .4s var(--qt)}
 .m1.mono.live .m1-lang a:hover,.m1.mono.live .m1-fbot a:hover{opacity:.6}
+/* the tabs answer the pointer (header, the header that stays, footer — the boards gave them no hover): a line draws in
+   under the name, from the left, and leaves to the right */
+.mono .m1-nav > a,.mono .m1-fnav a{position:relative}
+.mono .m1-nav > a:not([aria-current])::after,.mono .m1-fnav a:not([aria-current])::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%}
+.m1.mono.live .m1-nav > a::after,.m1.mono.live .m1-fnav a::after{transition:transform .5s var(--ex)}
+@media (hover: hover){.mono .m1-nav > a:hover::after,.mono .m1-fnav a:hover::after{transform:scaleX(1);transform-origin:0 50%}}
 /* a poster whose shape is far from the frame's: whole, over a soft copy of itself */
 .m1.mono .pst.whole > img.bk{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(16px) saturate(1.1);opacity:.85}
 .m1.mono .pst.whole > img:not(.bk){position:relative}
@@ -25,8 +31,40 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-about.live .m1-hl.mv .kw:nth-of-type(4)::before{transition-delay:1.16s}
 .m1.mono-about.live .m1-hl.mv .kw:nth-of-type(5)::before{transition-delay:1.38s}
 
+/* ---------- the header stays at the top of the window (user, 2026-11-13: "counter 홈페이지처럼 위에 남는 것") ----------
+   A second copy of the header in a holder that sticks to the top of the window and takes no room. It is hidden while the
+   page's own header is in its place; when that one starts to leave, the two change places (MonoRoot: `stuck`), and a
+   little later a frosted ground comes in behind it (`solid`). Over a blue part of the page, and over the main page's film,
+   it is white on frosted blue (`sdark`) — on the page's flat grounds the bar itself cannot be seen, only what passes under it. */
+.mono .m1-stick{position:sticky;top:0;z-index:80;height:0}
+.mono .m1-stick .m1-bar{visibility:hidden;transition:color .3s var(--qt),height .5s var(--ex)}
+/* (shown with the page: not during the moment the page waits for its motion to be set up) */
+.mono.stuck.live .m1-stick .m1-bar,.mono.stuck.still .m1-stick .m1-bar{visibility:visible}
+.mono.stuck header.m1-bar:not(.sk),.mono.stuck .b-bar2{visibility:hidden}
+.mono .m1-stick .m1-bar::before{content:"";position:absolute;inset:0;z-index:-1;background-color:rgba(255,255,255,.84);-webkit-backdrop-filter:blur(14px) saturate(1.15);backdrop-filter:blur(14px) saturate(1.15);border-bottom:1px solid rgba(37,150,190,.16);opacity:0;transition:opacity .35s var(--qt),background-color .3s var(--qt),border-color .3s var(--qt)}
+.mono.solid .m1-stick .m1-bar::before{opacity:1}
+/* (once it has its ground it is a little lower than the page's own header — on a phone that one is low already) */
+@container (min-width: 761px){.mono.solid .m1-stick .m1-bar{height:76px}}
+.mono .m1-stick .m1-logo img{transition:filter .3s var(--qt)}
+.mono.sdark .m1-stick .m1-bar{color:#fff}
+.mono.sdark .m1-stick .m1-bar::before{background-color:rgba(28,122,158,.84);border-bottom-color:transparent}
+.mono.sdark .m1-stick .m1-logo img{filter:brightness(0) invert(1)}
+.mono.sdark .m1-stick .m1-lang{border-left-color:rgba(255,255,255,.5)}
+.mono.sdark .m1-stick .m1-mbtn button{border-color:rgba(255,255,255,.6);color:#fff}
+/* (the main page's own header shows the wordmark alone — the mark is the first screen — at the margin: there the logo of the
+   header that stays starts from the same picture, and the mark comes out to the left of the wordmark as it takes its place) */
+.mono-home .m1-stick .m1-logo img{clip-path:inset(0 0 0 43.84%);transform:translateX(-43.84%)}
+.mono-home.stuck .m1-stick .m1-logo img{clip-path:inset(0 0 0 0);transform:none;transition:clip-path .7s var(--ex),transform .7s var(--ex),filter .3s var(--qt)}
+/* (what the browser brings into view stops below it: a link reached with the Tab key, a year reached from Works' index —
+   set on the things themselves; a padding on the page's scroll would also move the page whenever a link of this header,
+   or the phone menu's close button, takes the focus) */
+.mono main a,.mono main button,.mono .m1-foot a{scroll-margin-top:100px}
+/* (the arrivals of the page's own header are not for this one: it is there, or it is not) */
+.m1.mono.live .m1-stick .m1-logo,.m1.mono.live .m1-stick .m1-nav{opacity:1;transform:none;transition:none}
+
 /* ---------- Works: a year opens and closes at a tap (phone) ---------- */
-.mono .m1-wy{scroll-margin-top:24px}
+.mono .m1-wy{scroll-margin-top:116px}
+@container (max-width: 760px){.mono .m1-wy{scroll-margin-top:84px}}
 .mono button.tg{appearance:none;-webkit-appearance:none;box-sizing:content-box;margin:0;padding:0;background:none;font:inherit;color:var(--b);cursor:pointer}
 .mono .m1-wyh{cursor:default}
 @container (max-width: 760px){.mono .m1-wyh{cursor:pointer;-webkit-tap-highlight-color:transparent}}
@@ -51,10 +89,10 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
    (cqw, not cqi: in vertical text the inline axis is the height) */
 .mono-home[lang=en] .h-vt{font-size:min(4.45cqw,calc((clamp(460px,47cqw,690px) - 6.2cqw - 48px) / (var(--vn,7) * 1.12)))}
 @container (max-width: 760px){.mono-home[lang=en] .h-vt{font-size:min(9cqw,calc((138cqw - 15cqw - 24px) / (var(--vn,7) * 1.12)))}}
-/* the channel list where it is narrow (tablet, phone): a name may take two lines (the English ones are longer), so the band
-   under the row being looked at is drawn word by word — the pieces overlap across the spaces, each line gets one band with
-   the board's ends */
-@container (max-width: 1000px){
+/* the channel list: the names carry the section (user, 2026-11-13: larger — 3.3cqi where the board had 2.5). A name that does
+   not fit its row takes two lines (the English ones are longer), so the band under the row being looked at is drawn word
+   by word — the pieces overlap across the spaces, each line gets one band with the board's ends */
+.mono-home .b-yr .nm{font-size:3.3cqi}
 .mono-home .b-yr .kw{white-space:normal}
 .mono-home .b-yr .kw::before{display:none}
 .mono-home .b-yr .wd{position:relative}
@@ -62,19 +100,23 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono-home .b-yr.on .wd::before{transform:skewX(25.15deg)}
 .m1.mono-home.live .b-yr .wd::before{transform-origin:100% 50%;transition:transform .32s var(--qt)}
 .m1.mono-home.live .b-yr.on .wd::before{transform-origin:0 50%;transition:transform .9s var(--ex) calc(var(--wi,0) * 70ms)}
-}
-/* (on a tablet a row whose name takes two lines keeps a little air above and below it, and the one-line rows give it the room,
-   so the list still ends with the poster; where every name keeps to one line nothing changes) */
-@container (max-width: 1000px) and (min-width: 761px){.m1.mono-home .b-yr .rw{box-sizing:border-box;min-height:5.6cqi;padding-top:.6cqi;padding-bottom:.6cqi}}
+/* (a row whose name takes two lines keeps a little air above and below it, and the one-line rows give it the room, so the
+   list still ends with the poster; where every name keeps to one line nothing changes) */
+.m1.mono-home .b-yr .rw{box-sizing:border-box;min-height:5.4cqi;padding-top:.6cqi;padding-bottom:.6cqi}
+@container (max-width: 1000px) and (min-width: 761px){.mono-home .b-yr .nm{font-size:3.6cqi}.m1.mono-home .b-yr .rw{min-height:5.6cqi}}
+@container (max-width: 760px){.mono-home .b-yr .nm{font-size:5.3cqi}.m1.mono-home .b-yr .rw{min-height:0;padding:3.6cqi 0}}
 /* the lineup's cards carry no numbers (user, 2026-11-11): the caption is the channel over the title */
 .mono-home .b-lc .cp{display:block}
 @container (max-width: 760px){.mono-home .b-lc .ch{margin-top:0}}
 /* while the page moves, the row moves on by itself (motion/home.js): one line of posters running out past the window's
    edges; the one passing the middle stands up a little, in its own colours. (Room above the row for that: the row starts
-   as far below the text as the cards on the board.) */
+   as far below the text as the cards on the board.) The posters are larger than the board's grid had them (user,
+   2026-11-13: 20.5cqi where it was 16.5 — about four in a window, not five), their captions with them. */
 .m1.mono-home.drift .b-tkw{margin:calc(5.2cqi - 18px) calc(var(--px) * -1) 0;overflow:hidden}
 .m1.mono-home.drift .b-tk{display:flex;gap:max(24px,1.95cqi);width:max-content;margin:0;padding:18px var(--px) 2px}
-.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(200px,16.5cqi);will-change:translate}
+.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(220px,20.5cqi);will-change:translate}
+.m1.mono-home.drift .b-lc .ch{font-size:13px}
+.m1.mono-home.drift .b-lc .ti{font-size:max(15px,1.4cqi)}
 .m1.mono-home.drift .b-lc.on .th{transform:translateY(-14px);box-shadow:0 26px 44px -18px rgba(6,40,56,.6)}
 .m1.mono-home.drift .b-lc .cp{opacity:.7;transition:opacity .7s var(--qt)}
 .m1.mono-home.drift .b-lc.on .cp{opacity:1}

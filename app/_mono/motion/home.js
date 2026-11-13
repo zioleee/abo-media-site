@@ -50,6 +50,8 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
   const SEND = (fx + za) / (fx - xl) * 1.05;
   const hx = canPin ? Math.round(H0 * (desk ? 1.15 : 0.66)) : 0, ZS = canPin ? H0 * (desk ? 0.74 : 0.5) : PH * 0.6;
   if (canPin) { root.style.setProperty('--hx', hx + 'px'); root.classList.add('pin'); }
+  // (for the header that stays at the top of the window: the film, once it is the whole window, is a dark ground)
+  if (canPin && desk) film.setAttribute('data-tone', 'dark');
   const f2 = (v) => String(Math.round(v * 100) / 100);
   const pathOf = (x, y, w) => {
     let d = '';
@@ -227,7 +229,7 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     root.classList.remove('pin', 'tall', 'drift', 'wa', 'wb', 'wc');
     und.style.opacity = ''; und.style.transform = ''; und.style.visibility = '';
     root.style.removeProperty('--hx');
-    film.style.clipPath = clip0; film.style.pointerEvents = '';
+    film.style.clipPath = clip0; film.style.pointerEvents = ''; film.removeAttribute('data-tone');
     ['left', 'top', 'width', 'height', 'right', 'bottom'].forEach((k) => { vd.style[k] = ''; });
     ['transform', 'transformOrigin', 'filter', 'left', 'top', 'width', 'height'].forEach((k) => { vid.style[k] = ''; stl.style[k] = ''; });
     [tone, ov, shade, fcue, bar2].forEach((el) => { el.style.opacity = ''; });

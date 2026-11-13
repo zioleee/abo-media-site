@@ -317,7 +317,9 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
    The phone menu's sheet — blue, the sheared white grid, sweeping in with the logo's lean — and on it the poster whole, in
    its own colours, beside its year (the serif of the wall's years), its channel and its title. Outside the page's root,
    like the menu: sizes are worked out from the window here (--u as in the page: 1/100 of its width, up to 1728 px). */
-.mono button.m1-work{appearance:none;-webkit-appearance:none;display:block;width:100%;margin:0;padding:0;border:0;border-radius:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+/* (a button stretched to its row's height would set its poster and caption in the middle of that height: it keeps its own
+   height, at the top of the row, like the plain frames it replaces) */
+.mono button.m1-work{appearance:none;-webkit-appearance:none;display:block;align-self:start;width:100%;margin:0;padding:0;border:0;border-radius:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
 .mono .b-lc[data-cur]{cursor:pointer}
 /* (a card of the lineup that takes the keyboard's or a press's focus must not scroll its row: the row is clipped, not hidden) */
 .m1.mono-home.drift .b-tkw{overflow:clip}
@@ -415,7 +417,8 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono .m1-door .lb .m1-tag{font-size:calc(10 * var(--u));letter-spacing:-.015em;color:inherit}
 .mono .m1-door .lb .m1-tag > i:first-child{margin-left:.16em}
 .mono .m1-door .tl{grid-column:8 / 13;grid-row:2;justify-self:end;display:block;padding-bottom:calc(1.25 * var(--u));text-align:right;font-size:calc(2.15 * var(--u));line-height:1.5;font-weight:300;letter-spacing:-.035em}
-.mono .m1-door .tl b{font-weight:700}
+.mono .m1-door .tl{text-wrap:balance}
+.mono .m1-door .tl b{font-weight:700;white-space:nowrap}
 .m1.mono.live a.m1-door-a{transition:color .55s var(--qt)}
 .m1.mono.live .m1-door .sw{transition:transform .7s var(--qt)}
 @media (hover: hover){

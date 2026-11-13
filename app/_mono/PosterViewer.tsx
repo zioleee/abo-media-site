@@ -12,6 +12,9 @@ import { VIEWER, type Lang } from "./content";
 
 export type ViewItem = { id: string; title: string; year: string; channel?: string | null; src: string; ratio?: number | null };
 
+const WIDTHS = [800, 1200, 1600];
+const SIZES = "(max-width: 760px) 84vw, 44vw";
+
 const ArrowL = () => (
   <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M18 7H2M8 1 2 7l6 6" /></svg>
 );
@@ -77,7 +80,12 @@ export default function PosterViewer({ lang, list, index, open, onClose, onStep 
     if (!open || !many) return;
     [1, -1].forEach((d) => {
       const n = list[(index + d + list.length) % list.length];
-      if (n) { const im = new Image(); im.src = optimizeHygraphImage(n.src, 1200); }
+      if (!n) return;
+      // (asked for the way the poster itself will be: the browser then takes the same size)
+      const im = new Image();
+      const set = hygraphSrcSet(n.src, WIDTHS);
+      if (set) { im.sizes = SIZES; im.srcset = set; }
+      im.src = optimizeHygraphImage(n.src, 1200);
     });
   }, [open, many, list, index]);
 
@@ -120,14 +128,14 @@ export default function PosterViewer({ lang, list, index, open, onClose, onStep 
               {was && was.id !== item.id && (
                 <figure key={"was" + was.id} className="pv-fig was sharp" aria-hidden="true" style={{ ["--ar" as string]: ratioOf(was).toFixed(4), backgroundImage: `url("${optimizeHygraphImage(was.src, 400)}")` }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={optimizeHygraphImage(was.src, 1200)} srcSet={hygraphSrcSet(was.src, [800, 1200, 1600])} sizes="(max-width: 760px) 84vw, 44vw" alt="" />
+                  <img src={optimizeHygraphImage(was.src, 1200)} srcSet={hygraphSrcSet(was.src, WIDTHS)} sizes={SIZES} alt="" />
                 </figure>
               )}
               <figure key={item.id} className={"pv-fig" + (sharp === item.id ? " sharp" : "")} style={{ backgroundImage: `url("${optimizeHygraphImage(item.src, 400)}")` }}>
                 <CmsImg
                   src={optimizeHygraphImage(item.src, 1200)}
-                  srcSet={hygraphSrcSet(item.src, [800, 1200, 1600])}
-                  sizes="(max-width: 760px) 84vw, 44vw"
+                  srcSet={hygraphSrcSet(item.src, WIDTHS)}
+                  sizes={SIZES}
                   fallback={item.src}
                   alt={item.title}
                   decoding="async"

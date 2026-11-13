@@ -1,6 +1,7 @@
 // The first screen of every tab: the tab's name as a big serif label, the blue leaning slab, the title set vertically.
+// (No "Scroll" mark here — user, 2026-11-14: the round mark is the main page's alone.)
 import Header from "./Header";
-import { ArrowD, Tag, vars, verticalTitle } from "./parts";
+import { Tag, vars, verticalTitle } from "./parts";
 import type { Columns, Lang, TabKey } from "./content";
 
 export default function Hero({ lang, path, cur, name, tgw, columns }: { lang: Lang; path: string; cur?: TabKey; name: string; tgw: number; columns: Columns }) {
@@ -13,7 +14,6 @@ export default function Hero({ lang, path, cur, name, tgw, columns }: { lang: La
       <div className="m1-vtw">
         <h1 className="m1-vt" aria-label={`${name.toUpperCase()} — ${text}`}><span aria-hidden="true">{node}</span></h1>
       </div>
-      <p className="m1-cue" aria-hidden="true">Scroll<i><ArrowD /></i></p>
     </section>
   );
 }

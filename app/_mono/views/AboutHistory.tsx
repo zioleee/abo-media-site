@@ -7,6 +7,7 @@ import { useMono } from "../MonoRoot";
 import { MarkSvg, Tag, vars } from "../parts";
 import { ABOUT, HISTORY_EN, HISTORY_KO, type Lang } from "../content";
 import { coverOf, getWorks, optimizeHygraphImage, ratioOf, workOfProgramme, type Work } from "../data";
+import CmsImg from "../CmsImg";
 
 const clean = (s: string) => s.replace(/[<>]/g, "").trim();
 
@@ -67,7 +68,7 @@ export default function AboutHistory({ lang }: { lang: Lang }) {
                       style={vars(src ? { "--d": d, "--src": `url("${src}")`, "--ar": ratio.toFixed(4) } : { "--d": d })}
                     >
                       <span className="th" style={{ aspectRatio: ratio.toFixed(4) }}>
-                        {src && <img src={src} alt="" loading="lazy" decoding="async" />}
+                        {src && <CmsImg src={src} fallback={cover?.url} alt="" loading="lazy" decoding="async" />}
                       </span>
                       <span className="tx"><span className="ch">{r.net}</span><span className="pg">{r.prog}</span></span>
                     </li>

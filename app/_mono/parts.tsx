@@ -3,7 +3,8 @@
 import { Fragment, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 import { FORMS, MARK } from "./marks";
 import type { Columns, Lang } from "./content";
-import { optimizeHygraphImage } from "./data";
+import { hygraphSrcSet, optimizeHygraphImage } from "./data";
+import CmsImg from "./CmsImg";
 
 /** inline styles with custom properties */
 export const vars = (o: Record<string, string | number | undefined>) => o as CSSProperties;
@@ -24,8 +25,13 @@ export function Tag({ text, cls = "", ...rest }: { text: string; cls?: string } 
 export const ArrowD = () => (
   <svg width="14" height="18" viewBox="0 0 14 18" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M7 0v16M1 10l6 6 6-6" /></svg>
 );
+// (The arrow is drawn twice: the second waits outside the drawing, lower left. Under the pointer the first leaves through
+// the upper right corner and the second comes in after it — extra.css; the drawing's own edge cuts both.)
 export const ArrowUR = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M2.5 13.5 13 3M5 3h8v8" /></svg>
+  <svg className="aur" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <path d="M2.5 13.5 13 3M5 3h8v8" />
+    <path className="in" d="M2.5 13.5 13 3M5 3h8v8" />
+  </svg>
 );
 export const Plus = () => (
   <svg className="p" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 1v14M1 8h14" /></svg>
@@ -45,13 +51,16 @@ const FRAME = 1 / 1.414; // the frame (width / height): the A-series ratio most 
 const pc = (v: number) => v.toFixed(3);
 
 /** A poster in the 1 : 1.414 frame, never cropped. One that matches the frame fills it; a slightly different one is
- *  completed by its own edges mirrored outward (a few pixels); a very different one stands whole over a soft copy of itself. */
-export function Poster({ src, ratio, alt, lazy = true, width = 400 }: { src?: string | null; ratio?: number | null; alt: string; lazy?: boolean; width?: number }) {
+ *  completed by its own edges mirrored outward (a few pixels); a very different one stands whole over a soft copy of itself.
+ *  `sizes`: how wide it is shown (as for an <img>) — with it a CMS picture is offered at 400 and 800 px, and a dense
+ *  screen takes the larger one. */
+export function Poster({ src, ratio, alt, lazy = true, width = 400, sizes }: { src?: string | null; ratio?: number | null; alt: string; lazy?: boolean; width?: number; sizes?: string }) {
   if (!src) return <span className="pst" />;
   const url = optimizeHygraphImage(src, width);
-  const io = lazy ? ({ loading: "lazy", decoding: "async" } as const) : ({ decoding: "async" } as const);
+  const set = sizes ? hygraphSrcSet(src, [400, 800]) : undefined;
+  const io = { ...(lazy ? ({ loading: "lazy", decoding: "async" } as const) : ({ decoding: "async" } as const)), ...(set ? { srcSet: set, sizes } : {}) };
   if (ratio && Math.abs((ratio - FRAME) / FRAME) <= 0.015) {
-    return <span className="pst"><img className="cv" src={url} alt={alt} {...io} /></span>;
+    return <span className="pst"><CmsImg className="cv" src={url} fallback={src} alt={alt} {...io} /></span>;
   }
   if (ratio && Math.abs((ratio - FRAME) / FRAME) <= 0.1) {
     let main: CSSProperties, c1: CSSProperties, c2: CSSProperties;
@@ -70,16 +79,16 @@ export function Poster({ src, ratio, alt, lazy = true, width = 400 }: { src?: st
     }
     return (
       <span className="pst mr">
-        <img src={url} alt="" aria-hidden="true" style={c1} {...io} />
-        <img src={url} alt="" aria-hidden="true" style={c2} {...io} />
-        <img src={url} alt={alt} style={main} {...io} />
+        <CmsImg src={url} fallback={src} alt="" aria-hidden="true" style={c1} {...io} />
+        <CmsImg src={url} fallback={src} alt="" aria-hidden="true" style={c2} {...io} />
+        <CmsImg src={url} fallback={src} alt={alt} style={main} {...io} />
       </span>
     );
   }
   return (
     <span className="pst whole">
-      <img className="bk" src={url} alt="" aria-hidden="true" {...io} />
-      <img src={url} alt={alt} {...io} />
+      <CmsImg className="bk" src={url} fallback={src} alt="" aria-hidden="true" loading={lazy ? "lazy" : undefined} decoding="async" />
+      <CmsImg src={url} fallback={src} alt={alt} {...io} />
     </span>
   );
 }

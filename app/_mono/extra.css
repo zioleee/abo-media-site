@@ -7,6 +7,10 @@
 
 /* ---------- the page's root (on the boards these were the root's inline styles) ---------- */
 .mono{container-type:inline-size;width:100%;min-height:100vh;position:relative;overflow-x:clip;word-break:keep-all;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background:#fff;color:#1c7a9e;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-weight:400}
+/* The page's measure (--u, set in mono.css) stops growing at --cap px of window width — 1728: 1.2 times the boards, the
+   factor at which counter-digital.jp stops. In a wider window the content (header and footer with it) keeps that width
+   in the middle and everything keeps its size; grounds, the film and the lineup's row still reach the window's edges.
+   (user, 2026-11-13: in a 2576 px window every piece was 1.78 times the boards — "하나하나의 요소나 전체적으로 너무 커서 보기에 벅차다".) */
 /* with scripts on, the page shows once its motion is set up (or once it is clear there will be none); never later than 3 s */
 html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s linear 3s forwards}
 @keyframes pg-show{to{visibility:visible}}
@@ -16,14 +20,43 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono a:focus-visible,.mono button:focus-visible,.mm a:focus-visible,.mm button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 .mono .m1-mbtn button{cursor:pointer;font:inherit}
 .mono .m1-lang a,.mono .m1-fbot a{color:inherit}
-.m1.mono.live .m1-lang a,.m1.mono.live .m1-fbot a{transition:opacity .4s var(--qt)}
-.m1.mono.live .m1-lang a:hover,.m1.mono.live .m1-fbot a:hover{opacity:.6}
 /* the tabs answer the pointer (header, the header that stays, footer — the boards gave them no hover): a line draws in
    under the name, from the left, and leaves to the right */
 .mono .m1-nav > a,.mono .m1-fnav a{position:relative}
 .mono .m1-nav > a:not([aria-current])::after,.mono .m1-fnav a:not([aria-current])::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%}
 .m1.mono.live .m1-nav > a::after,.m1.mono.live .m1-fnav a::after{transition:transform .5s var(--ex)}
 @media (hover: hover){.mono .m1-nav > a:hover::after,.mono .m1-fnav a:hover::after{transform:scaleX(1);transform-origin:0 50%}}
+/* the small links answer the same way — the other language (it used to fade to 60 %: a link that got fainter under the
+   pointer), the footer's e-mail, the map's source (which had no answer at all) */
+.mono .m1-lang a,.mono .m1-fbot a,.mono .m1-finfo a,.mono .m1-osm a{position:relative}
+.mono .m1-lang a::after,.mono .m1-fbot a::after,.mono .m1-finfo a::after,.mono .m1-osm a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%}
+.m1.mono.live .m1-lang a::after,.m1.mono.live .m1-fbot a::after,.m1.mono.live .m1-finfo a::after,.m1.mono.live .m1-osm a::after{transition:transform .5s var(--ex)}
+@media (hover: hover){.mono .m1-lang a:hover::after,.mono .m1-fbot a:hover::after,.mono .m1-finfo a:hover::after,.mono .m1-osm a:hover::after{transform:scaleX(1);transform-origin:0 50%}}
+/* arrows (buttons, the news rows, the main page's news line): under the pointer the arrow leaves through the upper right
+   corner and comes in again from the lower left — it is drawn twice (parts.tsx), and the drawing's own edge cuts both.
+   The boards moved it 3 px. It moves on the way in only: when the pointer leaves, both are back at once, and since they
+   look the same at rest nothing is seen. */
+.mono svg.aur .in{transform:translate(-16px,16px)}
+@media (hover: hover){
+.m1.mono.live a:hover svg.aur path,.m1.mono.live .m1-nrow:hover svg.aur path{transform:translate(16px,-16px);transition:transform .9s var(--ex)}
+.m1.mono.live a:hover svg.aur .in,.m1.mono.live .m1-nrow:hover svg.aur .in{transform:none}
+}
+.m1.mono.live .m1-btn:hover svg,.m1.mono-home.live .b-news a:hover svg{transform:none}
+.m1.mono-news.live .m1-nrow:hover .m1-go{transform:none}
+/* a press on a touch screen: no grey box flashed over the link by the browser — the page answers itself (buttons and rows
+   show their hover; the phone menu's lines, which have none, dim while they are held) */
+.mono a,.mono button,.mm a,.mm button{-webkit-tap-highlight-color:transparent}
+.mm-it:active .tx,.mm-lang a:active,.mm-logo:active{opacity:.55}
+/* text picked out with the mouse on a blue part of the page: white, the reverse of the rest (globals.css) */
+.mono .m1-nums ::selection,.mono .b-lu ::selection,.mm ::selection{background-color:#fff;color:#1c7a9e}
+/* the footer's phone and mail keep to one line each; where the column is too narrow for both (a tablet, a narrow phone)
+   each takes a line of its own — before, the line broke after "Email." */
+.mono .m1-finfo .nb{white-space:nowrap}
+@container (max-width: 1220px) and (min-width: 761px){.mono .m1-finfo .nb{display:block}.mono .m1-finfo .sp{display:none}}
+@container (max-width: 380px){.mono .m1-finfo .nb{display:block}.mono .m1-finfo .sp{display:none}}
+/* a line that has not come in yet shows nothing at all: its clip left the strip above its own box open, and the tops of
+   big numerals (set tighter than their own height) showed there as specks at the foot of a tall window */
+.r8.mono.live [data-m="line"]:not(.mv){clip-path:inset(0 -8% 100% -8%)}
 /* the small labels — a programme's channel, a news item's source, an area's key words and note, a field's name — in the
    body's blue: the lighter blue the boards gave them is faint at 11–13 px on white (3.4 : 1; now 4.9 : 1 — user, 2026-11-13) */
 .mono-about .m1-ent .ch,.mono-business .m1-kws,.mono-business .m1-area .vs,.mono-works .m1-work .ch,.mono-news .m1-nrow .src,.mono-contact .m1-crow .k,.mono-contact .m1-dir .k{color:var(--b)}
@@ -65,37 +98,71 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 /* (the arrivals of the page's own header are not for this one: it is there, or it is not) */
 .m1.mono.live .m1-stick .m1-logo,.m1.mono.live .m1-stick .m1-nav{opacity:1;transform:none;transition:none}
 
+/* ---------- the header where the five tabs do not fit beside the logo ----------
+   Up to 1150 px (a tablet, a narrow laptop window, a phone held sideways) the header shows the phone's menu button
+   instead of the tabs: on a tab's first screen they ran onto the blue slab — blue on blue — and at 768 px they wrapped
+   (the audit, 2026-11-13). From there to 1340 px the tabs stand a little closer together, clear of the slab. */
+@container (max-width: 1150px) and (min-width: 761px){
+.mono .m1-nav{display:none}
+.mono .m1-mbtn{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:800;letter-spacing:.06em}
+.mono .m1-mbtn button{width:46px;height:46px;border-radius:50%;border:1px solid var(--ln);background:transparent;display:grid;place-items:center;color:var(--b);padding:0}
+}
+@container (max-width: 1340px) and (min-width: 1151px){.mono .m1-nav{gap:24px}.mono .m1-lang{padding-left:20px}}
+/* (a narrow phone — 360 px: the slab of a tab's first screen passes a little further left, clear of the language beside
+   the menu button) */
+@container (max-width: 400px){.mono .m1-slabw{left:calc(38% - (400px - 100cqw) * .45)}}
+/* (a tablet: the main page's round "Scroll" mark is smaller — the tabs' first screens, for which this was written, no
+   longer have one) */
+@container (max-width: 900px) and (min-width: 761px){.mono .m1-cue{gap:10px;font-size:16px}.mono .m1-cue i{width:40px;height:40px}}
+/* (small text set as a share of the window has a lower end: on a tablet it fell to 10 px) */
+@container (min-width: 761px){
+.mono-about .m1-panel .vd,.mono-about .m1-ent .pg{font-size:max(12.5px,calc(1.32 * var(--u)))}
+.mono-contact .m1-crow .k{font-size:max(12px,calc(1.25 * var(--u)))}
+}
+
 /* ---------- Works: a year opens and closes at a tap (phone) ---------- */
 .mono .m1-wy{scroll-margin-top:116px}
 @container (max-width: 760px){.mono .m1-wy{scroll-margin-top:84px}}
 .mono button.tg{appearance:none;-webkit-appearance:none;box-sizing:content-box;margin:0;padding:0;background:none;font:inherit;color:var(--b);cursor:pointer}
 .mono .m1-wyh{cursor:default}
 @container (max-width: 760px){.mono .m1-wyh{cursor:pointer;-webkit-tap-highlight-color:transparent}}
-.mono .m1-wempty{grid-column:1 / -1;padding:6cqi 0;font-size:max(15px,1.3cqi);font-weight:500}
+.mono .m1-wempty{grid-column:1 / -1;padding:calc(6 * var(--u)) 0;font-size:max(15px,calc(1.3 * var(--u)));font-weight:500}
 
 /* ---------- News: the whole row is the link; a year line where the list changes year ---------- */
 .mono .m1-nrow{position:relative}
 .mono .m1-nrow h2 a::after{content:"";position:absolute;inset:0;z-index:1}
-.mono .m1-nyr{padding:2.2cqi 0 1.4cqi;border-bottom:1px solid var(--b);font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:3.2cqi;line-height:.9}
-.mono .m1-nempty{padding:4cqi 0;border-bottom:1px solid var(--ln);font-size:max(15px,1.3cqi);line-height:1.7;font-weight:500}
-@container (max-width: 760px){.mono .m1-nyr{padding:6cqi 0 3cqi;font-size:9cqi}.mono .m1-nempty{padding:9cqi 0;font-size:4cqi}}
+.mono .m1-nyr{padding:calc(2.2 * var(--u)) 0 calc(1.4 * var(--u));border-bottom:1px solid var(--b);font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:calc(3.2 * var(--u));line-height:.9}
+.mono .m1-nempty{padding:calc(4 * var(--u)) 0;border-bottom:1px solid var(--ln);font-size:max(15px,calc(1.3 * var(--u)));line-height:1.7;font-weight:500}
+@container (max-width: 760px){.mono .m1-nyr{padding:calc(6 * var(--u)) 0 calc(3 * var(--u));font-size:calc(9 * var(--u))}.mono .m1-nempty{padding:calc(9 * var(--u)) 0;font-size:calc(4 * var(--u))}}
 
 /* ---------- Home ---------- */
+/* the first screen in a window taller than the mark and its lines need (the mark is never wider than the content): what is
+   left over goes above the mark and below the lines in equal parts, so the two stay together */
+@container (min-width: 761px){
+.mono-home .b-pin{--sp:max(0px,calc(var(--hh) - var(--mt) - var(--mh) - var(--g1) - var(--th) - var(--g2) - var(--nh) - 4px))}
+.mono-home .b-film{top:calc(var(--mt) + var(--sp) * .5)}
+.mono-home .b-txt{bottom:calc(var(--nh) + var(--g2) + var(--sp) * .5)}
+}
 /* the news line, once it has gone (or where there is none), keeps only its hairline */
 .m1.mono:not(.live) .b-news.off > *:not(.pl){visibility:hidden}
 .mono .b-news button:focus-visible{outline-offset:1px}
-@container (max-width: 760px){.mono[lang=en] .b-abp{white-space:normal}}
+/* (the English lines under "About Us" are longer than the Korean: they wrap inside their column — on an upright tablet they
+   ran into the statement beside them) */
+.mono[lang=en] .b-abp{white-space:normal}
 /* English set vertically: every letter turned with the line (curly quotes and apostrophes too, which would otherwise
    stand upright and break the word) */
 .mono[lang=en] .m1-vt,.mono[lang=en] .h-vt,.mono[lang=en] .m1-panel .vd,.mono[lang=en] .m1-area .vs,.mono[lang=en] .m1-crow .k{text-orientation:sideways}
-/* the English Contact title is longer than the Korean: it gets smaller where it would not fit its column
-   (cqw, not cqi: in vertical text the inline axis is the height) */
-.mono-home[lang=en] .h-vt{font-size:min(4.45cqw,calc((clamp(460px,47cqw,690px) - 6.2cqw - 48px) / (var(--vn,7) * 1.12)))}
-@container (max-width: 760px){.mono-home[lang=en] .h-vt{font-size:min(9cqw,calc((138cqw - 15cqw - 24px) / (var(--vn,7) * 1.12)))}}
+/* the English Contact title is longer than the Korean: it gets smaller where it would not fit its column */
+.mono-home[lang=en] .h-vt{font-size:min(calc(4.45 * var(--u)),calc((max(460px,calc(47 * var(--u))) - calc(6.2 * var(--u)) - 48px) / (var(--vn,7) * 1.12)))}
+@container (max-width: 760px){.mono-home[lang=en] .h-vt{font-size:min(calc(9 * var(--u)),calc((calc(138 * var(--u)) - calc(15 * var(--u)) - 24px) / (var(--vn,7) * 1.12)))}}
+/* YouTube Originals: the poster on the left, the list on the right (user, 2026-11-13) — a name begins next to its poster;
+   on the boards the list came first and the short names left an empty band between them and the poster */
+.mono-home .b-yp{grid-column:1 / 5;grid-row:1}
+.mono-home .b-yl{grid-column:6 / 13;grid-row:1}
 /* the channel list: the names carry the section (user, 2026-11-13: larger — 3.3cqi where the board had 2.5). A name that does
    not fit its row takes two lines (the English ones are longer), so the band under the row being looked at is drawn word
    by word — the pieces overlap across the spaces, each line gets one band with the board's ends */
-.mono-home .b-yr .nm{font-size:3.3cqi}
+.mono-home .b-yr .nm{font-size:calc(3.3 * var(--u))}
 .mono-home .b-yr .kw{white-space:normal}
 .mono-home .b-yr .kw::before{display:none}
 .mono-home .b-yr .wd{position:relative}
@@ -105,21 +172,21 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-home.live .b-yr.on .wd::before{transform-origin:0 50%;transition:transform .9s var(--ex) calc(var(--wi,0) * 70ms)}
 /* (a row whose name takes two lines keeps a little air above and below it, and the one-line rows give it the room, so the
    list still ends with the poster; where every name keeps to one line nothing changes) */
-.m1.mono-home .b-yr .rw{box-sizing:border-box;min-height:5.4cqi;padding-top:.6cqi;padding-bottom:.6cqi}
-@container (max-width: 1000px) and (min-width: 761px){.mono-home .b-yr .nm{font-size:3.6cqi}.m1.mono-home .b-yr .rw{min-height:5.6cqi}}
-@container (max-width: 760px){.mono-home .b-yr .nm{font-size:5.3cqi}.m1.mono-home .b-yr .rw{min-height:0;padding:3.6cqi 0}}
+.m1.mono-home .b-yr .rw{box-sizing:border-box;min-height:calc(5.4 * var(--u));padding-top:calc(.6 * var(--u));padding-bottom:calc(.6 * var(--u))}
+@container (max-width: 1000px) and (min-width: 761px){.mono-home .b-yr .nm{font-size:calc(3.6 * var(--u))}.m1.mono-home .b-yr .rw{min-height:calc(5.6 * var(--u))}}
+@container (max-width: 760px){.mono-home .b-yr .nm{font-size:calc(5.3 * var(--u))}.m1.mono-home .b-yr .rw{min-height:0;padding:calc(3.6 * var(--u)) 0}}
 /* the lineup's cards carry no numbers (user, 2026-11-11): the caption is the channel over the title */
 .mono-home .b-lc .cp{display:block}
-@container (max-width: 760px){.mono-home .b-lc .ch{margin-top:0}}
+@container (max-width: 760px){.mono-home .b-lc .ch{margin-top:0;font-size:11px}}
 /* while the page moves, the row moves on by itself (motion/home.js): one line of posters running out past the window's
    edges; the one passing the middle stands up a little, in its own colours. (Room above the row for that: the row starts
    as far below the text as the cards on the board.) The posters are larger than the board's grid had them (user,
    2026-11-13: 20.5cqi where it was 16.5 — about four in a window, not five), their captions with them. */
-.m1.mono-home.drift .b-tkw{margin:calc(5.2cqi - 18px) calc(var(--px) * -1) 0;overflow:hidden}
-.m1.mono-home.drift .b-tk{display:flex;gap:max(24px,1.95cqi);width:max-content;margin:0;padding:18px var(--px) 2px}
-.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(220px,20.5cqi);will-change:translate}
+.m1.mono-home.drift .b-tkw{margin:calc(calc(5.2 * var(--u)) - 18px) calc(var(--px) * -1) 0;overflow:hidden}
+.m1.mono-home.drift .b-tk{display:flex;gap:max(24px,calc(1.95 * var(--u)));width:max-content;margin:0;padding:18px var(--px) 2px}
+.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(220px,calc(20.5 * var(--u)));will-change:translate}
 .m1.mono-home.drift .b-lc .ch{font-size:13px}
-.m1.mono-home.drift .b-lc .ti{font-size:max(15px,1.4cqi)}
+.m1.mono-home.drift .b-lc .ti{font-size:max(15px,calc(1.4 * var(--u)))}
 .m1.mono-home.drift .b-lc.on .th{transform:translateY(-14px);box-shadow:0 26px 44px -18px rgba(6,40,56,.6)}
 .m1.mono-home.drift .b-lc .cp{opacity:.7;transition:opacity .7s var(--qt)}
 .m1.mono-home.drift .b-lc.on .cp{opacity:1}
@@ -128,11 +195,11 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-home.drift .b-lc:hover:not(.on) .th .pst{filter:grayscale(1) contrast(1.12)}
 .m1.mono-home.drift .b-lc:hover:not(.on) .th::after{opacity:1}
 @container (max-width: 760px){
-.m1.mono-home.drift .b-tkw{margin-top:calc(9cqi - 16px)}
-.m1.mono-home.drift .b-tk{gap:3.6cqi;padding-top:16px}
-.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){width:42cqi}
+.m1.mono-home.drift .b-tkw{margin-top:calc(calc(9 * var(--u)) - 16px)}
+.m1.mono-home.drift .b-tk{gap:calc(3.6 * var(--u));padding-top:16px}
+.m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){width:calc(42 * var(--u))}
 .m1.mono-home.drift .b-lc .ch{font-size:11px}
-.m1.mono-home.drift .b-lc .ti{font-size:3.9cqi}
+.m1.mono-home.drift .b-lc .ti{font-size:calc(3.9 * var(--u))}
 }
 
 /* ---------- Business: an area's note is a line over its name (user, 2026-11-13) ----------
@@ -140,51 +207,69 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
    Latin lay on its side. Now it is the first line of the text column, and that column takes the room the note left. */
 .mono-business .m1-area .bd{grid-column:9 / 13}
 /* (justify-self: the boards' rule sent the note to the row's end — newer browsers apply that to a block in a column too) */
-.mono-business .m1-area .vs{writing-mode:horizontal-tb;justify-self:start;margin-bottom:1cqi;font-size:13px;line-height:1.3;letter-spacing:.08em;white-space:normal}
+.mono-business .m1-area .vs{writing-mode:horizontal-tb;justify-self:start;margin-bottom:calc(1 * var(--u));font-size:13px;line-height:1.3;letter-spacing:.08em;white-space:normal}
 @container (max-width: 760px){
 .mono-business .m1-area .bd{padding-right:0}
-.mono-business .m1-area .vs{position:static;margin-bottom:2.6cqi;font-size:12.5px}
+.mono-business .m1-area .vs{position:static;margin-bottom:calc(2.6 * var(--u));font-size:12.5px}
 }
+/* ---------- Business, One Pipeline: the closing line and its button ----------
+   The button is wider than the two columns the boards gave it once the window is narrower than about 1240 px: on a tablet
+   it lay over the end of the line (the audit, 2026-11-13). There the line gives it a column; on a tablet the button goes
+   under the line. */
+@container (max-width: 1240px) and (min-width: 1001px){.mono-business .m1-ptext{grid-column:6 / 10}.mono-business .m1-pcta{grid-column:10 / 13}}
+@container (max-width: 1000px) and (min-width: 761px){.mono-business .m1-ptext{grid-column:6 / 13}.mono-business .m1-pcta{grid-column:6 / 13;justify-self:start;margin-top:calc(3 * var(--u))}}
 /* ---------- Business: the longer English names wrap inside the tube ---------- */
-.mono-business[lang=en] .m1-tube > div > span{white-space:normal;max-width:calc(100% - 2.4cqi);align-items:center}
+.mono-business[lang=en] .m1-tube > div > span{white-space:normal;max-width:calc(100% - calc(2.4 * var(--u)));align-items:center}
 .mono-business[lang=en] .m1-tube .t{line-height:1.25}
 
+/* (the map's source line at full strength: at 11.5 px and 72 % it measured 2.5 : 1 on white) */
+.mono-contact .m1-osm{opacity:1}
+/* ---------- Contact: the number and the address answer the pointer ----------
+   They are the page's two links and had no answer at all: the band of the key words (the statement's, the channel
+   list's) draws in behind them from the left, and leaves to the right. */
+.mono-contact .m1-fit > span{position:relative;isolation:isolate}
+.mono-contact .m1-fit > span::before{content:"";position:absolute;z-index:-1;left:-.05em;right:-.05em;top:.16em;bottom:.02em;background:var(--t2);transform:skewX(25.15deg) scaleX(0);transform-origin:100% 50%}
+.m1.mono-contact.live .m1-fit > span::before{transition:transform .5s var(--qt)}
+@media (hover: hover){
+.mono-contact a.m1-fit:hover > span::before{transform:skewX(25.15deg);transform-origin:0 50%}
+.m1.mono-contact.live a.m1-fit:hover > span::before{transition:transform 1.1s var(--ex)}
+}
 /* ---------- Contact: the English directions and map buttons are longer; where the row is narrow they take the whole width ---------- */
-@container (max-width: 1100px) and (min-width: 761px){.mono-contact[lang=en] .m1-dir{grid-column:1 / 13;justify-items:start;margin-top:2.6cqi}}
+@container (max-width: 1100px) and (min-width: 761px){.mono-contact[lang=en] .m1-dir{grid-column:1 / 13;justify-items:start;margin-top:calc(2.6 * var(--u))}}
 
 /* ---------- a news article (the boards had none): the list's language, read at length ---------- */
-.mono-article .m1-ahead{position:relative;padding-top:calc(96px + 5.4cqi);padding-bottom:5cqi;border-bottom:1px solid var(--ln)}
+.mono-article .m1-ahead{position:relative;padding-top:calc(96px + calc(5.4 * var(--u)));padding-bottom:calc(5 * var(--u));border-bottom:1px solid var(--ln)}
 .mono-article .m1-ahead .m1-paper{z-index:0}
 .mono-article .m1-ahead > .m1-g12{position:relative;align-items:start}
-.mono-article .m1-ameta{grid-column:1 / 4;display:grid;justify-items:start;row-gap:1.6cqi}
-.mono-article .m1-ameta .m1-tag{font-size:3.4cqi}
-.mono-article .m1-ameta time{font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:2.1cqi;line-height:1}
+.mono-article .m1-ameta{grid-column:1 / 4;display:grid;justify-items:start;row-gap:calc(1.6 * var(--u))}
+.mono-article .m1-ameta .m1-tag{font-size:calc(3.4 * var(--u))}
+.mono-article .m1-ameta time{font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:calc(2.1 * var(--u));line-height:1}
 .mono-article .m1-ameta .cat{font-size:12px;line-height:1.3;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--b)}
-.mono-article .m1-atitle{grid-column:4 / 13;font-size:3.1cqi;line-height:1.38;font-weight:300;letter-spacing:-.04em;color:var(--b)}
-.mono-article .m1-abody{padding-top:5cqi;padding-bottom:8cqi}
+.mono-article .m1-atitle{grid-column:4 / 13;font-size:calc(3.1 * var(--u));line-height:1.38;font-weight:300;letter-spacing:-.04em;color:var(--b)}
+.mono-article .m1-abody{padding-top:calc(5 * var(--u));padding-bottom:calc(8 * var(--u))}
 .mono-article .m1-acol{grid-column:4 / 11}
-.mono-article .m1-acov{margin:0 0 4cqi;border:1px solid var(--ln);background:var(--t1)}
+.mono-article .m1-acov{margin:0 0 calc(4 * var(--u));border:1px solid var(--ln);background:var(--t1)}
 .mono-article .m1-acov img{display:block;width:100%;height:auto;max-height:72vh;object-fit:contain}
-.mono-article .m1-atext p{margin:0 0 1.6em;font-size:max(16px,1.25cqi);line-height:1.95;font-weight:400;letter-spacing:-.015em;color:var(--b);white-space:pre-line}
+.mono-article .m1-atext p{margin:0 0 1.6em;font-size:max(16px,calc(1.25 * var(--u)));line-height:1.95;font-weight:400;letter-spacing:-.015em;color:var(--b);white-space:pre-line}
 .mono-article .m1-atext .gap{height:1.2em}
-.mono-article .m1-aback{display:flex;justify-content:flex-end;margin-top:4cqi;padding-top:3cqi;border-top:1px solid var(--ln)}
+.mono-article .m1-aback{display:flex;justify-content:flex-end;margin-top:calc(4 * var(--u));padding-top:calc(3 * var(--u));border-top:1px solid var(--ln)}
 @container (max-width: 760px){
- .mono-article .m1-ahead{padding-top:calc(68px + 10cqi);padding-bottom:10cqi}
- .mono-article .m1-ameta{grid-template-columns:auto auto;align-items:end;justify-content:start;column-gap:4cqi;row-gap:3cqi}
- .mono-article .m1-ameta .m1-tag{grid-column:1 / -1;font-size:10cqi}
- .mono-article .m1-ameta time{font-size:5.4cqi}
- .mono-article .m1-atitle{margin-top:7cqi;font-size:6.6cqi;line-height:1.42}
- .mono-article .m1-abody{padding-top:9cqi;padding-bottom:16cqi}
- .mono-article .m1-acov{margin-bottom:8cqi}
- .mono-article .m1-atext p{font-size:4.1cqi;line-height:1.9}
- .mono-article .m1-aback{margin-top:8cqi;padding-top:7cqi}
+ .mono-article .m1-ahead{padding-top:calc(68px + calc(10 * var(--u)));padding-bottom:calc(10 * var(--u))}
+ .mono-article .m1-ameta{grid-template-columns:auto auto;align-items:end;justify-content:start;column-gap:calc(4 * var(--u));row-gap:calc(3 * var(--u))}
+ .mono-article .m1-ameta .m1-tag{grid-column:1 / -1;font-size:calc(10 * var(--u))}
+ .mono-article .m1-ameta time{font-size:calc(5.4 * var(--u))}
+ .mono-article .m1-atitle{margin-top:calc(7 * var(--u));font-size:calc(6.6 * var(--u));line-height:1.42}
+ .mono-article .m1-abody{padding-top:calc(9 * var(--u));padding-bottom:calc(16 * var(--u))}
+ .mono-article .m1-acov{margin-bottom:calc(8 * var(--u))}
+ .mono-article .m1-atext p{font-size:calc(4.1 * var(--u));line-height:1.9}
+ .mono-article .m1-aback{margin-top:calc(8 * var(--u));padding-top:calc(7 * var(--u))}
 }
 
 /* ---------- IR, page not found: a short note under the first screen ---------- */
-.mono .m1-note{padding-top:9cqi;padding-bottom:10cqi;border-top:1px solid var(--ln)}
+.mono .m1-note{padding-top:calc(9 * var(--u));padding-bottom:calc(10 * var(--u));border-top:1px solid var(--ln)}
 .mono .m1-note .m1-ititle{grid-column:6 / 13}
-.mono .m1-note .m1-btns{grid-column:6 / 13;margin-top:3.4cqi}
-@container (max-width: 760px){.mono .m1-note{padding-top:19cqi;padding-bottom:20cqi}.mono .m1-note .m1-btns{margin-top:8cqi}}
+.mono .m1-note .m1-btns{grid-column:6 / 13;margin-top:calc(3.4 * var(--u))}
+@container (max-width: 760px){.mono .m1-note{padding-top:calc(19 * var(--u));padding-bottom:calc(20 * var(--u))}.mono .m1-note .m1-btns{margin-top:calc(8 * var(--u))}}
 
 /* ---------- the phone menu: a blue sheet that sweeps in with the logo's lean ---------- */
 .mm{position:fixed;inset:0;z-index:100;overflow:hidden;visibility:hidden;pointer-events:none;color:#fff;word-break:keep-all;-webkit-font-smoothing:antialiased;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;--ex:cubic-bezier(.19,1,.22,1);--qt:cubic-bezier(.165,.84,.44,1);--px:clamp(20px,4.44vw,64px);transition:visibility 0s linear .75s}
@@ -212,4 +297,136 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mm-info{text-align:right;opacity:.86}
 .mm-bar,.mm-it,.mm-foot{opacity:0;transform:translateY(14px);transition:opacity .3s var(--qt),transform .3s var(--qt)}
 .mm.on .mm-bar,.mm.on .mm-it,.mm.on .mm-foot{opacity:1;transform:none;transition:opacity .7s var(--qt) calc(.22s + var(--k,0) * .05s),transform 1.1s var(--ex) calc(.22s + var(--k,0) * .05s)}
+/* (the same menu serves a tablet and a narrow laptop window: its bar matches the page's header there, the tabs keep the
+   phone's size, the spaces stop growing; in a low window it scrolls) */
+@media (min-width: 761px){
+.mm-bar{height:96px}
+.mm-logo img{height:28px}
+.mm-btn button{width:46px;height:46px}
+.mm-sheet i{background-size:34px 34px}
+.mm-nav{margin-top:min(5vw,7vh,56px)}
+.mm-it{padding:min(2.6vw,2vh,22px) 0 min(3vw,2.4vh,26px)}
+.mm-it .tx{font-size:min(64px,7.6vh)}
+.mm-foot{padding-top:min(5vw,5vh,48px)}
+}
 @media (prefers-reduced-motion: reduce){.mm-sheet,.mm-bar,.mm-it,.mm-foot,.mm.on .mm-bar,.mm.on .mm-it,.mm.on .mm-foot{transition:none!important}.mm.on .mm-sheet{transform:skewX(25.15deg)}}
+
+/* ================= added 2026-11-14 (shown as a trial first; the user kept these two): a poster opens large, and a sheet
+   sweeps across the window between two pages ================= */
+
+/* ---------- a poster opens large (PosterViewer.tsx) ----------
+   The phone menu's sheet — blue, the sheared white grid, sweeping in with the logo's lean — and on it the poster whole, in
+   its own colours, beside its year (the serif of the wall's years), its channel and its title. Outside the page's root,
+   like the menu: sizes are worked out from the window here (--u as in the page: 1/100 of its width, up to 1728 px). */
+/* (a button stretched to its row's height would set its poster and caption in the middle of that height: it keeps its own
+   height, at the top of the row, like the plain frames it replaces) */
+.mono button.m1-work{appearance:none;-webkit-appearance:none;display:block;align-self:start;width:100%;margin:0;padding:0;border:0;border-radius:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.mono .b-lc[data-cur]{cursor:pointer}
+/* (a card of the lineup that takes the keyboard's or a press's focus must not scroll its row: the row is clipped, not hidden) */
+.m1.mono-home.drift .b-tkw{overflow:clip}
+.pv{position:fixed;inset:0;z-index:110;overflow:hidden;visibility:hidden;pointer-events:none;color:#fff;word-break:keep-all;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  --ex:cubic-bezier(.19,1,.22,1);--qt:cubic-bezier(.165,.84,.44,1);--u:min(1vw,17.28px);--px:max(clamp(20px,4.44vw,64px),calc(50vw - 800px));
+  --vh:100vh;--ha:max(240px,calc(var(--vh) - 96px - 5.4 * var(--u)));--wa:calc(41 * var(--u));
+  transition:visibility 0s linear .75s}
+/* (the poster's height: as tall as the window allows, or as its width allows — worked out where the poster's shape is known) */
+.pv-stage,.pv-fig.was{--ph:min(var(--ha),calc(var(--wa) / var(--ar,.7072)))}
+@supports (height: 100dvh){.pv{--vh:100dvh}}
+.pv.on{visibility:visible;pointer-events:auto;transition:none}
+.pv p,.pv h2,.pv figure{margin:0}
+.pv-sheet{position:absolute;top:0;bottom:0;left:-60vh;right:-60vh;overflow:hidden;background:linear-gradient(180deg,#3db3d9 0%,#2596be 46%,#1c7a9e 100%);transform-origin:0 0;transform:skewX(25.15deg) translateX(-101%);transition:transform .75s var(--ex)}
+.pv.on .pv-sheet{transform:skewX(25.15deg)}
+.pv-sheet i{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.17) 1px,transparent 1px);background-size:calc(2.1 * var(--u)) calc(2.1 * var(--u))}
+.pv-in{position:relative;height:100%;display:flex;flex-direction:column;opacity:0;transition:opacity .16s linear}
+.pv.on .pv-in{opacity:1;transition:opacity .5s var(--qt) .22s}
+.pv-bar{flex:none;height:96px;display:flex;align-items:center;justify-content:flex-end;padding:0 var(--px)}
+.pv-b{width:52px;height:52px;display:grid;place-items:center;margin:0;padding:0;border:1px solid rgba(255,255,255,.6);border-radius:50%;background:transparent;color:#fff;font:inherit;cursor:pointer;transition:background-color .45s var(--qt),color .45s var(--qt),border-color .45s var(--qt)}
+.pv-b:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media (hover: hover){.pv-b:hover{background:#fff;border-color:#fff;color:#1c7a9e}}
+.pv-stage{flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;gap:calc(6.4 * var(--u));padding:0 var(--px) calc(5.4 * var(--u))}
+/* (the poster stands in a place as wide as the widest upright poster — 3 : 4 —, against its right edge: the lines beside it
+   stay where they are from one poster to the next; a poster wider than that makes its own room) */
+.pv-figw{flex:none;position:relative;display:flex;justify-content:flex-end;width:max(min(calc(var(--ha) * .75),var(--wa)),calc(var(--ph) * var(--ar,.7072)))}
+.pv-fig.was{position:absolute;right:0;top:0;animation:pv-out .3s linear .85s both}
+@keyframes pv-out{to{opacity:0}}
+.pv-fig{position:relative;height:var(--ph);width:calc(var(--ph) * var(--ar,.7072));background:rgba(255,255,255,.12) 50% 50% / cover no-repeat;box-shadow:0 0 0 1px rgba(255,255,255,.4),0 34px 60px -26px rgba(4,34,48,.66);
+  --s:calc(46.95% / var(--ar,.7072));animation:pv-wipe 1.15s var(--ex) var(--pd,0s) both}
+.pv-fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .45s var(--qt)}
+.pv-fig.sharp img{opacity:1}
+@keyframes pv-wipe{from{clip-path:polygon(0 0,calc(-1 * var(--s)) 0,0 100%,0 100%)}to{clip-path:polygon(0 0,100% 0,calc(100% + var(--s)) 100%,0 100%)}}
+.pv-tx{flex:none;width:calc(30 * var(--u));height:var(--ph);display:flex;flex-direction:column;justify-content:space-between}
+.pv-ln p,.pv-ln h2{overflow:hidden}
+.pv-ln p > span,.pv-ln h2 > span{display:block;animation:pv-rise 1.2s var(--ex) calc(var(--pd,0s) + var(--ld,0s)) both}
+@keyframes pv-rise{from{transform:translateY(105%)}to{transform:none}}
+.pv-ln .y{font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:calc(6.6 * var(--u));line-height:.82;letter-spacing:-.01em;padding-bottom:.06em}
+.pv-ln .ch{margin-top:calc(2.8 * var(--u));font-size:max(13px,calc(.95 * var(--u)));line-height:1.3;font-weight:700;letter-spacing:.08em;--ld:.07s}
+.pv-ln .ti{margin-top:calc(.6 * var(--u));font-size:calc(3.1 * var(--u));line-height:1.3;font-weight:300;letter-spacing:-.04em;--ld:.13s}
+.pv-ln .y + .ti{margin-top:calc(2.8 * var(--u))}
+.pv-nav{display:flex;gap:10px}
+/* (a low window — a phone held sideways: a lower bar, less room under the poster) */
+@media (max-height: 520px) and (min-width: 761px){
+.pv{--ha:max(180px,calc(var(--vh) - 60px - 26px))}
+.pv-bar{height:60px}
+.pv-b{width:44px;height:44px}
+.pv-stage{padding-bottom:26px}
+}
+/* (a phone, and a tablet held upright: the poster over its lines) */
+@media (max-width: 760px), (max-width: 1100px) and (orientation: portrait){
+.pv{--ha:max(200px,calc(var(--vh) - 68px - min(48vw,400px)));--wa:84vw}
+.pv-bar{height:68px}
+.pv-b{width:44px;height:44px}
+.pv-stage{flex-direction:column;align-items:center;justify-content:flex-start;gap:min(6vw,44px);padding-bottom:min(7vw,48px)}
+.pv-figw{justify-content:flex-start}
+.pv-fig.was{right:auto;left:0}
+/* (the lines stand under the poster's place, from its left edge to its right) */
+.pv-tx{width:max(min(calc(var(--ha) * .75),var(--wa)),calc(var(--ph) * var(--ar,.7072)));height:auto;flex:1;min-height:0;gap:min(5vw,36px)}
+.pv-ln{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:min(4.4vw,32px);align-items:end}
+.pv-ln .y{grid-row:1 / 3;font-size:min(17vw,112px)}
+.pv-ln .ch{margin-top:0;font-size:max(11.5px,min(1.7vw,14px))}
+.pv-ln .ti,.pv-ln .ch + .ti,.pv-ln .y + .ti{margin-top:min(.6vw,5px);font-size:min(5.6vw,40px);line-height:1.3}
+.pv-nav{justify-content:flex-end}
+}
+@media (prefers-reduced-motion: reduce){
+.pv,.pv-sheet,.pv-in,.pv.on .pv-in,.pv-fig img{transition:none!important}
+.pv-fig,.pv-ln p > span,.pv-ln h2 > span{animation:none!important}
+}
+
+/* ---------- the ring around the pointer over a poster that opens large (motion/pointer.js) ----------
+   After counter-digital.jp's, as the user asked: a circle an eighth of the window wide (theirs is 11.25 rem of a root that
+   is 1/90 of the window, up to 216 px), a hairline, centred on the pointer. It fades in over .3 s while a smaller ring
+   grows from 30 % into it; then a soft glow leaves it outward. The browser's own pointer stays.
+   Theirs is one line in their orange, which shows on any picture. Ours is the page's blue, which a dark poster swallows:
+   so the line is two hairlines side by side, blue outside and white inside — on the white page only the blue one shows,
+   on the blue lineup only the white one, on a poster whichever it needs. (Both are borders: a border is drawn on whole
+   screen dots at any display scale, which a shadow is not.)
+   (The two extra rings are measured from the inside of the blue line: + 2 px is its outside.) */
+.cur{position:fixed;left:0;top:0;z-index:95;pointer-events:none;color:#1c7a9e}
+.cur[data-tone=dark]{color:#fff}
+.cur-o{position:absolute;left:0;top:0;will-change:transform}
+.cur-o i,.cur-o b,.cur-o i::before{box-sizing:border-box;border:1px solid #1c7a9e;border-radius:50%}
+.cur-o i{position:absolute;--d:clamp(128px,12.5vw,216px);left:calc(var(--d) * -.5);top:calc(var(--d) * -.5);width:var(--d);height:var(--d);opacity:0;transition:opacity .3s cubic-bezier(.165,.84,.44,1)}
+.cur.on .cur-o i{opacity:1}
+.cur-o b{position:absolute;inset:0;border-color:rgba(255,255,255,.9)}
+.cur-o i::before,.cur-o i::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.cur-o i::before{width:30%;height:30%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.9);opacity:0}
+.cur.on .cur-o i::before{animation:cur-ring .3s cubic-bezier(.25,.46,.45,.94) forwards}
+@keyframes cur-ring{0%{opacity:0;width:30%;height:30%}99.99%{opacity:1;width:calc(100% + 2px);height:calc(100% + 2px)}100%{opacity:0;width:calc(100% + 2px);height:calc(100% + 2px)}}
+.cur-o i::after{width:calc(100% + 2px);height:calc(100% + 2px);border-radius:50%;box-shadow:inset 0 0 0 0 currentColor}
+.cur.on .cur-o i::after{width:115%;height:115%;box-shadow:inset 0 0 15px 2px currentColor;opacity:0;transition:width .6s cubic-bezier(.215,.61,.355,1) .3s,height .6s cubic-bezier(.215,.61,.355,1) .3s,box-shadow .6s cubic-bezier(.215,.61,.355,1) .3s,opacity .6s cubic-bezier(.215,.61,.355,1) .3s}
+
+/* ---------- between two pages: the sheet sweeps across the window (PageSheet.tsx) ----------
+   The phone menu's sheet once more: in from the left with the logo's lean, out on the right. */
+.pgs{position:fixed;inset:0;z-index:120;overflow:hidden;visibility:hidden;pointer-events:none}
+.pgs.in,.pgs.out{visibility:visible}
+.pgs.in{pointer-events:auto}
+.pgs > i{position:absolute;top:0;bottom:0;left:-60vh;right:-60vh;overflow:hidden;background:linear-gradient(180deg,#3db3d9 0%,#2596be 46%,#1c7a9e 100%);transform-origin:0 0;transform:skewX(25.15deg) translateX(-101%)}
+.pgs > i > b{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.17) 1px,transparent 1px);background-size:min(2.1vw,36.3px) min(2.1vw,36.3px)}
+.pgs.in > i{transform:skewX(25.15deg);transition:transform .56s cubic-bezier(.645,.045,.355,1)}
+.pgs.out > i{transform:skewX(25.15deg) translateX(101%);transition:transform .9s cubic-bezier(.19,1,.22,1)}
+/* (from the phone menu: the menu's own sheet stays while its lines go out, then this one is there in its place — the same
+   blue and the same grid — and leaves as usual) */
+.pgs.now.in > i{transition:none}
+.mm[data-go] .mm-sheet{transform:skewX(25.15deg);transition:none}
+.mm[data-go] .mm-bar,.mm[data-go] .mm-it,.mm[data-go] .mm-foot{transition:opacity .16s linear}
+.mm[data-go]:not(.on){transition:visibility 0s linear .3s}
+.pgs.now > i > b{background-size:34px 34px}
+@media (max-width: 760px){.pgs > i > b,.pgs.now > i > b{background-size:5.4vw 5.4vw}}

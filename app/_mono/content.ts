@@ -157,6 +157,11 @@ export const BUSINESS = {
 };
 
 // ------------------------------------------------------------------ Works
+// a poster seen large: what its controls are called (read out, not shown)
+export const VIEWER = {
+  ko: { label: "포스터 크게 보기", open: (t: string) => `${t} 포스터 크게 보기`, close: "닫기", prev: "이전 작품", next: "다음 작품" },
+  en: { label: "Poster", open: (t: string) => `View the poster of ${t}`, close: "Close", prev: "Previous work", next: "Next work" },
+};
 export const WORKS = {
   ko: { label: "Works", years: "연도", year: (y: string) => `${y}년`, toggle: (y: string) => `${y}년 작품`, empty: "작품이 없습니다" },
   en: { label: "Works", years: "Years", year: (y: string) => y, toggle: (y: string) => `${y} works`, empty: "No works found" },
@@ -200,12 +205,13 @@ export const CONTACT = {
     addrLabel: "Address",
     addr: ["705, Hanwha Bizmetro 1", "551-17 Yangcheon-ro, Gangseo-gu, Seoul"],
     telLabel: "Phone",
-    tel: "+82-10-3889-4595",
+    // (the number and the address are the Korean page's — user, 2026-11-14; the English page had its own)
+    tel: "02-2668-0877",
     telHref: "tel:010-3889-4595",
-    telW: 6.56,
+    telW: 4.984,
     mailLabel: "Email",
-    mail: "abo@abomedia.co.kr",
-    mailW: 7.18,
+    mail: "business@abomedia.co.kr",
+    mailW: 8.787,
     mapLabel: "Map",
     directions: "Directions",
     viewMap: "View Map",

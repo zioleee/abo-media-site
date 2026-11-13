@@ -113,13 +113,17 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
 
   // ---------- 2026 Lineup: one row of posters that moves on by itself, slowly — leftwards, the next poster coming in from
   // the right. One poster at a time is chosen (in its own colours, standing up a little): the one passing the middle of the
-  // window, or — while a mouse rests on the row, which then slows to a stop — the one under it; the one left goes back.
+  // window, or — while a mouse is on the row — the one under it; the one left goes back. The mouse also steers the row
+  // (user, 2026-11-13): towards the right edge it runs on faster, towards the left edge it runs back; near the middle it
+  // keeps its own pace. It never stops for the mouse.
   // A conveyor: a poster that has left on the left comes round again on the right, out of sight (no copies).
   // The page as laid out keeps the board's grid.
   let lu = null, tk = null, tkw = null, lcs = [], NL = 0, drift = false;
   let cl = [], lx = [], cwd = 0, pitch = 0, loop = 0, tkx = 0, dpos = 0, dv = 0, speed = 0, lCur = -1, pick = -1;
   // the same pace on every screen: a new poster reaches the middle every PER seconds (about 44 px/s at 1440, 30 on a phone)
   const PER = 6;
+  // with the mouse at an edge: this many times the pace more, forwards (right edge) or backwards (left edge)
+  const STEER = 5;
   // a mouse can rest on the row (a finger leaves no pointer behind)
   const fine = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
   let away = true;
@@ -205,10 +209,15 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     // the lineup, while it is in sight
     const lr2 = drift ? lu.getBoundingClientRect() : null;
     if (lr2 && lr2.top < c.H + 40 && lr2.bottom > -40) {
-      let rest = false;
+      let rest = false, aim = speed;
       if (fine && !away) { const wr = tkw.getBoundingClientRect(); rest = c.ptr.cx >= wr.left && c.ptr.cx <= wr.right && c.ptr.cy >= wr.top && c.ptr.cy <= wr.bottom; }
-      dv += ((rest ? 0 : speed) - dv) * (1 - Math.exp(-c.dt * (rest ? 6 : 2.2)));
-      dpos = (dpos + dv * c.dt) % loop;
+      if (rest) {
+        // where the mouse is across the window: -1 at the left edge, 1 at the right; a quiet band in the middle
+        const u = clamp((c.ptr.cx - c.W / 2) / (c.W / 2), -1, 1), a = Math.max(0, (Math.abs(u) - 0.16) / 0.84), e = a * a * (3 - 2 * a);
+        aim = u > 0 ? speed * (1 + STEER * e) : speed * (1 - (STEER + 2) * e);
+      }
+      dv += (aim - dv) * (1 - Math.exp(-c.dt * 3));
+      dpos = ((dpos + dv * c.dt) % loop + loop) % loop;
       const best = placeRow();
       if (rest) {
         // the poster under the mouse is the chosen one (between two posters the last one stays chosen)

@@ -76,7 +76,6 @@ export default function PageSheet() {
       s.timers.forEach((t) => window.clearTimeout(t));
       s.timers = [];
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   // the new page is there: the sheet leaves (not before it has covered the window)
@@ -86,7 +85,6 @@ export default function PageSheet() {
     s.arrived = true;
     const wait = Math.max(0, IN - (performance.now() - s.t0)) + HOLD;
     s.timers.push(window.setTimeout(leave, wait));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return <div ref={el} className="pgs" aria-hidden="true"><i><b /></i></div>;

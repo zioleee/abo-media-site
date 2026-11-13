@@ -1,52 +1,56 @@
-// Over a poster that opens large, the pointer changes shape: a thin outline of the logo's O — the leaning, rounded form
-// the mark ends on — draws itself around the hand and follows it a little behind, with a small plus at the hand itself.
-// No word (the first version said "View" on a filled chip; user, 2026-11-14: the shape should change, as the thin ring
-// does on counter-digital.jp, without lettering). The mark is drawn outside the page's root (a fixed layer, MonoRoot);
-// this moves its two pieces and decides when it shows: only with a mouse (not on touch screens), only while the page
-// moves (with "reduce motion" the pointer stays the browser's own), and only over things marked [data-cur].
+// Over a poster that opens large, a thin ring comes up around the pointer and follows it — made after the one on
+// counter-digital.jp, as the user asked (2026-11-14: first a filled chip that said "View", then an outline of the logo's
+// O with a plus; neither pleased — "counter의 원 형태랑 거의 흡사하게"). Like theirs: a circle an eighth of the window
+// wide, a hairline, centred on the pointer and following it with a fifth of a second's ease; it fades in while a smaller
+// ring grows into it, and a soft glow leaves it outward (extra.css). The browser's own pointer stays. The ring is drawn
+// outside the page's root (a fixed layer, MonoRoot); this moves it and decides when it shows: only with a mouse (not on
+// touch screens), only while the page moves (not with "reduce motion"), and only over things marked [data-cur].
 export default function pointerMotion({ root, on, X }) {
   const el = document.querySelector('.cur');
   const fine = !!window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (!el || !fine) return;
-  const ring = el.querySelector('.cur-o'), dot = el.querySelector('.cur-x');
-  if (!ring || !dot) return;
-  // tx, ty: the pointer · rx, ry: the outline (it trails) · dx, dy: the plus (it keeps up)
-  let tx = 0, ty = 0, rx = 0, ry = 0, dx = 0, dy = 0, seen = false, inside = true, target = null, n = 0;
+  const ring = el.querySelector('.cur-o');
+  if (!ring) return;
+  // where the pointer is (tx, ty), where the ring is (x, y), and the move it is making: from (fx, fy), begun at t0;
+  // now: the time of the last frame (the engine's clock, in seconds)
+  let tx = 0, ty = 0, x = 0, y = 0, fx = 0, fy = 0, t0 = 0, now = 0, seen = false, inside = true, target = null, n = 0;
   const set = (t) => {
     if (t === target) return;
-    // (it comes in where the pointer is, not from where it last was)
-    if (t && !target) { rx = tx; ry = ty; dx = tx; dy = ty; }
     target = t;
     if (t) {
-      // on a blue part of the page the mark is white, on white it is blue
+      // the glow that leaves the ring: white on a blue part of the page, blue on a white one
       el.setAttribute('data-tone', t.closest('.b-lu, .m1-nums, [data-tone="dark"]') ? 'dark' : 'light');
       el.classList.add('on');
-    } else el.classList.remove('on', 'dn');
+    } else el.classList.remove('on');
   };
   on(window, 'mousemove', (e) => {
-    tx = e.clientX; ty = e.clientY; inside = true;
-    if (!seen) { seen = true; rx = dx = tx; ry = dy = ty; root.classList.add('cur-live'); }
+    tx = e.clientX; ty = e.clientY;
+    // (the first move, and the first one after the pointer was outside the window: the ring is put there, it does not
+    // fly in from where it was)
+    if (!seen || !inside) { seen = true; x = tx; y = ty; }
+    inside = true;
+    // every move of the hand starts the ring's move again, from where the ring is now. It starts on the last frame's
+    // time, not on this very moment: a move arrives just before a frame, and counted from the move itself the ring
+    // would get next to nowhere by that frame — it would hang far behind a hand that keeps moving
+    fx = x; fy = y; t0 = now;
   });
-  on(window, 'mousedown', () => { if (target) el.classList.add('dn'); });
-  on(window, 'mouseup', () => el.classList.remove('dn'));
   on(document.documentElement, 'mouseleave', () => { inside = false; set(null); });
   on(window, 'blur', () => set(null));
   X.frame = (c) => {
+    now = c.t;
     if (!seen) return;
     // what is under the pointer changes without the pointer moving too (the page scrolls, the lineup's row moves on)
     if (inside && (n++ & 1) === 0) {
       const hit = document.elementFromPoint(tx, ty);
       set(hit && root.contains(hit) ? hit.closest('[data-cur]') : null);
     }
-    const kr = 1 - Math.exp(-c.dt * 11), kd = 1 - Math.exp(-c.dt * 34);
-    rx += (tx - rx) * kr; ry += (ty - ry) * kr;
-    dx += (tx - dx) * kd; dy += (ty - dy) * kd;
-    ring.style.transform = 'translate3d(' + rx.toFixed(1) + 'px,' + ry.toFixed(1) + 'px,0)';
-    dot.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,0)';
+    // there in a fifth of a second, slowing down (theirs: gsap.quickTo, .2 s, power2.out)
+    const q = Math.min(1, (now - t0) / 0.2), e = 1 - (1 - q) * (1 - q);
+    x = fx + (tx - fx) * e; y = fy + (ty - fy) * e;
+    ring.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
   };
   X.stop = () => {
-    root.classList.remove('cur-live');
-    el.classList.remove('on', 'dn');
+    el.classList.remove('on');
     target = null;
   };
 }

@@ -1,7 +1,7 @@
 "use client";
 // The root of every page: the element the design's styles hang on (class "mono" + "mono-<page>"), the motion engine that
 // runs on it while the page scrolls in a window, the header that stays at the top of the window, the phone menu, the
-// poster viewer, and the shape the pointer takes over a poster.
+// poster viewer, and the ring around the pointer over a poster.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { startEngine } from "./engine";
 import tabsMotion from "./motion/tabs";
@@ -10,7 +10,6 @@ import pointerMotion from "./motion/pointer";
 import MobileMenu from "./MobileMenu";
 import PosterViewer, { type ViewItem } from "./PosterViewer";
 import Header from "./Header";
-import { FORMS } from "./marks";
 import type { Lang, TabKey } from "./content";
 
 type Mono = {
@@ -160,12 +159,9 @@ export default function MonoRoot({
       </div>
       <MobileMenu lang={lang} path={path} cur={cur} open={menuOpen} onClose={closeMenu} />
       <PosterViewer lang={lang} list={pv.list} index={pv.i} open={pv.open} onClose={closeViewer} onStep={stepViewer} />
-      {/* the shape the pointer takes over a poster that opens large: the logo's O as a thin outline, and a small plus —
-          motion/pointer.js moves the two */}
-      <div className="cur" aria-hidden="true">
-        <div className="cur-o"><svg viewBox={FORMS.O.viewBox} focusable="false"><path className="cs" d={FORMS.O.d} pathLength={1} /><path d={FORMS.O.d} pathLength={1} /></svg></div>
-        <div className="cur-x"><i /></div>
-      </div>
+      {/* the ring that comes up around the pointer over a poster that opens large — motion/pointer.js moves it
+          (i: the ring, its blue line; b: the white line inside it) */}
+      <div className="cur" aria-hidden="true"><div className="cur-o"><i><b /></i></div></div>
     </MonoContext.Provider>
   );
 }

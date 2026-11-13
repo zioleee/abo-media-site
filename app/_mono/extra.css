@@ -390,27 +390,28 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .pv-fig,.pv-ln p > span,.pv-ln h2 > span{animation:none!important}
 }
 
-/* ---------- the shape the pointer takes over a poster that opens large (motion/pointer.js) ----------
-   A thin outline of the logo's O — drawn round once as it comes in — follows the hand a little behind; a small plus stays
-   at the hand itself. Blue on the white parts of the page, white on the blue ones; the line is cased in the other tone
-   (as a road is on a map), so that it reads over a poster in its own colours too. Where it shows, the browser's own
-   pointer is put away. */
-.mono.cur-live [data-cur]{cursor:none}
-.cur{position:fixed;left:0;top:0;z-index:95;pointer-events:none;color:#1c7a9e;--halo:rgba(255,255,255,.9)}
-.cur[data-tone=dark]{color:#fff;--halo:rgba(13,60,80,.42)}
-.cur-o,.cur-x{position:absolute;left:0;top:0;will-change:transform}
-/* (192 px wide: the form's own 1232 units at 1 : 6.42 — the line is 8 units, 1.25 px; its casing 20, about 3 px) */
-.cur-o svg{position:absolute;left:-96px;top:-75px;width:192px;height:150px;overflow:visible;fill:none;stroke:currentColor;stroke-width:8;opacity:0;transform:scale(.6);transition:opacity .2s linear,transform .3s cubic-bezier(.165,.84,.44,1)}
-.cur-o path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 0s linear .3s}
-.cur-o path.cs{stroke:var(--halo);stroke-width:20}
-.cur.on .cur-o svg{opacity:1;transform:none;transition:opacity .18s linear,transform .8s cubic-bezier(.19,1,.22,1)}
-.cur.on .cur-o path{stroke-dashoffset:0;transition:stroke-dashoffset .9s cubic-bezier(.19,1,.22,1)}
-.cur.on.dn .cur-o svg{transform:scale(.88);transition:transform .22s cubic-bezier(.165,.84,.44,1)}
-.cur-x i{position:absolute;left:-7.5px;top:-7.5px;width:15px;height:15px;filter:drop-shadow(0 0 .7px var(--halo)) drop-shadow(0 0 .7px var(--halo));opacity:0;transform:scale(.2) rotate(-90deg);transition:opacity .14s linear,transform .25s cubic-bezier(.165,.84,.44,1)}
-.cur-x i::before,.cur-x i::after{content:"";position:absolute;background:currentColor}
-.cur-x i::before{left:0;right:0;top:7px;height:1px}
-.cur-x i::after{top:0;bottom:0;left:7px;width:1px}
-.cur.on .cur-x i{opacity:1;transform:none;transition:opacity .18s linear .06s,transform .65s cubic-bezier(.19,1,.22,1) .06s}
+/* ---------- the ring around the pointer over a poster that opens large (motion/pointer.js) ----------
+   After counter-digital.jp's, as the user asked: a circle an eighth of the window wide (theirs is 11.25 rem of a root that
+   is 1/90 of the window, up to 216 px), a hairline, centred on the pointer. It fades in over .3 s while a smaller ring
+   grows from 30 % into it; then a soft glow leaves it outward. The browser's own pointer stays.
+   Theirs is one line in their orange, which shows on any picture. Ours is the page's blue, which a dark poster swallows:
+   so the line is two hairlines side by side, blue outside and white inside — on the white page only the blue one shows,
+   on the blue lineup only the white one, on a poster whichever it needs. (Both are borders: a border is drawn on whole
+   screen dots at any display scale, which a shadow is not.)
+   (The two extra rings are measured from the inside of the blue line: + 2 px is its outside.) */
+.cur{position:fixed;left:0;top:0;z-index:95;pointer-events:none;color:#1c7a9e}
+.cur[data-tone=dark]{color:#fff}
+.cur-o{position:absolute;left:0;top:0;will-change:transform}
+.cur-o i,.cur-o b,.cur-o i::before{box-sizing:border-box;border:1px solid #1c7a9e;border-radius:50%}
+.cur-o i{position:absolute;--d:clamp(128px,12.5vw,216px);left:calc(var(--d) * -.5);top:calc(var(--d) * -.5);width:var(--d);height:var(--d);opacity:0;transition:opacity .3s cubic-bezier(.165,.84,.44,1)}
+.cur.on .cur-o i{opacity:1}
+.cur-o b{position:absolute;inset:0;border-color:rgba(255,255,255,.9)}
+.cur-o i::before,.cur-o i::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.cur-o i::before{width:30%;height:30%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.9);opacity:0}
+.cur.on .cur-o i::before{animation:cur-ring .3s cubic-bezier(.25,.46,.45,.94) forwards}
+@keyframes cur-ring{0%{opacity:0;width:30%;height:30%}99.99%{opacity:1;width:calc(100% + 2px);height:calc(100% + 2px)}100%{opacity:0;width:calc(100% + 2px);height:calc(100% + 2px)}}
+.cur-o i::after{width:calc(100% + 2px);height:calc(100% + 2px);border-radius:50%;box-shadow:inset 0 0 0 0 currentColor}
+.cur.on .cur-o i::after{width:115%;height:115%;box-shadow:inset 0 0 15px 2px currentColor;opacity:0;transition:width .6s cubic-bezier(.215,.61,.355,1) .3s,height .6s cubic-bezier(.215,.61,.355,1) .3s,box-shadow .6s cubic-bezier(.215,.61,.355,1) .3s,opacity .6s cubic-bezier(.215,.61,.355,1) .3s}
 
 /* ---------- between two pages: the sheet sweeps across the window (PageSheet.tsx) ----------
    The phone menu's sheet once more: in from the left with the logo's lean, out on the right. */

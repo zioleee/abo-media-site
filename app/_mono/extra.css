@@ -310,3 +310,83 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mm-foot{padding-top:min(5vw,5vh,48px)}
 }
 @media (prefers-reduced-motion: reduce){.mm-sheet,.mm-bar,.mm-it,.mm-foot,.mm.on .mm-bar,.mm.on .mm-it,.mm.on .mm-foot{transition:none!important}.mm.on .mm-sheet{transform:skewX(25.15deg)}}
+
+/* ================= trial (2026-11-14): ideas shown on their own preview, not part of the approved design ================= */
+
+/* ---------- a poster opens large (PosterViewer.tsx) ----------
+   The phone menu's sheet — blue, the sheared white grid, sweeping in with the logo's lean — and on it the poster whole, in
+   its own colours, beside its year (the serif of the wall's years), its channel and its title. Outside the page's root,
+   like the menu: sizes are worked out from the window here (--u as in the page: 1/100 of its width, up to 1728 px). */
+.mono button.m1-work{appearance:none;-webkit-appearance:none;display:block;width:100%;margin:0;padding:0;border:0;border-radius:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.mono .b-lc[data-cur]{cursor:pointer}
+/* (a card of the lineup that takes the keyboard's or a press's focus must not scroll its row: the row is clipped, not hidden) */
+.m1.mono-home.drift .b-tkw{overflow:clip}
+.pv{position:fixed;inset:0;z-index:110;overflow:hidden;visibility:hidden;pointer-events:none;color:#fff;word-break:keep-all;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  --ex:cubic-bezier(.19,1,.22,1);--qt:cubic-bezier(.165,.84,.44,1);--u:min(1vw,17.28px);--px:max(clamp(20px,4.44vw,64px),calc(50vw - 800px));
+  --vh:100vh;--ha:max(240px,calc(var(--vh) - 96px - 5.4 * var(--u)));--wa:calc(41 * var(--u));
+  transition:visibility 0s linear .75s}
+/* (the poster's height: as tall as the window allows, or as its width allows — worked out where the poster's shape is known) */
+.pv-stage,.pv-fig.was{--ph:min(var(--ha),calc(var(--wa) / var(--ar,.7072)))}
+@supports (height: 100dvh){.pv{--vh:100dvh}}
+.pv.on{visibility:visible;pointer-events:auto;transition:none}
+.pv p,.pv h2,.pv figure{margin:0}
+.pv-sheet{position:absolute;top:0;bottom:0;left:-60vh;right:-60vh;overflow:hidden;background:linear-gradient(180deg,#3db3d9 0%,#2596be 46%,#1c7a9e 100%);transform-origin:0 0;transform:skewX(25.15deg) translateX(-101%);transition:transform .75s var(--ex)}
+.pv.on .pv-sheet{transform:skewX(25.15deg)}
+.pv-sheet i{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.17) 1px,transparent 1px);background-size:calc(2.1 * var(--u)) calc(2.1 * var(--u))}
+.pv-in{position:relative;height:100%;display:flex;flex-direction:column;opacity:0;transition:opacity .16s linear}
+.pv.on .pv-in{opacity:1;transition:opacity .5s var(--qt) .22s}
+.pv-bar{flex:none;height:96px;display:flex;align-items:center;justify-content:flex-end;padding:0 var(--px)}
+.pv-b{width:52px;height:52px;display:grid;place-items:center;margin:0;padding:0;border:1px solid rgba(255,255,255,.6);border-radius:50%;background:transparent;color:#fff;font:inherit;cursor:pointer;transition:background-color .45s var(--qt),color .45s var(--qt),border-color .45s var(--qt)}
+.pv-b:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media (hover: hover){.pv-b:hover{background:#fff;border-color:#fff;color:#1c7a9e}}
+.pv-stage{flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;gap:calc(6.4 * var(--u));padding:0 var(--px) calc(5.4 * var(--u))}
+/* (the poster stands in a place as wide as the widest upright poster — 3 : 4 —, against its right edge: the lines beside it
+   stay where they are from one poster to the next; a poster wider than that makes its own room) */
+.pv-figw{flex:none;position:relative;display:flex;justify-content:flex-end;width:max(min(calc(var(--ha) * .75),var(--wa)),calc(var(--ph) * var(--ar,.7072)))}
+.pv-fig.was{position:absolute;right:0;top:0;animation:pv-out .3s linear .85s both}
+@keyframes pv-out{to{opacity:0}}
+.pv-fig{position:relative;height:var(--ph);width:calc(var(--ph) * var(--ar,.7072));background:rgba(255,255,255,.12) 50% 50% / cover no-repeat;box-shadow:0 0 0 1px rgba(255,255,255,.4),0 34px 60px -26px rgba(4,34,48,.66);
+  --s:calc(46.95% / var(--ar,.7072));animation:pv-wipe 1.15s var(--ex) var(--pd,0s) both}
+.pv-fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .45s var(--qt)}
+.pv-fig.sharp img{opacity:1}
+@keyframes pv-wipe{from{clip-path:polygon(0 0,calc(-1 * var(--s)) 0,0 100%,0 100%)}to{clip-path:polygon(0 0,100% 0,calc(100% + var(--s)) 100%,0 100%)}}
+.pv-tx{flex:none;width:calc(30 * var(--u));height:var(--ph);display:flex;flex-direction:column;justify-content:space-between}
+.pv-ln p,.pv-ln h2{overflow:hidden}
+.pv-ln p > span,.pv-ln h2 > span{display:block;animation:pv-rise 1.2s var(--ex) calc(var(--pd,0s) + var(--ld,0s)) both}
+@keyframes pv-rise{from{transform:translateY(105%)}to{transform:none}}
+.pv-ln .y{font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:calc(6.6 * var(--u));line-height:.82;letter-spacing:-.01em;padding-bottom:.06em}
+.pv-ln .ch{margin-top:calc(2.8 * var(--u));font-size:max(13px,calc(.95 * var(--u)));line-height:1.3;font-weight:700;letter-spacing:.08em;--ld:.07s}
+.pv-ln .ti{margin-top:calc(.6 * var(--u));font-size:calc(3.1 * var(--u));line-height:1.3;font-weight:300;letter-spacing:-.04em;--ld:.13s}
+.pv-ln .y + .ti{margin-top:calc(2.8 * var(--u))}
+.pv-nav{display:flex;gap:10px}
+@media (max-width: 760px){
+.pv{--ha:max(200px,calc(var(--vh) - 68px - 48vw));--wa:84vw}
+.pv-bar{height:68px}
+.pv-b{width:44px;height:44px}
+.pv-stage{flex-direction:column;align-items:center;justify-content:flex-start;gap:6vw;padding-bottom:7vw}
+.pv-figw{justify-content:center}
+.pv-fig.was{right:auto;left:50%;margin-left:calc(var(--ph) * var(--ar,.7072) * -.5)}
+.pv-tx{width:100%;height:auto;flex:1;min-height:0;gap:5vw}
+.pv-ln{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:4.4vw;align-items:end}
+.pv-ln .y{grid-row:1 / 3;font-size:17vw}
+.pv-ln .ch{margin-top:0;font-size:11.5px}
+.pv-ln .ti,.pv-ln .ch + .ti,.pv-ln .y + .ti{margin-top:.6vw;font-size:5.6vw;line-height:1.3}
+.pv-nav{justify-content:flex-end}
+}
+@media (prefers-reduced-motion: reduce){
+.pv,.pv-sheet,.pv-in,.pv.on .pv-in,.pv-fig img{transition:none!important}
+.pv-fig,.pv-ln p > span,.pv-ln h2 > span{animation:none!important}
+}
+
+/* ---------- the mark that follows the pointer over a poster (motion/pointer.js) ----------
+   A small leaning form in the page's blue (white on the blue parts) with "View" in the serif. Where it shows, the
+   browser's own pointer is put away — this is the pointer there. */
+.mono.cur-live [data-cur]{cursor:none}
+.cur{position:fixed;left:0;top:0;z-index:95;pointer-events:none;will-change:transform}
+.cur-chip{position:absolute;left:0;top:0;height:42px;padding:0 19px;display:flex;align-items:center;white-space:nowrap;color:#fff;font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:22px;line-height:1;transform:translate(-50%,-50%)}
+.cur-chip::before{content:"";position:absolute;inset:0;z-index:-1;background:#1c7a9e;box-shadow:0 10px 24px -10px rgba(6,40,56,.5);transform:skewX(25.15deg) scaleX(0);transition:transform .28s cubic-bezier(.165,.84,.44,1)}
+.cur-chip span{display:block;padding-bottom:.08em;opacity:0;transition:opacity .14s linear}
+.cur.on .cur-chip::before{transform:skewX(25.15deg);transition:transform .6s cubic-bezier(.19,1,.22,1)}
+.cur.on .cur-chip span{opacity:1;transition:opacity .28s linear .1s}
+.cur[data-tone=dark] .cur-chip{color:#1c7a9e}
+.cur[data-tone=dark] .cur-chip::before{background:#fff}

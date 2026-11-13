@@ -1,16 +1,25 @@
 "use client";
 // The root of every page: the element the design's styles hang on (class "mono" + "mono-<page>"), the motion engine that
-// runs on it while the page scrolls in a window, the header that stays at the top of the window, and the phone menu.
+// runs on it while the page scrolls in a window, the header that stays at the top of the window, the phone menu, and
+// (trial) the poster viewer with the mark that follows the pointer over a poster.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { startEngine } from "./engine";
 import tabsMotion from "./motion/tabs";
 import homeMotion from "./motion/home";
+import pointerMotion from "./motion/pointer";
 import MobileMenu from "./MobileMenu";
+import PosterViewer, { type ViewItem } from "./PosterViewer";
 import Header from "./Header";
 import type { Lang, TabKey } from "./content";
 
-type Mono = { rescan: () => void; openMenu: (from?: HTMLElement | null) => void; menuOpen: boolean };
-const MonoContext = createContext<Mono>({ rescan() {}, openMenu() {}, menuOpen: false });
+type Mono = {
+  rescan: () => void;
+  openMenu: (from?: HTMLElement | null) => void;
+  menuOpen: boolean;
+  /** (trial) a poster seen large: the list it belongs to, which one, and what was pressed (the focus goes back there) */
+  view: (list: ViewItem[], index: number, from?: HTMLElement | null) => void;
+};
+const MonoContext = createContext<Mono>({ rescan() {}, openMenu() {}, menuOpen: false, view() {} });
 export const useMono = () => useContext(MonoContext);
 
 type Engine = { rescan(): void; stop(): void };
@@ -34,11 +43,14 @@ export default function MonoRoot({
   const engine = useRef<Engine | null>(null);
   const opener = useRef<HTMLElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [pv, setPv] = useState<{ list: ViewItem[]; i: number; open: boolean }>({ list: [], i: 0, open: false });
+  const pvOpener = useRef<HTMLElement | null>(null);
+  const pvStep = useRef(false); // the viewer added a step to the browser's history (Back closes it)
 
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    const extras = motion === "home" ? [homeMotion] : motion === "tabs" ? [tabsMotion] : [];
+    const extras = motion === "home" ? [homeMotion, pointerMotion] : motion === "tabs" ? [tabsMotion, pointerMotion] : [];
     const e: Engine = startEngine(root, extras);
     engine.current = e;
     let alive = true;
@@ -108,15 +120,47 @@ export default function MonoRoot({
     // (once the page is no longer inert)
     if (el && typeof el.focus === "function") requestAnimationFrame(() => el.focus({ preventScroll: true }));
   }, []);
-  const value = useMemo(() => ({ rescan, openMenu, menuOpen }), [rescan, openMenu, menuOpen]);
+  // (trial) the poster viewer. Opening it adds a step to the browser's history, so that Back — the gesture a phone's
+  // user reaches for — closes it instead of leaving the page; closing it any other way takes that step back.
+  const view = useCallback((list: ViewItem[], index: number, from?: HTMLElement | null) => {
+    if (!list.length) return;
+    pvOpener.current = from ?? (document.activeElement as HTMLElement | null);
+    setPv({ list, i: Math.max(0, Math.min(list.length - 1, index)), open: true });
+    try {
+      window.history.pushState({ ...(window.history.state ?? {}), aboPoster: 1 }, "");
+      pvStep.current = true;
+    } catch {}
+  }, []);
+  const shutViewer = useCallback(() => {
+    setPv((s) => (s.open ? { ...s, open: false } : s));
+    const el = pvOpener.current;
+    pvOpener.current = null;
+    if (el && typeof el.focus === "function") requestAnimationFrame(() => el.focus({ preventScroll: true }));
+  }, []);
+  const closeViewer = useCallback(() => {
+    if (pvStep.current) { pvStep.current = false; window.history.back(); } // (→ popstate → shutViewer)
+    else shutViewer();
+  }, [shutViewer]);
+  const stepViewer = useCallback((d: number) => {
+    setPv((s) => (s.open && s.list.length > 1 ? { ...s, i: (s.i + d + s.list.length) % s.list.length } : s));
+  }, []);
+  useEffect(() => {
+    const onPop = () => { pvStep.current = false; shutViewer(); };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [shutViewer]);
+  const value = useMemo(() => ({ rescan, openMenu, menuOpen, view }), [rescan, openMenu, menuOpen, view]);
 
   return (
     <MonoContext.Provider value={value}>
-      <div ref={ref} className={`r8 m1 mono mono-${page}`} lang={lang} inert={menuOpen || undefined}>
+      <div ref={ref} className={`r8 m1 mono mono-${page}`} lang={lang} inert={menuOpen || pv.open || undefined}>
         <div className="m1-stick"><Header lang={lang} path={path} cur={cur} sticky /></div>
         {children}
       </div>
       <MobileMenu lang={lang} path={path} cur={cur} open={menuOpen} onClose={closeMenu} />
+      <PosterViewer lang={lang} list={pv.list} index={pv.i} open={pv.open} onClose={closeViewer} onStep={stepViewer} />
+      {/* (trial) the mark that follows the pointer over a poster — motion/pointer.js */}
+      <div className="cur" aria-hidden="true"><div className="cur-chip"><span /></div></div>
     </MonoContext.Provider>
   );
 }

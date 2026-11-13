@@ -1,5 +1,6 @@
-// About (board: M4-About): the first screen, the three values as the logo's forms on graph paper, the statement,
-// the history with every programme's poster, the numbers.
+// About (board: M4-About): the first screen, the three values as the logo's forms on graph paper (each under its letter;
+// the boards' 01–03 beside the letters are gone — user, 2026-11-13), the statement, the history with every programme's
+// poster, the numbers.
 import MonoRoot from "../MonoRoot";
 import Hero from "../Hero";
 import Footer from "../Footer";
@@ -22,7 +23,7 @@ export default function AboutView({ lang }: { lang: Lang }) {
           <div className="m1-panels">
             {a.values.map((v, i) => (
               <article key={v.letter} className="m1-panel" data-m="rise" style={vars({ "--d": `${(i * 0.12).toFixed(2)}s` })}>
-                <p className="k"><b>{v.letter}</b><span>{String(i + 1).padStart(2, "0")}</span></p>
+                <p className="k"><b>{v.letter}</b></p>
                 <div className="fm"><GridForm g={v.letter as "A" | "B" | "O"} uid={`m1g${v.letter}`} /></div>
                 <p className="vd">{v.desc[0]}<br />{v.desc[1]}</p>
                 <p className="w">{v.word}</p>

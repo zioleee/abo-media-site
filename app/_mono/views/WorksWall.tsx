@@ -1,6 +1,6 @@
 "use client";
 // The wall of works, by year (newest first; the newest year three to a row, the others five). On a phone a year opens
-// and closes at a tap (the newest is open).
+// and closes at a tap (the newest is open). No count of the works beside the label (user, 2026-11-13).
 import { useEffect, useMemo, useState } from "react";
 import { useMono } from "../MonoRoot";
 import { Minus, Plus, Poster, Tag, vars } from "../parts";
@@ -39,7 +39,6 @@ export default function WorksWall({ lang }: { lang: Lang }) {
       <div className="m1-g12 m1-whead">
         <p className="m1-wtag" data-m="line">
           <Tag text={t.label} cls="mid" />
-          {works && works.length > 0 && <span className="cnt" aria-label={t.count(works.length)}>({works.length})</span>}
         </p>
         <nav className="m1-yidx" aria-label={t.years} data-m="fade" style={vars({ "--d": ".3s" })}>
           {years.map(([y]) => <a key={y} href={`#y${y}`} aria-label={t.year(y)}>{y}</a>)}

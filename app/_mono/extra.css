@@ -24,6 +24,9 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono .m1-nav > a:not([aria-current])::after,.mono .m1-fnav a:not([aria-current])::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%}
 .m1.mono.live .m1-nav > a::after,.m1.mono.live .m1-fnav a::after{transition:transform .5s var(--ex)}
 @media (hover: hover){.mono .m1-nav > a:hover::after,.mono .m1-fnav a:hover::after{transform:scaleX(1);transform-origin:0 50%}}
+/* the small labels — a programme's channel, a news item's source, an area's key words and note, a field's name — in the
+   body's blue: the lighter blue the boards gave them is faint at 11–13 px on white (3.4 : 1; now 4.9 : 1 — user, 2026-11-13) */
+.mono-about .m1-ent .ch,.mono-business .m1-kws,.mono-business .m1-area .vs,.mono-works .m1-work .ch,.mono-news .m1-nrow .src,.mono-contact .m1-crow .k,.mono-contact .m1-dir .k{color:var(--b)}
 /* a poster whose shape is far from the frame's: whole, over a soft copy of itself */
 .m1.mono .pst.whole > img.bk{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(16px) saturate(1.1);opacity:.85}
 .m1.mono .pst.whole > img:not(.bk){position:relative}
@@ -132,6 +135,16 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-home.drift .b-lc .ti{font-size:3.9cqi}
 }
 
+/* ---------- Business: an area's note is a line over its name (user, 2026-11-13) ----------
+   The boards set it vertically at the row's right edge; with Latin in it ("YouTube · 디지털 플랫폼", "Native Ads · 캠페인") the
+   Latin lay on its side. Now it is the first line of the text column, and that column takes the room the note left. */
+.mono-business .m1-area .bd{grid-column:9 / 13}
+/* (justify-self: the boards' rule sent the note to the row's end — newer browsers apply that to a block in a column too) */
+.mono-business .m1-area .vs{writing-mode:horizontal-tb;justify-self:start;margin-bottom:1cqi;font-size:13px;line-height:1.3;letter-spacing:.08em;white-space:normal}
+@container (max-width: 760px){
+.mono-business .m1-area .bd{padding-right:0}
+.mono-business .m1-area .vs{position:static;margin-bottom:2.6cqi;font-size:12.5px}
+}
 /* ---------- Business: the longer English names wrap inside the tube ---------- */
 .mono-business[lang=en] .m1-tube > div > span{white-space:normal;max-width:calc(100% - 2.4cqi);align-items:center}
 .mono-business[lang=en] .m1-tube .t{line-height:1.25}
@@ -146,7 +159,7 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono-article .m1-ameta{grid-column:1 / 4;display:grid;justify-items:start;row-gap:1.6cqi}
 .mono-article .m1-ameta .m1-tag{font-size:3.4cqi}
 .mono-article .m1-ameta time{font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:2.1cqi;line-height:1}
-.mono-article .m1-ameta .cat{font-size:12px;line-height:1.3;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.mono-article .m1-ameta .cat{font-size:12px;line-height:1.3;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--b)}
 .mono-article .m1-atitle{grid-column:4 / 13;font-size:3.1cqi;line-height:1.38;font-weight:300;letter-spacing:-.04em;color:var(--b)}
 .mono-article .m1-abody{padding-top:5cqi;padding-bottom:8cqi}
 .mono-article .m1-acol{grid-column:4 / 11}
@@ -187,8 +200,7 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mm-btn{display:flex;align-items:center;gap:14px;font-size:14px;font-weight:800;letter-spacing:.06em}
 .mm-btn button{width:42px;height:42px;display:grid;place-items:center;margin:0;padding:0;border:1px solid rgba(255,255,255,.6);border-radius:50%;background:transparent;color:#fff;cursor:pointer}
 .mm-nav{flex:none;display:flex;flex-direction:column;margin:9vw var(--px) 0;border-bottom:1px solid rgba(255,255,255,.4)}
-.mm-it{display:flex;align-items:baseline;gap:5vw;padding:3.6vw 0 4.2vw;border-top:1px solid rgba(255,255,255,.4)}
-.mm-it .no{flex:none;width:7vw;font-size:12px;font-weight:700;letter-spacing:.14em;opacity:.72}
+.mm-it{display:block;padding:3.6vw 0 4.2vw;border-top:1px solid rgba(255,255,255,.4)}
 .mm-it .tx{display:inline-flex;align-items:center;gap:.3em;font-family:'Instrument Serif','Noto Serif KR',Georgia,serif;font-size:min(14vw,64px);line-height:1;letter-spacing:-.015em;white-space:nowrap}
 .mm-it .tx > span{display:block;padding-bottom:.07em}
 .mm-it .tx > i{display:none;flex:none;width:max(1.5px,.02em);height:.84em;background:currentColor;transform:skewX(25.15deg)}

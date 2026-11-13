@@ -1,6 +1,7 @@
 "use client";
-// The phone menu: a blue sheet with the sheared white grid sweeps in with the logo's lean; the tabs in the serif,
-// the one you are on held between the two strokes; the language switch and the company's line at its foot.
+// The phone menu: a blue sheet with the sheared white grid sweeps in with the logo's lean; the tabs in the serif (no
+// numbers beside them — user, 2026-11-13), the one you are on held between the two strokes; the language switch and
+// the company's line at its foot.
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { FOOTER, LOGO, TABS, UI, hrefOf, type Lang, type TabKey } from "./content";
@@ -46,7 +47,6 @@ export default function MobileMenu({ lang, path, cur, open, onClose }: { lang: L
         <nav className="mm-nav" aria-label={t.nav}>
           {TABS.map((x, i) => (
             <Link key={x.key} href={hrefOf(lang, x.path)} className="mm-it" style={vars({ "--k": i + 1 })} aria-current={x.key === cur ? "page" : undefined} onClick={onClose}>
-              <span className="no" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
               <span className="tx"><i aria-hidden="true" /><span>{x.label}</span><i aria-hidden="true" /></span>
             </Link>
           ))}

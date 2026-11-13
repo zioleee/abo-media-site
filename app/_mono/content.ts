@@ -158,8 +158,8 @@ export const BUSINESS = {
 
 // ------------------------------------------------------------------ Works
 export const WORKS = {
-  ko: { label: "Works", count: (n: number) => `${n}편`, years: "연도", year: (y: string) => `${y}년`, toggle: (y: string) => `${y}년 작품`, empty: "작품이 없습니다" },
-  en: { label: "Works", count: (n: number) => `${n} works`, years: "Years", year: (y: string) => y, toggle: (y: string) => `${y} works`, empty: "No works found" },
+  ko: { label: "Works", years: "연도", year: (y: string) => `${y}년`, toggle: (y: string) => `${y}년 작품`, empty: "작품이 없습니다" },
+  en: { label: "Works", years: "Years", year: (y: string) => y, toggle: (y: string) => `${y} works`, empty: "No works found" },
 };
 
 // ------------------------------------------------------------------ News

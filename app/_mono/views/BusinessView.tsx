@@ -29,11 +29,11 @@ export default function BusinessView({ lang }: { lang: Lang }) {
                   <p className="no"><span data-m="line" style={{ display: "inline-block" }}>{it.id}</span></p>
                   <p className="en" data-m="rise" style={vars({ "--d": ".08s" })}>{it.tag.slice(0, sp)}<br />{it.tag.slice(sp + 1)}</p>
                   <div className="bd" data-m="rise" style={vars({ "--d": ".18s" })}>
+                    <p className="vs">{it.subtitle}</p>
                     <h3>{it.title}</h3>
                     <p className="ds">{it.description}</p>
                     <ul className="m1-kws">{it.keywords.map((k) => <li key={k}>{k}</li>)}</ul>
                   </div>
-                  <p className="vs" data-m="fade" style={vars({ "--d": ".4s" })}>{it.subtitle}</p>
                 </article>
               );
             })}

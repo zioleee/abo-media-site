@@ -3,6 +3,7 @@ import "./globals.css";
 import "./_mono/mono.css";
 import "./_mono/extra.css";
 import { SITE_URL } from "./lib/site";
+import PageSheet from "./_mono/PageSheet";
 import type { Metadata } from "next";
 
 const NAVER_VERIFICATION = "358efa793fdb1d77773d4c5232f93baa8f272d33";
@@ -113,7 +114,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* the sheet that sweeps across the window between two pages */}
+        <PageSheet />
+      </body>
     </html>
   );
 }

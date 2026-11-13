@@ -9,12 +9,13 @@ import { useMono } from "../MonoRoot";
 import { ArrowUR, Poster, Tag, vars } from "../parts";
 import { HOME, HOME_WORKS, hrefOf, type Lang } from "../content";
 import { coverOf, getWorks, ratioOf, type Work } from "../data";
+import type { ViewItem } from "../PosterViewer";
 
 const NB = "\u00a0"; // a non-breaking space: an empty caption keeps its line
 
 export default function HomeLineup({ lang }: { lang: Lang }) {
   const h = HOME[lang];
-  const { rescan } = useMono();
+  const { rescan, view } = useMono();
   const [works, setWorks] = useState<Work[] | null>(null);
   useEffect(() => {
     let alive = true;
@@ -26,6 +27,16 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
   const list = works ? (HOME_WORKS.map((s) => works.find((w) => w.slug === s)).filter(Boolean) as Work[]) : null;
   if (list && list.length === 0) return null;
   const n = list ? list.length : HOME_WORKS.length;
+  // a poster of the row opens large at a press (mouse or finger; with the keyboard the same posters open from
+  // the Works page, which the button under the row leads to)
+  const items: ViewItem[] = [];
+  const at = new Map<string, number>();
+  for (const w of list ?? []) {
+    const c = coverOf(w);
+    if (!c) continue;
+    at.set(w.id, items.length);
+    items.push({ id: w.id, title: w.title, year: String(w.year), channel: w.client?.name?.trim() || null, src: c.url, ratio: ratioOf(c) });
+  }
 
   return (
     <section className="b-lu">
@@ -44,8 +55,9 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
               {Array.from({ length: n }, (_, i) => {
                 const w = list ? list[i] : null;
                 const c = w ? coverOf(w) : null;
+                const k = w ? at.get(w.id) : undefined;
                 return (
-                  <div key={i} className="b-lc" data-m="rise" style={vars({ "--d": `${((i % 5) * 0.07).toFixed(2)}s` })}>
+                  <div key={i} className="b-lc" data-m="rise" style={vars({ "--d": `${((i % 5) * 0.07).toFixed(2)}s` })} data-cur={k === undefined ? undefined : "view"} onClick={k === undefined ? undefined : (e) => view(items, k, e.currentTarget)}>
                     <span className="th">{w ? <Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} lazy={false} sizes="(max-width: 760px) 42vw, min(20.5vw, 354px)" /> : <span className="pst" />}</span>
                     <span className="cp">
                       <span className="ch">{w?.client?.name?.trim() || NB}</span>

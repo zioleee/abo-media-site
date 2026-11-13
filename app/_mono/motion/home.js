@@ -185,6 +185,11 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
   };
   setupDrift();
   void root.offsetWidth; remeasure();
+  // The row's further rounds are put into the page a moment after it is there (and taken out again when the window gets
+  // narrow): the row is set up again the moment its cards change, not a frame later — a window that is not in front has
+  // no frames, and a page that opens at the row should not show the grid first.
+  const mo = tk && typeof MutationObserver === 'function' ? new MutationObserver(() => { setupDrift(); }) : null;
+  if (mo) mo.observe(tk, { childList: true });
 
   const ct = $('.h-ct'), ctSlab = $('.h-ct .m1-slabw');
   X.frame = (c) => {
@@ -263,5 +268,6 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     if (yct) yct.textContent = '01'; yp.classList.remove('lit');
     lcs.forEach((el) => { el.style.translate = ''; el.classList.remove('on'); });
     ctSlab.style.transform = '';
+    if (mo) mo.disconnect();
   };
 }

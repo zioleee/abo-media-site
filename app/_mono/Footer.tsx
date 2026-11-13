@@ -18,7 +18,7 @@ export default function Footer({ lang, path, cur }: { lang: Lang; path: string; 
         <div className="m1-finfo" style={{ gridColumn: "9 / 13" }}>
           <p style={{ fontWeight: 800 }}>{f.name}</p>
           <p style={{ marginTop: 6 }}>{f.addr}</p>
-          <p>{FOOTER.tel} · {FOOTER.mail}</p>
+          <p><span className="nb">{FOOTER.tel}</span><span className="sp"> · </span><span className="nb">{FOOTER.mail}</span></p>
         </div>
       </div>
       <div className="m1-fbot">

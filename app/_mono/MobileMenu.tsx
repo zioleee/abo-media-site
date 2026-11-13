@@ -18,8 +18,8 @@ export default function MobileMenu({ lang, path, cur, open, onClose }: { lang: L
     html.style.overflow = "hidden";
     const focus = requestAnimationFrame(() => closeBtn.current?.focus({ preventScroll: true }));
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    // the menu belongs to the phone layout: a window made wide closes it
-    const onSize = () => { if (window.innerWidth > 760) onClose(); };
+    // the menu belongs to the header with the menu button (up to 1150 px): a window made wider closes it
+    const onSize = () => { if (window.innerWidth > 1150) onClose(); };
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onSize);
     return () => {

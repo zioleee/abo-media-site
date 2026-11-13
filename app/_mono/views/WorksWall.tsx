@@ -1,7 +1,7 @@
 "use client";
 // The wall of works, by year (newest first; the newest year three to a row, the others five). On a phone a year opens
 // and closes at a tap (the newest is open). No count of the works beside the label (user, 2026-11-13).
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { useMono } from "../MonoRoot";
 import { Minus, Plus, Poster, Tag, vars } from "../parts";
 import { WORKS, type Lang } from "../content";
@@ -31,6 +31,17 @@ export default function WorksWall({ lang }: { lang: Lang }) {
   // the layout changed: what is still waiting to arrive is measured again
   useEffect(() => { if (works) rescan(); }, [works, open, rescan]);
 
+  // the index of years: the page travels to the year (it used to jump there), and the address keeps the year without
+  // adding a step to the way back
+  const goYear = (e: MouseEvent<HTMLAnchorElement>, y: string) => {
+    const el = document.getElementById(`y${y}`);
+    if (!el || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    const still = !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+    try { window.history.replaceState(window.history.state, "", `#y${y}`); } catch {}
+  };
+
   const isOpen = (y: string, i: number) => open[y] ?? i === 0;
   const toggle = (y: string, i: number) => setOpen((o) => ({ ...o, [y]: !(o[y] ?? i === 0) }));
 
@@ -41,7 +52,7 @@ export default function WorksWall({ lang }: { lang: Lang }) {
           <Tag text={t.label} cls="mid" />
         </p>
         <nav className="m1-yidx" aria-label={t.years} data-m="fade" style={vars({ "--d": ".3s" })}>
-          {years.map(([y]) => <a key={y} href={`#y${y}`} aria-label={t.year(y)}>{y}</a>)}
+          {years.map(([y]) => <a key={y} href={`#y${y}`} aria-label={t.year(y)} onClick={(e) => goYear(e, y)}>{y}</a>)}
         </nav>
       </div>
       <div className="m1-wall">

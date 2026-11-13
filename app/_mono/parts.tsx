@@ -25,8 +25,13 @@ export function Tag({ text, cls = "", ...rest }: { text: string; cls?: string } 
 export const ArrowD = () => (
   <svg width="14" height="18" viewBox="0 0 14 18" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M7 0v16M1 10l6 6 6-6" /></svg>
 );
+// (The arrow is drawn twice: the second waits outside the drawing, lower left. Under the pointer the first leaves through
+// the upper right corner and the second comes in after it — extra.css; the drawing's own edge cuts both.)
 export const ArrowUR = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M2.5 13.5 13 3M5 3h8v8" /></svg>
+  <svg className="aur" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <path d="M2.5 13.5 13 3M5 3h8v8" />
+    <path className="in" d="M2.5 13.5 13 3M5 3h8v8" />
+  </svg>
 );
 export const Plus = () => (
   <svg className="p" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 1v14M1 8h14" /></svg>

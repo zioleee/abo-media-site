@@ -20,14 +20,31 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono a:focus-visible,.mono button:focus-visible,.mm a:focus-visible,.mm button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 .mono .m1-mbtn button{cursor:pointer;font:inherit}
 .mono .m1-lang a,.mono .m1-fbot a{color:inherit}
-.m1.mono.live .m1-lang a,.m1.mono.live .m1-fbot a{transition:opacity .4s var(--qt)}
-.m1.mono.live .m1-lang a:hover,.m1.mono.live .m1-fbot a:hover{opacity:.6}
 /* the tabs answer the pointer (header, the header that stays, footer — the boards gave them no hover): a line draws in
    under the name, from the left, and leaves to the right */
 .mono .m1-nav > a,.mono .m1-fnav a{position:relative}
 .mono .m1-nav > a:not([aria-current])::after,.mono .m1-fnav a:not([aria-current])::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%}
 .m1.mono.live .m1-nav > a::after,.m1.mono.live .m1-fnav a::after{transition:transform .5s var(--ex)}
 @media (hover: hover){.mono .m1-nav > a:hover::after,.mono .m1-fnav a:hover::after{transform:scaleX(1);transform-origin:0 50%}}
+/* the small links answer the same way — the other language (it used to fade to 60 %: a link that got fainter under the
+   pointer), the footer's e-mail, the map's source (which had no answer at all) */
+.mono .m1-lang a,.mono .m1-fbot a,.mono .m1-finfo a,.mono .m1-osm a{position:relative}
+.mono .m1-lang a::after,.mono .m1-fbot a::after,.mono .m1-finfo a::after,.mono .m1-osm a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%}
+.m1.mono.live .m1-lang a::after,.m1.mono.live .m1-fbot a::after,.m1.mono.live .m1-finfo a::after,.m1.mono.live .m1-osm a::after{transition:transform .5s var(--ex)}
+@media (hover: hover){.mono .m1-lang a:hover::after,.mono .m1-fbot a:hover::after,.mono .m1-finfo a:hover::after,.mono .m1-osm a:hover::after{transform:scaleX(1);transform-origin:0 50%}}
+/* arrows (buttons, the news rows, the main page's news line): under the pointer the arrow leaves through the upper right
+   corner and comes in again from the lower left — it is drawn twice (parts.tsx), and the drawing's own edge cuts both.
+   The boards moved it 3 px. It moves on the way in only: when the pointer leaves, both are back at once, and since they
+   look the same at rest nothing is seen. */
+.mono svg.aur .in{transform:translate(-16px,16px)}
+@media (hover: hover){
+.m1.mono.live a:hover svg.aur path,.m1.mono.live .m1-nrow:hover svg.aur path{transform:translate(16px,-16px);transition:transform .9s var(--ex)}
+.m1.mono.live a:hover svg.aur .in,.m1.mono.live .m1-nrow:hover svg.aur .in{transform:none}
+}
+.m1.mono.live .m1-btn:hover svg,.m1.mono-home.live .b-news a:hover svg{transform:none}
+.m1.mono-news.live .m1-nrow:hover .m1-go{transform:none}
+/* text picked out with the mouse on a blue part of the page: white, the reverse of the rest (globals.css) */
+.mono .m1-nums ::selection,.mono .b-lu ::selection,.mm ::selection{background-color:#fff;color:#1c7a9e}
 /* the footer's phone and mail keep to one line each; where the column is too narrow for both (a tablet, a narrow phone)
    each takes a line of its own — before, the line broke after "Email." */
 .mono .m1-finfo .nb{white-space:nowrap}
@@ -90,7 +107,8 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 /* (a narrow phone — 360 px: the slab of a tab's first screen passes a little further left, clear of the language beside
    the menu button) */
 @container (max-width: 400px){.mono .m1-slabw{left:calc(38% - (400px - 100cqw) * .45)}}
-/* (a tablet: the round "Scroll" mark is smaller, clear of the big label above it) */
+/* (a tablet: the main page's round "Scroll" mark is smaller — the tabs' first screens, for which this was written, no
+   longer have one) */
 @container (max-width: 900px) and (min-width: 761px){.mono .m1-cue{gap:10px;font-size:16px}.mono .m1-cue i{width:40px;height:40px}}
 /* (small text set as a share of the window has a lower end: on a tablet it fell to 10 px) */
 @container (min-width: 761px){
@@ -202,6 +220,16 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 
 /* (the map's source line at full strength: at 11.5 px and 72 % it measured 2.5 : 1 on white) */
 .mono-contact .m1-osm{opacity:1}
+/* ---------- Contact: the number and the address answer the pointer ----------
+   They are the page's two links and had no answer at all: the band of the key words (the statement's, the channel
+   list's) draws in behind them from the left, and leaves to the right. */
+.mono-contact .m1-fit > span{position:relative;isolation:isolate}
+.mono-contact .m1-fit > span::before{content:"";position:absolute;z-index:-1;left:-.05em;right:-.05em;top:.16em;bottom:.02em;background:var(--t2);transform:skewX(25.15deg) scaleX(0);transform-origin:100% 50%}
+.m1.mono-contact.live .m1-fit > span::before{transition:transform .5s var(--qt)}
+@media (hover: hover){
+.mono-contact a.m1-fit:hover > span::before{transform:skewX(25.15deg);transform-origin:0 50%}
+.m1.mono-contact.live a.m1-fit:hover > span::before{transition:transform 1.1s var(--ex)}
+}
 /* ---------- Contact: the English directions and map buttons are longer; where the row is narrow they take the whole width ---------- */
 @container (max-width: 1100px) and (min-width: 761px){.mono-contact[lang=en] .m1-dir{grid-column:1 / 13;justify-items:start;margin-top:calc(2.6 * var(--u))}}
 

@@ -3,7 +3,7 @@
 import { Fragment, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 import { FORMS, MARK } from "./marks";
 import type { Columns, Lang } from "./content";
-import { optimizeHygraphImage } from "./data";
+import { hygraphSrcSet, optimizeHygraphImage } from "./data";
 
 /** inline styles with custom properties */
 export const vars = (o: Record<string, string | number | undefined>) => o as CSSProperties;
@@ -45,11 +45,14 @@ const FRAME = 1 / 1.414; // the frame (width / height): the A-series ratio most 
 const pc = (v: number) => v.toFixed(3);
 
 /** A poster in the 1 : 1.414 frame, never cropped. One that matches the frame fills it; a slightly different one is
- *  completed by its own edges mirrored outward (a few pixels); a very different one stands whole over a soft copy of itself. */
-export function Poster({ src, ratio, alt, lazy = true, width = 400 }: { src?: string | null; ratio?: number | null; alt: string; lazy?: boolean; width?: number }) {
+ *  completed by its own edges mirrored outward (a few pixels); a very different one stands whole over a soft copy of itself.
+ *  `sizes`: how wide it is shown (as for an <img>) — with it a CMS picture is offered at 400 and 800 px, and a dense
+ *  screen takes the larger one. */
+export function Poster({ src, ratio, alt, lazy = true, width = 400, sizes }: { src?: string | null; ratio?: number | null; alt: string; lazy?: boolean; width?: number; sizes?: string }) {
   if (!src) return <span className="pst" />;
   const url = optimizeHygraphImage(src, width);
-  const io = lazy ? ({ loading: "lazy", decoding: "async" } as const) : ({ decoding: "async" } as const);
+  const set = sizes ? hygraphSrcSet(src, [400, 800]) : undefined;
+  const io = { ...(lazy ? ({ loading: "lazy", decoding: "async" } as const) : ({ decoding: "async" } as const)), ...(set ? { srcSet: set, sizes } : {}) };
   if (ratio && Math.abs((ratio - FRAME) / FRAME) <= 0.015) {
     return <span className="pst"><img className="cv" src={url} alt={alt} {...io} /></span>;
   }
@@ -78,7 +81,7 @@ export function Poster({ src, ratio, alt, lazy = true, width = 400 }: { src?: st
   }
   return (
     <span className="pst whole">
-      <img className="bk" src={url} alt="" aria-hidden="true" {...io} />
+      <img className="bk" src={url} alt="" aria-hidden="true" loading={lazy ? "lazy" : undefined} decoding="async" />
       <img src={url} alt={alt} {...io} />
     </span>
   );

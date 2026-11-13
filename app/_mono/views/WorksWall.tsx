@@ -69,7 +69,7 @@ export default function WorksWall({ lang }: { lang: Lang }) {
                   const ch = w.client?.name?.trim();
                   return (
                     <div key={w.id} className="m1-work" data-m="rise" style={vars({ "--d": `${((j % (yi === 0 ? 3 : 5)) * 0.06).toFixed(2)}s` })}>
-                      <span className="th"><Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} /></span>
+                      <span className="th"><Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} sizes={yi === 0 ? "(max-width: 760px) 44vw, min(23vw, 390px)" : "(max-width: 760px) 44vw, min(13vw, 224px)"} /></span>
                       {ch && <span className="ch">{ch}</span>}
                       <span className="ti">{w.title}</span>
                     </div>

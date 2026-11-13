@@ -7,7 +7,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import { ArrowUR, Tag } from "../parts";
 import { NEWS, hrefOf, type Lang } from "../content";
-import { dateParts, getNewsDetail, paragraphsOf } from "../data";
+import { dateParts, getNewsDetail, optimizeHygraphImage, paragraphsOf } from "../data";
 
 export default async function NewsDetailView({ lang, slug }: { lang: Lang; slug: string }) {
   const news = await getNewsDetail(slug);
@@ -37,7 +37,7 @@ export default async function NewsDetailView({ lang, slug }: { lang: Lang; slug:
             <div className="m1-acol">
               {news.coverImage?.url && (
                 <figure className="m1-acov" data-m="fade">
-                  <img src={news.coverImage.url} alt={news.title} decoding="async" />
+                  <img src={optimizeHygraphImage(news.coverImage.url, 1600)} alt={news.title} decoding="async" />
                 </figure>
               )}
               <div className="m1-atext" data-m="rise">

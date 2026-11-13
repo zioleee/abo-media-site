@@ -46,7 +46,7 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
                 const c = w ? coverOf(w) : null;
                 return (
                   <div key={i} className="b-lc" data-m="rise" style={vars({ "--d": `${((i % 5) * 0.07).toFixed(2)}s` })}>
-                    <span className="th">{w ? <Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} lazy={false} /> : <span className="pst" />}</span>
+                    <span className="th">{w ? <Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} lazy={false} sizes="(max-width: 760px) 42vw, min(20.5vw, 354px)" /> : <span className="pst" />}</span>
                     <span className="cp">
                       <span className="ch">{w?.client?.name?.trim() || NB}</span>
                       <span className="ti">{w ? w.title : NB}</span>

@@ -63,14 +63,32 @@ export function ratioOf(a: Asset | null): number | null {
   return a && a.width && a.height ? a.width / a.height : null;
 }
 
-// Hygraph image optimisation (as on the live main page)
+// Pictures from the CMS, at the size they are shown. Hygraph serves them through Filestack, where a transformation goes
+// into the path, before the file's handle:
+//   https://ap-south-1.graphassets.com/<environment>/resize=width:400,fit:max/output=format:webp,quality:80/<handle>
+// (The "?w=400&q=80&fm=webp" query the site sent before is ignored there: every poster came down as its full-size
+// original — up to 19 MB each. Found 2026-11-13.) `fit:max` never enlarges an original that is smaller.
+function hygraphParts(url: string): { head: string; handle: string } | null {
+  try {
+    const u = new URL(url);
+    if (!/(^|\.)graphassets\.com$/.test(u.hostname)) return null;
+    const segs = u.pathname.split("/").filter(Boolean);
+    if (!segs.length || segs.some((x) => x.includes("="))) return null; // nothing to work on, or transformed already
+    const handle = segs.pop() as string;
+    return { head: [u.origin, ...segs].join("/"), handle };
+  } catch {
+    return null;
+  }
+}
 export function optimizeHygraphImage(url: string, width = 400): string {
   if (!url) return url;
-  if (url.includes("hygraph.com") || url.includes("graphassets.com")) {
-    const separator = url.includes("?") ? "&" : "?";
-    return `${url}${separator}w=${width}&q=80&fm=webp`;
-  }
-  return url;
+  const p = hygraphParts(url);
+  return p ? `${p.head}/resize=width:${width},fit:max/output=format:webp,quality:80/${p.handle}` : url;
+}
+/** the same picture at several widths, for `srcset` (nothing for a picture that is not the CMS's) */
+export function hygraphSrcSet(url: string | null | undefined, widths: number[]): string | undefined {
+  if (!url || !hygraphParts(url)) return undefined;
+  return widths.map((w) => `${optimizeHygraphImage(url, w)} ${w}w`).join(", ");
 }
 
 /** the work a programme of the history stands for: same title (the CMS's wording), the same year if there is one */

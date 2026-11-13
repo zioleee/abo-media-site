@@ -43,6 +43,10 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 }
 .m1.mono.live .m1-btn:hover svg,.m1.mono-home.live .b-news a:hover svg{transform:none}
 .m1.mono-news.live .m1-nrow:hover .m1-go{transform:none}
+/* a press on a touch screen: no grey box flashed over the link by the browser — the page answers itself (buttons and rows
+   show their hover; the phone menu's lines, which have none, dim while they are held) */
+.mono a,.mono button,.mm a,.mm button{-webkit-tap-highlight-color:transparent}
+.mm-it:active .tx,.mm-lang a:active,.mm-logo:active{opacity:.55}
 /* text picked out with the mouse on a blue part of the page: white, the reverse of the rest (globals.css) */
 .mono .m1-nums ::selection,.mono .b-lu ::selection,.mm ::selection{background-color:#fff;color:#1c7a9e}
 /* the footer's phone and mail keep to one line each; where the column is too narrow for both (a tablet, a narrow phone)

@@ -191,6 +191,41 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
   const mo = tk && typeof MutationObserver === 'function' ? new MutationObserver(() => { setupDrift(); }) : null;
   if (mo) mo.observe(tk, { childList: true });
 
+  // On a touch screen the row goes with the finger (user, 2026-11-14: "슬라이드해서 넘길 수 있게"): a sideways
+  // stroke takes hold of it, on letting go it runs on at the stroke's speed and settles back into its own pace. A stroke
+  // up or down is the page's (touch-action: pan-y on the row, extra.css). A press that was a stroke opens nothing.
+  let drag = null, swiped = 0;
+  if (tkw) {
+    on(tkw, 'touchstart', (e) => {
+      if (!drift || e.touches.length !== 1) { drag = null; return; }
+      const t = e.touches[0];
+      drag = { x0: t.clientX, y0: t.clientY, d0: dpos, on: false, x: t.clientX, px: t.clientX, pt: performance.now(), v: 0 };
+    }, { passive: true });
+    on(tkw, 'touchmove', (e) => {
+      if (!drag) return;
+      const t = e.touches[0], dx = t.clientX - drag.x0, dy = t.clientY - drag.y0;
+      if (!drag.on) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+        drag.on = true; drag.x0 = t.clientX; drag.d0 = dpos; drag.px = t.clientX; drag.pt = performance.now();
+      }
+      const now = performance.now(), dt = Math.max(1, now - drag.pt);
+      drag.v = drag.v * 0.55 + ((t.clientX - drag.px) / dt * 1000) * 0.45;
+      drag.px = t.clientX; drag.pt = now; drag.x = t.clientX;
+    }, { passive: true });
+    const end = () => {
+      if (drag && drag.on) {
+        // (a finger that rested before lifting leaves the row where it is)
+        dv = performance.now() - drag.pt > 90 ? 0 : clamp(-drag.v, -3200, 3200);
+        swiped = performance.now();
+      }
+      drag = null;
+    };
+    on(tkw, 'touchend', end, { passive: true });
+    on(tkw, 'touchcancel', end, { passive: true });
+    on(tkw, 'click', (e) => { if (performance.now() - swiped < 350) { e.stopPropagation(); e.preventDefault(); } }, true);
+  }
+
   const ct = $('.h-ct'), ctSlab = $('.h-ct .m1-slabw');
   X.frame = (c) => {
     // the wordmark steps out of the growing mark's way and comes back at the margin (wherever the page happens to be)
@@ -238,8 +273,11 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
         const u = clamp((c.ptr.cx - c.W / 2) / (c.W / 2), -1, 1), a = Math.max(0, (Math.abs(u) - 0.16) / 0.84), e = a * a * (3 - 2 * a);
         aim = u > 0 ? speed * (1 + STEER * e) : speed * (1 - (STEER + 2) * e);
       }
-      dv += (aim - dv) * (1 - Math.exp(-c.dt * 3));
-      dpos = ((dpos + dv * c.dt) % loop + loop) % loop;
+      if (drag && drag.on) { dv = 0; dpos = ((drag.d0 - (drag.x - drag.x0)) % loop + loop) % loop; }
+      else {
+        dv += (aim - dv) * (1 - Math.exp(-c.dt * (Math.abs(dv) > speed * 8 ? 1.8 : 3)));
+        dpos = ((dpos + dv * c.dt) % loop + loop) % loop;
+      }
       const best = placeRow();
       if (rest) {
         // the poster under the mouse is the chosen one (between two posters the last one stays chosen)

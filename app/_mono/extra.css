@@ -434,3 +434,39 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mm[data-go]:not(.on){transition:visibility 0s linear .3s}
 .pgs.now > i > b{background-size:34px 34px}
 @media (max-width: 760px){.pgs > i > b,.pgs.now > i > b{background-size:5.4vw 5.4vw}}
+
+/* ---------- added 2026-11-14: the phone, read as a phone (user: "스마트폰에서는 가로로 보이게 해야 가독성이 좋지") ----------
+   On a phone nothing is set vertically any more: the tabs' first-screen titles, the main page's closing title and the
+   lines on About's three cards run across, like everything else one reads on a phone. The first-screen title stands
+   above the tab's big name, under the slab. The lineup's row goes with the finger (motion/home.js). */
+.m1.mono-home.drift .b-tkw{touch-action:pan-y}
+@container (max-width: 760px){
+.mono .m1-vt,.mono-home .h-vt,.mono[lang=en] .m1-vt,.mono-home[lang=en] .h-vt{writing-mode:horizontal-tb;font-size:calc(8.2 * var(--u));line-height:1.34;letter-spacing:-.045em;white-space:nowrap}
+.mono[lang=en] .m1-vt,.mono-home[lang=en] .h-vt{font-size:calc(6.6 * var(--u));letter-spacing:-.02em}
+.mono .m1-vtw{top:auto;bottom:calc(45.5 * var(--u))}
+.mono-home .h-vtw{top:auto;bottom:calc(38 * var(--u))}
+.m1.mono.live .m1-vt .ch,.m1.mono-home.live .h-vt .ch{transform:translateY(.5em)}
+.m1.mono.ready .m1-vt .ch,.m1.mono-home.live .h-vt.mv .ch{transform:none}
+/* About's three cards stand side by side on a phone too, made small (user, 2026-11-14: one under the other makes a
+   phone page long and heavy — "요소를 작게 줄여서 가로로"); the same thought for the lists under them: the history's
+   works in two columns, a business area's number beside its name. */
+.mono-about .m1-panels{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:calc(8 * var(--u))}
+.mono-about .m1-panel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto 1fr;padding:calc(3 * var(--u)) calc(2.6 * var(--u)) calc(3.2 * var(--u))}
+.mono-about .m1-panel .k b{font-size:calc(4.2 * var(--u))}
+.mono-about .m1-panel .fm{height:calc(15 * var(--u));margin:calc(3.4 * var(--u)) 0 calc(3 * var(--u))}
+.mono-about .m1-panel .w{grid-row:3;font-size:calc(5.3 * var(--u))}
+.mono-about .m1-panel .vd,.mono-about[lang=en] .m1-panel .vd{grid-row:4;grid-column:1 / -1;justify-self:start;writing-mode:horizontal-tb;padding-top:calc(2.2 * var(--u));font-size:max(11.5px,calc(2.9 * var(--u)));line-height:1.5;letter-spacing:-.03em;white-space:normal;word-break:keep-all}
+.mono-about .m1-panel .vd br{display:none}
+.mono-about .m1-yr{padding:calc(3 * var(--u)) 0 calc(5 * var(--u))}
+.mono-about .m1-yr h3{font-size:calc(12 * var(--u))}
+.mono-about .m1-ents{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;margin-top:calc(3.4 * var(--u))!important}
+.mono-about .m1-ent{gap:calc(2.4 * var(--u));padding:calc(2 * var(--u)) 0}
+.mono-about .m1-ent .th{width:calc(7.4 * var(--u))}
+.mono-about .m1-ent .ch{font-size:11.5px}
+.mono-about .m1-ent .pg{font-size:max(13px,calc(3.4 * var(--u)));word-break:keep-all}
+.mono-business .m1-area{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:calc(4.5 * var(--u));align-items:end;padding:calc(4.4 * var(--u)) 0 calc(6.4 * var(--u))}
+.mono-business .m1-g12.m1-area > .no{grid-column:1!important;font-size:calc(12 * var(--u));line-height:.86}
+.mono-business .m1-g12.m1-area > .en{grid-column:2!important;margin-top:0!important;font-size:calc(7.2 * var(--u))}
+.mono-business .m1-area .bd{margin-top:calc(4.4 * var(--u))}
+.mono .m1-fnav{justify-content:space-between;gap:8px 10px}
+}

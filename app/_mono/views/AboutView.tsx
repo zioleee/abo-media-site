@@ -25,7 +25,7 @@ export default function AboutView({ lang }: { lang: Lang }) {
               <article key={v.letter} className="m1-panel" data-m="rise" style={vars({ "--d": `${(i * 0.12).toFixed(2)}s` })}>
                 <p className="k"><b>{v.letter}</b></p>
                 <div className="fm"><GridForm g={v.letter as "A" | "B" | "O"} uid={`m1g${v.letter}`} /></div>
-                <p className="vd">{v.desc[0]}<br />{v.desc[1]}</p>
+                <p className="vd">{v.desc[0]}{" "}<br />{v.desc[1]}</p>
                 <p className="w">{v.word}</p>
               </article>
             ))}

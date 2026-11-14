@@ -462,7 +462,7 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .mono-about .m1-ents{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;margin-top:calc(3.4 * var(--u))!important}
 .mono-about .m1-ent{gap:calc(2.4 * var(--u));padding:calc(2 * var(--u)) 0}
 .mono-about .m1-ent .th{width:calc(7.4 * var(--u))}
-.mono-about .m1-ent .ch{font-size:10.5px}
+.mono-about .m1-ent .ch{font-size:11.5px}
 .mono-about .m1-ent .pg{font-size:max(13px,calc(3.4 * var(--u)));word-break:keep-all}
 .mono-business .m1-area{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:calc(4.5 * var(--u));align-items:end;padding:calc(4.4 * var(--u)) 0 calc(6.4 * var(--u))}
 .mono-business .m1-g12.m1-area > .no{grid-column:1!important;font-size:calc(12 * var(--u));line-height:.86}

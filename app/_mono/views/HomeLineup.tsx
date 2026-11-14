@@ -3,6 +3,11 @@
 // count. While the page moves, the row of posters moves on by itself, slowly (motion/home.js); the poster passing the
 // middle of the window is in its own colours. The works are read in the browser, as before; until they are in, the row
 // holds empty frames.
+// In a very wide window one round of the list is shorter than the row has to be to go round out of sight (sizes stop
+// growing at 1728 px, the window does not): the row then holds the list two or three times. Those further rounds are
+// made here, in the browser, a moment after the page is there, and only in a window wider than those 1728 px;
+// motion/home.js shows as many of them as the window needs. On the page as laid out, and where one round is enough,
+// they are put away (extra.css).
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMono } from "../MonoRoot";
@@ -12,6 +17,8 @@ import { coverOf, getWorks, ratioOf, type Work } from "../data";
 import type { ViewItem } from "../PosterViewer";
 
 const NB = "\u00a0"; // a non-breaking space: an empty caption keeps its line
+const ROUNDS = 3; // the list at most this many times in the row (enough for a window about 9700 px wide)
+const WIDE = "(min-width: 1729px)"; // wider than the page's own width (--cap in mono.css): only there can one round be too short
 
 export default function HomeLineup({ lang }: { lang: Lang }) {
   const h = HOME[lang];
@@ -22,7 +29,17 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
     getWorks(50).then((w) => { if (alive) setWorks(w); });
     return () => { alive = false; };
   }, []);
-  useEffect(() => { if (works) rescan(); }, [works, rescan]);
+  const [rounds, setRounds] = useState(1);
+  useEffect(() => {
+    const mq = window.matchMedia(WIDE);
+    const set = () => setRounds(mq.matches ? ROUNDS : 1);
+    set();
+    if (!mq.addEventListener) return; // (an old Safari: the window's width at the start decides)
+    mq.addEventListener("change", set);
+    return () => mq.removeEventListener("change", set);
+  }, []);
+  // (the row is set up again when the works are in, and when its further rounds are)
+  useEffect(() => { if (works || rounds > 1) rescan(); }, [works, rounds, rescan]);
 
   const list = works ? (HOME_WORKS.map((s) => works.find((w) => w.slug === s)).filter(Boolean) as Work[]) : null;
   if (list && list.length === 0) return null;
@@ -52,12 +69,13 @@ export default function HomeLineup({ lang }: { lang: Lang }) {
           </div>
           <div className="b-tkw">
             <div className="b-tk">
-              {Array.from({ length: n }, (_, i) => {
+              {Array.from({ length: n * rounds }, (_, j) => {
+                const i = j % n, rep = Math.floor(j / n); // rep: which round of the list (0: the list itself)
                 const w = list ? list[i] : null;
                 const c = w ? coverOf(w) : null;
                 const k = w ? at.get(w.id) : undefined;
                 return (
-                  <div key={i} className="b-lc" data-m="rise" style={vars({ "--d": `${((i % 5) * 0.07).toFixed(2)}s` })} data-cur={k === undefined ? undefined : "view"} onClick={k === undefined ? undefined : (e) => view(items, k, e.currentTarget)}>
+                  <div key={j} className="b-lc" data-rep={rep || undefined} aria-hidden={rep ? true : undefined} data-m="rise" style={vars({ "--d": `${((i % 5) * 0.07).toFixed(2)}s` })} data-cur={k === undefined ? undefined : "view"} onClick={k === undefined ? undefined : (e) => view(items, k, e.currentTarget)}>
                     <span className="th">{w ? <Poster src={c?.url} ratio={ratioOf(c)} alt={w.title} lazy={false} sizes="(max-width: 760px) 42vw, min(20.5vw, 354px)" /> : <span className="pst" />}</span>
                     <span className="cp">
                       <span className="ch">{w?.client?.name?.trim() || NB}</span>

@@ -185,6 +185,10 @@ html.js .mono:not(.live):not(.still){visibility:hidden;animation:pg-show 0s line
 .m1.mono-home.drift .b-tkw{margin:calc(calc(5.2 * var(--u)) - 18px) calc(var(--px) * -1) 0;overflow:hidden}
 .m1.mono-home.drift .b-tk{display:flex;gap:max(24px,calc(1.95 * var(--u)));width:max-content;margin:0;padding:18px var(--px) 2px}
 .m1.mono-home.drift .b-lc,.m1.mono-home.drift .b-lc:nth-child(6){flex:none;width:max(220px,calc(20.5 * var(--u)));will-change:translate}
+/* the row's further rounds of the list (HomeLineup; a very wide window needs them for the row to go round out of sight):
+   not on the page as laid out, and only as many as the script asks for */
+.m1.mono-home .b-lc[data-rep]{display:none}
+.m1.mono-home.drift.lr2 .b-lc[data-rep="1"],.m1.mono-home.drift.lr3 .b-lc[data-rep]{display:block}
 .m1.mono-home.drift .b-lc .ch{font-size:13px}
 .m1.mono-home.drift .b-lc .ti{font-size:max(15px,calc(1.4 * var(--u)))}
 .m1.mono-home.drift .b-lc.on .th{transform:translateY(-14px);box-shadow:0 26px 44px -18px rgba(6,40,56,.6)}

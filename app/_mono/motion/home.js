@@ -116,7 +116,8 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
   // window, or — while a mouse is on the row — the one under it; the one left goes back. The mouse also steers the row
   // (user, 2026-11-13): towards the right edge it runs on faster, towards the left edge it runs back; near the middle it
   // keeps its own pace. It never stops for the mouse.
-  // A conveyor: a poster that has left on the left comes round again on the right, out of sight (no copies).
+  // A conveyor: a poster that has left on the left comes round again on the right, out of sight. One round of the list is
+  // enough for that in most windows; in a very wide one the row holds the list two or three times (see setupDrift).
   // The page as laid out keeps the board's grid.
   let lu = null, tk = null, tkw = null, lcs = [], NL = 0, drift = false;
   let cl = [], lx = [], cwd = 0, pitch = 0, loop = 0, tkx = 0, dpos = 0, dv = 0, speed = 0, lCur = -1, pick = -1;
@@ -150,24 +151,45 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     return best;
   };
   // (set up again when the list arrives from the CMS — before that the row holds empty frames)
+  const repOf = (el) => Number(el.getAttribute('data-rep')) || 0;
   const setupDrift = () => {
     lcs.forEach((el) => { el.style.translate = ''; el.classList.remove('on'); });
-    lu = $('.b-lu'); tk = $('.b-tk'); tkw = $('.b-tkw'); lcs = $$('.b-lc');
-    NL = lcs.length; lCur = -1; pick = -1; drift = false;
-    root.classList.remove('drift');
-    if (!lu || !tk || !tkw || NL < 3) return;
+    lu = $('.b-lu'); tk = $('.b-tk'); tkw = $('.b-tkw');
+    // the list once (the page as laid out shows just this), and the further rounds of it that the page holds ready
+    const all = $$('.b-lc'), one = all.filter((el) => !repOf(el)), N1 = one.length;
+    lcs = one; NL = N1; lCur = -1; pick = -1; drift = false;
+    root.classList.remove('drift', 'lr2', 'lr3');
+    if (!lu || !tk || !tkw || N1 < 3) return;
     root.classList.add('drift'); void root.offsetWidth;
+    cwd = one[0].getBoundingClientRect().width; pitch = one[1].getBoundingClientRect().left - one[0].getBoundingClientRect().left;
+    // too few posters for a row that goes round — fewer than fill the page's own width and two more: the grid stays.
+    // (The page's own width, not the window's: sizes stop growing at --cap, so in a wider window the posters are no
+    // larger — that the WINDOW is wide is no reason for the grid. It was, by mistake, from 2026-11-13 to 11-14: wider
+    // than 2715 px the row gave way to the grid; the user saw it on the live site at 2844 px.)
+    const cap = Number(getComputedStyle(root).getPropertyValue('--cap')) || 1728;
+    if (!(pitch > 0) || N1 * pitch < Math.min(W, cap) + 2 * pitch) { root.classList.remove('drift'); return; }
+    // A window wider than one round of the list (and two posters more, for coming round out of sight): the row holds the
+    // list twice, or three times. Those further rounds are in the page (HomeLineup makes them a moment after the page is
+    // there) and are put away where one round is enough.
+    const have = 1 + all.reduce((m, el) => Math.max(m, repOf(el)), 0);
+    const need = Math.ceil((W + 2 * pitch) / (N1 * pitch));
+    if (need > have) { root.classList.remove('drift'); return; }   // (not made yet; or a window wider than three rounds)
+    if (need > 1) { root.classList.add(need > 2 ? 'lr3' : 'lr2'); void root.offsetWidth; }
+    lcs = all.filter((el) => repOf(el) < need); NL = lcs.length;
     const r0 = tk.getBoundingClientRect();
     cl = lcs.map((el) => el.getBoundingClientRect().left - r0.left);
-    cwd = lcs[0].getBoundingClientRect().width; pitch = cl[1] - cl[0]; loop = NL * pitch; tkx = r0.left; speed = pitch / PER;
-    // too few posters to fill the window and come round out of sight: the grid stays
-    if (!(pitch > 0) || loop < W + 2 * pitch) { root.classList.remove('drift'); return; }
+    loop = NL * pitch; tkx = r0.left; speed = pitch / PER;
     drift = true;
     dpos %= loop;
     choose(placeRow());                              // where the row has got to (no frame in its laid-out place)
   };
   setupDrift();
   void root.offsetWidth; remeasure();
+  // The row's further rounds are put into the page a moment after it is there (and taken out again when the window gets
+  // narrow): the row is set up again the moment its cards change, not a frame later — a window that is not in front has
+  // no frames, and a page that opens at the row should not show the grid first.
+  const mo = tk && typeof MutationObserver === 'function' ? new MutationObserver(() => { setupDrift(); }) : null;
+  if (mo) mo.observe(tk, { childList: true });
 
   const ct = $('.h-ct'), ctSlab = $('.h-ct .m1-slabw');
   X.frame = (c) => {
@@ -235,7 +257,7 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
   };
   X.rescan = () => { setupDrift(); };
   X.stop = () => {
-    root.classList.remove('pin', 'tall', 'drift', 'wa', 'wb', 'wc');
+    root.classList.remove('pin', 'tall', 'drift', 'lr2', 'lr3', 'wa', 'wb', 'wc');
     und.style.opacity = ''; und.style.transform = ''; und.style.visibility = '';
     root.style.removeProperty('--hx');
     film.style.clipPath = clip0; film.style.pointerEvents = ''; film.removeAttribute('data-tone');
@@ -246,5 +268,6 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     if (yct) yct.textContent = '01'; yp.classList.remove('lit');
     lcs.forEach((el) => { el.style.translate = ''; el.classList.remove('on'); });
     ctSlab.style.transform = '';
+    if (mo) mo.disconnect();
   };
 }

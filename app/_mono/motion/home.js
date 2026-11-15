@@ -1,12 +1,19 @@
 // The main page (Home B): what moves besides the arrivals — the mark leaving the header to become the window onto the
-// film, the way in through the O, the channel list, the lineup that moves on by itself, Contact's slab.
+// film, the way in through the O (made by the scroll; on a phone it plays by itself), the channel list, the lineup that
+// moves on by itself, Contact's slab.
 // Ported from the board (round11/homeb.js, via round13/make_home_js.py); the lineup's motion is the site's own (user, 2026-11-11).
 /* eslint-disable */
 export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure, remeasure, W, H0, sy0, X }) {
   // ===== draft B: what moves (only while the page scrolls in a window; the page as laid out is complete without it) =====
   const K = 0.4695, desk = W > 760;
   // an upright window wider than a phone (a tablet held upright): nothing is held in place, the page just scrolls
-  const tall = desk && H0 > W, canPin = !tall;
+  const tall = desk && H0 > W;
+  // On a phone the way in through the O plays by itself, a moment after the mark has arrived (user, 2026-11-15: "폰에서는
+  // 스크롤 안 해도 메인 로고가 처음에 딱 뜨고 영상으로 넘어가는 거까지는 자동으로"): nobody scrolls a phone's first screen
+  // to see it open. Nothing is held in place for it either — the page just scrolls. In a wider window the scroll still
+  // makes the way in, as before.
+  const auto = !desk, AUTO0 = 2.4, AUTOD = 1.2;     // (it starts this long after the motion starts, and takes this long)
+  const canPin = !tall && !auto;
   if (tall) { root.classList.add('tall'); void root.offsetWidth; remeasure(); }
   const MARK = [[["M",0.061575,0.192732],["A",0.029412,1,0.114396,0.192688],["L",0.173011,0.312034],["A",0.029412,1,0.146611,0.354412],["L",0.029626,0.354412],["A",0.029412,1,0.003205,0.312078]],[["M",0.098095,0.033529],["A",0.023529,1,0.119394,0.0],["L",0.199759,0.0],["A",0.023529,1,0.221058,0.01353],["L",0.36536,0.320883],["A",0.023529,1,0.344061,0.354412],["L",0.263696,0.354412],["A",0.023529,1,0.242397,0.340882]],[["M",0.293242,0.033529],["A",0.023529,1,0.314541,0.0],["L",0.491237,0.0],["A",0.023529,1,0.512402,0.03381],["L",0.456903,0.148072],["A",0.004412,0,0.460871,0.154412],["L",0.568111,0.154412],["A",0.011765,1,0.578761,0.161177],["L",0.653743,0.320883],["A",0.023529,1,0.632444,0.354412],["L",0.458843,0.354412],["A",0.023529,1,0.437544,0.340882]],[["M",0.578095,0.033529],["A",0.023529,1,0.599394,0.0],["L",0.832112,0.0],["A",0.023529,1,0.853411,0.01353],["L",0.997713,0.320883],["A",0.023529,1,0.976414,0.354412],["L",0.743696,0.354412],["A",0.023529,1,0.722397,0.340882]]], MH = 0.354412;
   const eio = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2), sstep = (x) => x * x * (3 - 2 * x);
@@ -66,7 +73,7 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     }
     return d;
   };
-  let ps = clamp(window.pageYOffset / ZS, 0, 1), lastKey = '', ovO = -1, toO = -1, shO = -1, cueO = -1, unO = -1, wst = 0, inMark = true;
+  let ps = auto ? 0 : clamp(window.pageYOffset / ZS, 0, 1), lastKey = '', ovO = -1, toO = -1, shO = -1, cueO = -1, unO = -1, wst = 0, inMark = true;
   // the film closes on the company's own logo: inside the mark that would be the logo within the logo, so there it starts over before it
   const CUT = 28.15;
   const onTime = () => { if (inMark && vid.currentTime > CUT) { try { vid.currentTime = 0; } catch (e) {} } };
@@ -234,9 +241,13 @@ export default function homeMotion({ root, $, $$, on, clamp, mix, pageY, measure
     // first screen
     if (c.y < PH + hx + 60) {
       const q = eio(clamp((c.t - 0.55) / 1.5, 0, 1));
-      const p0 = clamp(c.y / ZS, 0, 1);
-      ps += (p0 - ps) * (1 - Math.exp(-c.dt * 10)); if (Math.abs(p0 - ps) < 0.0004) ps = p0;
-      const p = sstep(ps);
+      let p;
+      if (auto) { ps = clamp((c.t - AUTO0) / AUTOD, 0, 1); p = eio(ps); }
+      else {
+        const p0 = clamp(c.y / ZS, 0, 1);
+        ps += (p0 - ps) * (1 - Math.exp(-c.dt * 10)); if (Math.abs(p0 - ps) < 0.0004) ps = p0;
+        p = sstep(ps);
+      }
       place(q, p, desk ? -c.ptr.sx * 9 * q * (1 - p) : 0);
       inMark = p < 0.5;
       // what stands under the mark makes room before the mark reaches it

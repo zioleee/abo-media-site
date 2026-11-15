@@ -1,6 +1,7 @@
 "use client";
 // The main page's first screen (Home B): the ABO mark is the window onto the company's film, toned in the one blue;
-// scrolling goes in through the O until the film is the whole window (motion/home.js). Under the mark: what the
+// scrolling goes in through the O until the film is the whole window (motion/home.js) — on a phone that plays by itself
+// a moment after the mark has arrived, and the film then fills the band under the header. Under the mark: what the
 // company is, in its own words; at the foot, the news line.
 import { useEffect, useRef } from "react";
 import Header from "../Header";
